@@ -1,0 +1,73 @@
+Elm.DeadScreen = Elm.DeadScreen || {};
+Elm.DeadScreen.make = function (_elm) {
+   "use strict";
+   _elm.DeadScreen = _elm.DeadScreen || {};
+   if (_elm.DeadScreen.values)
+   return _elm.DeadScreen.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "DeadScreen",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Game = Elm.Game.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Vect = Elm.Vect.make(_elm);
+   var cDeadScreen_inputs = $Game.taps_f;
+   var cDeadScreen_localvar_messageStyle = function ($) {
+      return $Text.bold($Text.typeface(_L.fromArray(["monospace"
+                                                    ,"arial"]))($));
+   };
+   var cDeadScreen_render = function (g) {
+      return A3($Graphics$Collage.collage,
+      $Config.game_total_width,
+      $Config.game_total_height,
+      _L.fromArray([$Graphics$Collage.toForm($Game.cGame_render(g))
+                   ,A2($Graphics$Collage.filled,
+                   A4($Color.rgba,200,200,200,0.5),
+                   A2($Graphics$Collage.rect,
+                   $Basics.toFloat($Config.game_total_width),
+                   $Basics.toFloat($Config.game_total_height)))
+                   ,$Graphics$Collage.moveY(80)($Graphics$Collage.toForm($Text.centered(A2($Text.height,
+                   80,
+                   A2($Text.color,
+                   $Color.orange,
+                   $Text.italic(cDeadScreen_localvar_messageStyle($Text.fromString("Game\nOver\n\n"))))))))
+                   ,$Graphics$Collage.moveY(-30)($Graphics$Collage.toForm($Text.centered(A2($Text.height,
+                   150,
+                   A2($Text.color,
+                   $Color.orange,
+                   cDeadScreen_localvar_messageStyle($Text.fromString($Basics.toString($Basics.round($Time.inSeconds(g.time_playing))))))))))]));
+   };
+   var Replay = function (a) {
+      return {ctor: "Replay"
+             ,_0: a};
+   };
+   var Continue = function (a) {
+      return {ctor: "Continue"
+             ,_0: a};
+   };
+   var cDeadScreen_step = F2(function (tap_pos,
+   g) {
+      return function () {
+         var new_g = _U.replace([["prev_tap_pos"
+                                 ,tap_pos]],
+         g);
+         return !_U.eq(tap_pos,
+         g.prev_tap_pos) ? Replay(tap_pos) : Continue(new_g);
+      }();
+   });
+   _elm.DeadScreen.values = {_op: _op
+                            ,Continue: Continue
+                            ,Replay: Replay
+                            ,cDeadScreen_localvar_messageStyle: cDeadScreen_localvar_messageStyle
+                            ,cDeadScreen_inputs: cDeadScreen_inputs
+                            ,cDeadScreen_step: cDeadScreen_step
+                            ,cDeadScreen_render: cDeadScreen_render};
+   return _elm.DeadScreen.values;
+};

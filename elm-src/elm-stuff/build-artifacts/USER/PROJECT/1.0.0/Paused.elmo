@@ -1,0 +1,63 @@
+Elm.Paused = Elm.Paused || {};
+Elm.Paused.make = function (_elm) {
+   "use strict";
+   _elm.Paused = _elm.Paused || {};
+   if (_elm.Paused.values)
+   return _elm.Paused.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Paused",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Game = Elm.Game.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Vect = Elm.Vect.make(_elm);
+   var cPaused_inputs = $Game.taps_f;
+   var cPaused_localvar_messageStyle = function ($) {
+      return $Text.color($Color.orange)($Text.bold($Text.height(60)($Text.typeface(_L.fromArray(["monospace"
+                                                                                                ,"arial"]))($))));
+   };
+   var cPaused_render = function (g) {
+      return A3($Graphics$Collage.collage,
+      $Config.game_total_width,
+      $Config.game_total_height,
+      _L.fromArray([$Graphics$Collage.toForm($Game.cGame_render(g))
+                   ,A2($Graphics$Collage.filled,
+                   A4($Color.rgba,200,200,200,0.5),
+                   A2($Graphics$Collage.rect,
+                   $Basics.toFloat($Config.game_total_width),
+                   $Basics.toFloat($Config.game_total_height)))
+                   ,A2($Graphics$Collage.moveY,
+                   20,
+                   $Graphics$Collage.toForm($Text.centered(cPaused_localvar_messageStyle($Text.fromString("Paused")))))]));
+   };
+   var Play = function (a) {
+      return {ctor: "Play",_0: a};
+   };
+   var Continue = function (a) {
+      return {ctor: "Continue"
+             ,_0: a};
+   };
+   var cPaused_step = F2(function (tap_pos,
+   g) {
+      return function () {
+         var new_g = _U.replace([["prev_tap_pos"
+                                 ,tap_pos]],
+         g);
+         return !_U.eq(tap_pos,
+         g.prev_tap_pos) ? Play(new_g) : Continue(new_g);
+      }();
+   });
+   _elm.Paused.values = {_op: _op
+                        ,cPaused_step: cPaused_step
+                        ,cPaused_render: cPaused_render
+                        ,cPaused_inputs: cPaused_inputs
+                        ,Continue: Continue
+                        ,Play: Play};
+   return _elm.Paused.values;
+};

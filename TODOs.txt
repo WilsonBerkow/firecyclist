@@ -1,4 +1,4 @@
-(c) Wilson Berkow
+(c) Wilson Berkow. Note that a bunch of this is old... up-to-date TODOs can be found in compelm-src/Main.compelm, and other files.
 TODOS:
    - GRAPICS:
      - Try making the body (and maybe outline) of fireballs yellower (ie. orange --> yellow-orange).

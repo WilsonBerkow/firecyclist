@@ -1,0 +1,31 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Main",
+   $App = Elm.App.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var delta = A2($Signal.map,
+   $Time.inSeconds,
+   $Time.fps(60));
+   var main = A2($Signal.map,
+   $App.cApp_render,
+   A3($Signal.foldp,
+   $App.cApp_step,
+   $App.cApp_init,
+   A2($Signal.sampleOn,
+   delta,
+   $App.cApp_inputs)));
+   _elm.Main.values = {_op: _op
+                      ,main: main
+                      ,delta: delta};
+   return _elm.Main.values;
+};

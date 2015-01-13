@@ -1,0 +1,210 @@
+Elm.Player = Elm.Player || {};
+Elm.Player.make = function (_elm) {
+   "use strict";
+   _elm.Player = _elm.Player || {};
+   if (_elm.Player.values)
+   return _elm.Player.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Player",
+   $BasicUtil = Elm.BasicUtil.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Platfm = Elm.Platfm.make(_elm),
+   $Vect = Elm.Vect.make(_elm);
+   var configPlayer = {_: {}
+                      ,radius: 10};
+   var stepPlayer = function () {
+      var player_grav = 0.2;
+      var platfm_bounciness = 0.75;
+      var vel_from_slope = function (m) {
+         return $Vect.vect_rise(platfm_bounciness)($Vect.vect_rise($Platfm.configPlatfm.fall_rate)($Vect.vscale(3)(A2($Vect.Vect,
+         $BasicUtil.signnum(m),
+         $Basics.abs(m)))));
+      };
+      var slope = F2(function (_v0,
+      _v1) {
+         return function () {
+            switch (_v1.ctor)
+            {case "_Tuple2":
+               return function () {
+                    switch (_v0.ctor)
+                    {case "_Tuple2":
+                       return (_v1._1 - _v0._1) / (_v1._0 - _v0._0);}
+                    _U.badCase($moduleName,
+                    "on line 29, column 34 to 53");
+                 }();}
+            _U.badCase($moduleName,
+            "on line 29, column 34 to 53");
+         }();
+      });
+      var line_to_func = F2(function (_v8,
+      b) {
+         return function () {
+            switch (_v8.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var m = A2(slope,_v8,b);
+                    return function (x) {
+                       return m * (x - _v8._0) + _v8._1;
+                    };
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 32 and 33");
+         }();
+      });
+      var touching = F2(function (a,
+      b) {
+         return function () {
+            var in_r = A2($BasicUtil.in_range,
+            $Basics.fst(a),
+            $Basics.fst(b));
+            var fn = A2(line_to_func,a,b);
+            return function (_v12) {
+               return function () {
+                  switch (_v12.ctor)
+                  {case "_Tuple2":
+                     return in_r(_v12._0) && _U.cmp($Basics.abs(fn(_v12._0) - _v12._1),
+                       2 * configPlayer.radius) < 1;}
+                  _U.badCase($moduleName,
+                  "on line 38, column 43 to 109");
+               }();
+            };
+         }();
+      });
+      var touching_plat = F2(function (_v16,
+      _v17) {
+         return function () {
+            return function () {
+               return function () {
+                  var _raw = _v16.pos,
+                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
+                  "on line 43, column 65 to 68"),
+                  pl_x = $._0,
+                  pl_y = $._1;
+                  var _raw = _v17.end,
+                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
+                  "on line 42, column 61 to 64"),
+                  x2 = $._0,
+                  y2 = $._1;
+                  var _raw = _v17.start,
+                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
+                  "on line 41, column 61 to 66"),
+                  x1 = $._0,
+                  y1 = $._1;
+                  return A3(touching,
+                  {ctor: "_Tuple2",_0: x1,_1: y1},
+                  {ctor: "_Tuple2",_0: x2,_1: y2},
+                  {ctor: "_Tuple2"
+                  ,_0: pl_x
+                  ,_1: pl_y});
+               }();
+            }();
+         }();
+      });
+      var touching_any = F2(function (pl,
+      plats) {
+         return A3($List.foldl,
+         F2(function (plat,acc) {
+            return $BasicUtil.isJust(acc) ? acc : A2(touching_plat,
+            pl,
+            plat) ? $Maybe.Just(plat) : acc;
+         }),
+         $Maybe.Nothing,
+         plats);
+      });
+      var plat_slope = function (_v20) {
+         return function () {
+            return function () {
+               var _raw = _v20.end,
+               $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
+               "on line 55, column 52 to 55"),
+               x2 = $._0,
+               y2 = $._1;
+               var _raw = _v20.start,
+               $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
+               "on line 54, column 52 to 57"),
+               x1 = $._0,
+               y1 = $._1;
+               return A2(slope,
+               {ctor: "_Tuple2",_0: x1,_1: y1},
+               {ctor: "_Tuple2"
+               ,_0: x2
+               ,_1: y2});
+            }();
+         }();
+      };
+      var step = F2(function (plats,
+      p) {
+         return function () {
+            var rad = configPlayer.radius;
+            var gwidth = $Basics.toFloat($Config.game_total_width);
+            var on_plat = A2(touching_any,
+            p,
+            plats);
+            var vel = function () {
+               switch (on_plat.ctor)
+               {case "Just":
+                  return vel_from_slope(plat_slope(on_plat._0));
+                  case "Nothing":
+                  return A2($Vect.vect_fall,
+                    player_grav,
+                    p.vel);}
+               _U.badCase($moduleName,
+               "between lines 65 and 68");
+            }();
+            var _raw = $Vect.vsum(_L.fromArray([p.pos
+                                               ,vel])),
+            $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
+            "on line 68, column 45 to 62"),
+            newx = $._0,
+            newy = $._1;
+            var modded_newx = _U.cmp(newx,
+            gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
+            0 - rad) < 0 ? newx + gwidth + rad : newx;
+            return {_: {}
+                   ,pos: A2($Vect.Vect,
+                   modded_newx,
+                   newy)
+                   ,vel: vel};
+         }();
+      });
+      return step;
+   }();
+   var renderPlayer = function (p) {
+      return function () {
+         var secondary = A4($Color.rgba,
+         50,
+         50,
+         200,
+         1);
+         var blue_gray = A4($Color.rgba,
+         50,
+         50,
+         200,
+         0.7);
+         return $Vect.move_f(p.pos)($Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
+                                                                         blue_gray,
+                                                                         $Graphics$Collage.circle(configPlayer.radius))
+                                                                         ,A2($Graphics$Collage.outlined,
+                                                                         $Graphics$Collage.solid(secondary),
+                                                                         $Graphics$Collage.circle(configPlayer.radius))])));
+      }();
+   };
+   var Player = F2(function (a,b) {
+      return {_: {},pos: a,vel: b};
+   });
+   _elm.Player.values = {_op: _op
+                        ,Player: Player
+                        ,renderPlayer: renderPlayer
+                        ,configPlayer: configPlayer
+                        ,stepPlayer: stepPlayer};
+   return _elm.Player.values;
+};

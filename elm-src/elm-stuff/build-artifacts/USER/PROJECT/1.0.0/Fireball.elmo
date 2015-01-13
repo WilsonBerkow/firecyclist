@@ -1,0 +1,186 @@
+Elm.Fireball = Elm.Fireball || {};
+Elm.Fireball.make = function (_elm) {
+   "use strict";
+   _elm.Fireball = _elm.Fireball || {};
+   if (_elm.Fireball.values)
+   return _elm.Fireball.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Fireball",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Vect = Elm.Vect.make(_elm);
+   var staticFb = F2(function (x,
+   y) {
+      return {_: {}
+             ,pos: A2($Vect.Vect,x,y)
+             ,speed: 0};
+   });
+   var stepFireball = F2(function (dt,
+   fb) {
+      return {_: {}
+             ,pos: A2($Vect.vect_fall,
+             fb.speed,
+             fb.pos)
+             ,speed: fb.speed};
+   });
+   var single_fb = function () {
+      var unit = 4;
+      var sq = A2($Graphics$Collage.filled,
+      $Color.darkOrange,
+      $Graphics$Collage.square(unit));
+      var at = F2(function (x,y) {
+         return A2($Graphics$Collage.move,
+         {ctor: "_Tuple2"
+         ,_0: x * unit
+         ,_1: (0 - y) * unit},
+         sq);
+      });
+      return $Graphics$Collage.moveY(4.5 * unit)($Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.move,
+                                                                                      {ctor: "_Tuple2"
+                                                                                      ,_0: 2.5 * unit
+                                                                                      ,_1: -1.5 * unit},
+                                                                                      A2($Graphics$Collage.rotate,
+                                                                                      $Basics.turns(0.75),
+                                                                                      A2($Graphics$Collage.filled,
+                                                                                      $Color.orange,
+                                                                                      A2($Graphics$Collage.ngon,
+                                                                                      3,
+                                                                                      3 * unit))))
+                                                                                      ,A2(at,
+                                                                                      0,
+                                                                                      0)
+                                                                                      ,A2(at,
+                                                                                      1,
+                                                                                      0)
+                                                                                      ,A2(at,
+                                                                                      2,
+                                                                                      0)
+                                                                                      ,A2(at,
+                                                                                      3,
+                                                                                      0)
+                                                                                      ,A2(at,
+                                                                                      4,
+                                                                                      0)
+                                                                                      ,A2(at,
+                                                                                      5,
+                                                                                      0)
+                                                                                      ,A2(at,
+                                                                                      0.5,
+                                                                                      1)
+                                                                                      ,A2(at,
+                                                                                      1,
+                                                                                      2)
+                                                                                      ,A2(at,
+                                                                                      1.5,
+                                                                                      3)
+                                                                                      ,A2(at,
+                                                                                      2,
+                                                                                      4)
+                                                                                      ,A2(at,
+                                                                                      2.5,
+                                                                                      5)
+                                                                                      ,A2(at,
+                                                                                      3,
+                                                                                      4)
+                                                                                      ,A2(at,
+                                                                                      3.5,
+                                                                                      3)
+                                                                                      ,A2(at,
+                                                                                      4,
+                                                                                      2)
+                                                                                      ,A2(at,
+                                                                                      4.5,
+                                                                                      1)])));
+   }();
+   var renderFireball = function (f) {
+      return function () {
+         var base_clr = $Color.orange;
+         return $Vect.move_f(f.pos)(single_fb);
+      }();
+   };
+   var fb_height = 4 * 4.5;
+   var tri = function (s) {
+      return function () {
+         var h = s * ($Basics.sqrt(3) / 2);
+         return $Graphics$Collage.polygon(_L.fromArray([{ctor: "_Tuple2"
+                                                        ,_0: (0 - s) / 2
+                                                        ,_1: (0 - h) / 2}
+                                                       ,{ctor: "_Tuple2"
+                                                        ,_0: s / 2
+                                                        ,_1: (0 - h) / 2}
+                                                       ,{ctor: "_Tuple2"
+                                                        ,_0: 0
+                                                        ,_1: h / 2}]));
+      }();
+   };
+   var configFireball = function () {
+      var side_len = 12;
+      return {_: {}
+             ,def_speed: -2
+             ,padded_len: side_len * 1.5
+             ,side_len: side_len};
+   }();
+   var makeFireball = function (pos) {
+      return {_: {}
+             ,pos: pos
+             ,speed: configFireball.def_speed};
+   };
+   var fbCol = F2(function (amt,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "Vect": return _U.cmp(amt,
+              0) > 0 ? A2($List._op["::"],
+              A2(staticFb,_v0._0,_v0._1),
+              A2(fbCol,
+              amt - 1,
+              A2($Vect.Vect,
+              _v0._0,
+              _v0._1 + configFireball.padded_len))) : _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 60 and 62");
+      }();
+   });
+   var fbRow = F2(function (amt,
+   _v4) {
+      return function () {
+         switch (_v4.ctor)
+         {case "Vect": return _U.cmp(amt,
+              0) > 0 ? A2($List._op["::"],
+              A2(staticFb,_v4._0,_v4._1),
+              A2(fbRow,
+              amt - 1,
+              A2($Vect.Vect,
+              _v4._0 + configFireball.padded_len,
+              _v4._1))) : _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 63 and 65");
+      }();
+   });
+   var Fireball = F2(function (a,
+   b) {
+      return {_: {}
+             ,pos: a
+             ,speed: b};
+   });
+   _elm.Fireball.values = {_op: _op
+                          ,Fireball: Fireball
+                          ,configFireball: configFireball
+                          ,tri: tri
+                          ,fb_height: fb_height
+                          ,single_fb: single_fb
+                          ,stepFireball: stepFireball
+                          ,renderFireball: renderFireball
+                          ,makeFireball: makeFireball
+                          ,staticFb: staticFb
+                          ,fbCol: fbCol
+                          ,fbRow: fbRow};
+   return _elm.Fireball.values;
+};

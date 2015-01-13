@@ -1,0 +1,78 @@
+Elm.MainMenu = Elm.MainMenu || {};
+Elm.MainMenu.make = function (_elm) {
+   "use strict";
+   _elm.MainMenu = _elm.MainMenu || {};
+   if (_elm.MainMenu.values)
+   return _elm.MainMenu.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "MainMenu",
+   $BasicUtil = Elm.BasicUtil.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Game = Elm.Game.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Vect = Elm.Vect.make(_elm);
+   var cMainMenu_init = A2($Vect.Vect,
+   0,
+   0);
+   var cMainMenu_inputs = $Game.taps_f;
+   var cMainMenu_localvar_monospace = $Text.typeface(_L.fromArray(["monospace"
+                                                                  ,"arial"]));
+   var cMainMenu_render = function (_v0) {
+      return function () {
+         return A3($Graphics$Collage.collage,
+         $Config.game_total_width,
+         $Config.game_total_height,
+         _L.fromArray([$Game.game_background
+                      ,A2($Graphics$Collage.filled,
+                      A4($Color.rgba,200,200,200,0.5),
+                      A2($Graphics$Collage.rect,
+                      $Basics.toFloat($Config.game_total_width),
+                      $Basics.toFloat($Config.game_total_height)))
+                      ,$Graphics$Collage.moveY(40)($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(75)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
+                                                                                        $Color.orange,
+                                                                                        A2($Text.height,
+                                                                                        132,
+                                                                                        cMainMenu_localvar_monospace($Text.fromString("Fire"))))))))
+                                                                                        ,$Graphics$Collage.moveY(0)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
+                                                                                        $Color.orange,
+                                                                                        A2($Text.height,
+                                                                                        72,
+                                                                                        cMainMenu_localvar_monospace($Text.fromString("cyclist"))))))))
+                                                                                        ,$Graphics$Collage.moveY(-100)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
+                                                                                        $BasicUtil.deepGrey,
+                                                                                        A2($Text.height,
+                                                                                        60,
+                                                                                        $Text.italic(cMainMenu_localvar_monospace($Text.fromString("Play")))))))))])))]));
+      }();
+   };
+   var cMainMenu_localvar_messageStyle = function ($) {
+      return $Text.color($Color.darkGrey)($Text.bold($Text.height(40)(cMainMenu_localvar_monospace($))));
+   };
+   var PlayGame = {ctor: "PlayGame"};
+   var Continue = function (a) {
+      return {ctor: "Continue"
+             ,_0: a};
+   };
+   var cMainMenu_step = F2(function (tap_pos,
+   prev_tap_pos) {
+      return !_U.eq(tap_pos,
+      prev_tap_pos) ? PlayGame : Continue(tap_pos);
+   });
+   _elm.MainMenu.values = {_op: _op
+                          ,Continue: Continue
+                          ,PlayGame: PlayGame
+                          ,cMainMenu_localvar_messageStyle: cMainMenu_localvar_messageStyle
+                          ,cMainMenu_localvar_monospace: cMainMenu_localvar_monospace
+                          ,cMainMenu_inputs: cMainMenu_inputs
+                          ,cMainMenu_step: cMainMenu_step
+                          ,cMainMenu_render: cMainMenu_render
+                          ,cMainMenu_init: cMainMenu_init};
+   return _elm.MainMenu.values;
+};
