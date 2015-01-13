@@ -1,0 +1,44 @@
+Elm.ArbitraryRounding = Elm.ArbitraryRounding || {};
+Elm.ArbitraryRounding.make = function (_elm) {
+   "use strict";
+   _elm.ArbitraryRounding = _elm.ArbitraryRounding || {};
+   if (_elm.ArbitraryRounding.values)
+   return _elm.ArbitraryRounding.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "ArbitraryRounding",
+   $Basics = Elm.Basics.make(_elm);
+   var arb_round_down = F2(function (round_num,
+   n) {
+      return n - A2($Basics._op["%"],
+      n,
+      round_num);
+   });
+   var arb_round_up = F2(function (round_num,
+   n) {
+      return A2(arb_round_down,
+      round_num,
+      n + round_num);
+   });
+   var arb_round = F2(function (round_num,
+   n) {
+      return function () {
+         var r_down = A2(arb_round_down,
+         round_num,
+         n);
+         var r_up = A2(arb_round_up,
+         round_num,
+         n);
+         return _U.cmp(r_up - n,
+         n - r_down) < 1 ? r_up : r_down;
+      }();
+   });
+   _elm.ArbitraryRounding.values = {_op: _op
+                                   ,arb_round_down: arb_round_down
+                                   ,arb_round_up: arb_round_up
+                                   ,arb_round: arb_round};
+   return _elm.ArbitraryRounding.values;
+};

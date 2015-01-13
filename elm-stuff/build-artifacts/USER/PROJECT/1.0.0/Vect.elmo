@@ -1,0 +1,177 @@
+Elm.Vect = Elm.Vect || {};
+Elm.Vect.make = function (_elm) {
+   "use strict";
+   _elm.Vect = _elm.Vect || {};
+   if (_elm.Vect.values)
+   return _elm.Vect.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Vect",
+   $Basics = Elm.Basics.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm);
+   var distance = F2(function (_v0,
+   _v1) {
+      return function () {
+         switch (_v1.ctor)
+         {case "Vect":
+            return function () {
+                 switch (_v0.ctor)
+                 {case "Vect":
+                    return $Basics.sqrt(Math.pow(_v1._0 - _v0._0,
+                      2) + Math.pow(_v1._1 - _v0._1,
+                      2));}
+                 _U.badCase($moduleName,
+                 "on line 22, column 38 to 69");
+              }();}
+         _U.badCase($moduleName,
+         "on line 22, column 38 to 69");
+      }();
+   });
+   var vect_y = function (_v8) {
+      return function () {
+         switch (_v8.ctor)
+         {case "Vect": return _v8._1;}
+         _U.badCase($moduleName,
+         "on line 18, column 21 to 22");
+      }();
+   };
+   var vect_x = function (_v12) {
+      return function () {
+         switch (_v12.ctor)
+         {case "Vect": return _v12._0;}
+         _U.badCase($moduleName,
+         "on line 17, column 21 to 22");
+      }();
+   };
+   var Vect = F2(function (a,b) {
+      return {ctor: "Vect"
+             ,_0: a
+             ,_1: b};
+   });
+   var vect_add = F2(function (_v16,
+   _v17) {
+      return function () {
+         switch (_v17.ctor)
+         {case "Vect":
+            return function () {
+                 switch (_v16.ctor)
+                 {case "Vect": return A2(Vect,
+                      _v16._0 + _v17._0,
+                      _v16._1 + _v17._1);}
+                 _U.badCase($moduleName,
+                 "on line 11, column 36 to 57");
+              }();}
+         _U.badCase($moduleName,
+         "on line 11, column 36 to 57");
+      }();
+   });
+   var vsum = A2($List.foldl,
+   vect_add,
+   A2(Vect,0,0));
+   var vect_fall = F2(function (dy,
+   _v24) {
+      return function () {
+         switch (_v24.ctor)
+         {case "Vect": return A2(Vect,
+              _v24._0,
+              _v24._1 + dy);}
+         _U.badCase($moduleName,
+         "on line 13, column 27 to 41");
+      }();
+   });
+   var vect_rise = F2(function (dy,
+   _v28) {
+      return function () {
+         switch (_v28.ctor)
+         {case "Vect": return A2(Vect,
+              _v28._0,
+              _v28._1 - dy);}
+         _U.badCase($moduleName,
+         "on line 14, column 27 to 41");
+      }();
+   });
+   var vscale = F2(function (s,
+   _v32) {
+      return function () {
+         switch (_v32.ctor)
+         {case "Vect": return A2(Vect,
+              s * _v32._0,
+              s * _v32._1);}
+         _U.badCase($moduleName,
+         "on line 15, column 23 to 42");
+      }();
+   });
+   var arrow_to_vect = function (_v36) {
+      return function () {
+         return A2(Vect,
+         $Basics.toFloat(_v36.x * 2),
+         0);
+      }();
+   };
+   var set_origin_context = F2(function (_v38,
+   _v39) {
+      return function () {
+         switch (_v39.ctor)
+         {case "Vect":
+            return function () {
+                 switch (_v38.ctor)
+                 {case "_Tuple2": return A2(Vect,
+                      _v39._0 - $Basics.toFloat(_v38._0) / 2,
+                      0 - _v39._1 + $Basics.toFloat(_v38._1) / 2);}
+                 _U.badCase($moduleName,
+                 "on line 25, column 61 to 129");
+              }();}
+         _U.badCase($moduleName,
+         "on line 25, column 61 to 129");
+      }();
+   });
+   var fix_origin = set_origin_context({ctor: "_Tuple2"
+                                       ,_0: $Config.game_total_width
+                                       ,_1: $Config.game_total_height});
+   var pt_to_fp = function (pt) {
+      return function () {
+         var _raw = fix_origin(pt),
+         $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
+         "on line 30, column 32 to 45"),
+         x = $._0,
+         y = $._1;
+         return {ctor: "_Tuple2"
+                ,_0: x
+                ,_1: y};
+      }();
+   };
+   var move_f = F2(function (pt,
+   form) {
+      return A2($Graphics$Collage.move,
+      pt_to_fp(pt),
+      form);
+   });
+   var segment_f = F2(function (pt1,
+   pt2) {
+      return A2($Graphics$Collage.segment,
+      pt_to_fp(pt1),
+      pt_to_fp(pt2));
+   });
+   _elm.Vect.values = {_op: _op
+                      ,Vect: Vect
+                      ,vect_add: vect_add
+                      ,vsum: vsum
+                      ,vect_fall: vect_fall
+                      ,vect_rise: vect_rise
+                      ,vscale: vscale
+                      ,vect_x: vect_x
+                      ,vect_y: vect_y
+                      ,arrow_to_vect: arrow_to_vect
+                      ,distance: distance
+                      ,set_origin_context: set_origin_context
+                      ,fix_origin: fix_origin
+                      ,pt_to_fp: pt_to_fp
+                      ,move_f: move_f
+                      ,segment_f: segment_f};
+   return _elm.Vect.values;
+};

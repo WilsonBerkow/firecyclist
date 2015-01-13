@@ -1,0 +1,86 @@
+Elm.Platfm = Elm.Platfm || {};
+Elm.Platfm.make = function (_elm) {
+   "use strict";
+   _elm.Platfm = _elm.Platfm || {};
+   if (_elm.Platfm.values)
+   return _elm.Platfm.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Platfm",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Vect = Elm.Vect.make(_elm);
+   var platfmLineStyle = function () {
+      var df = $Graphics$Collage.defaultLine;
+      return _U.replace([["width",6]
+                        ,["cap",$Graphics$Collage.Round]
+                        ,["join"
+                         ,$Graphics$Collage.Smooth]],
+      df);
+   }();
+   var renderPlatfm = function (p) {
+      return A2($Graphics$Collage.traced,
+      _U.replace([["color"
+                  ,A4($Color.rgba,
+                  0,
+                  0,
+                  0,
+                  $Time.inSeconds(p.time_left))]],
+      platfmLineStyle),
+      A2($Vect.segment_f,
+      p.start,
+      p.end));
+   };
+   var platfmPreviewLineStyle = _U.replace([["color"
+                                            ,A4($Color.rgba,
+                                            150,
+                                            150,
+                                            150,
+                                            0.5)]],
+   platfmLineStyle);
+   var renderTouchPlatfmPreview = function (p) {
+      return $Graphics$Collage.traced(platfmPreviewLineStyle)(A2($Vect.segment_f,
+      p.start,
+      p.end));
+   };
+   var configPlatfm = {_: {}
+                      ,fall_rate: 3};
+   var stepPlatfm = F2(function (dt,
+   _v0) {
+      return function () {
+         return function () {
+            var fall_rate = configPlatfm.fall_rate;
+            return {_: {}
+                   ,end: A2($Vect.vect_rise,
+                   fall_rate,
+                   _v0.end)
+                   ,start: A2($Vect.vect_rise,
+                   fall_rate,
+                   _v0.start)
+                   ,time_left: _v0.time_left - dt};
+         }();
+      }();
+   });
+   var Platfm = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,end: b
+             ,start: a
+             ,time_left: c};
+   });
+   _elm.Platfm.values = {_op: _op
+                        ,Platfm: Platfm
+                        ,configPlatfm: configPlatfm
+                        ,stepPlatfm: stepPlatfm
+                        ,platfmLineStyle: platfmLineStyle
+                        ,renderPlatfm: renderPlatfm
+                        ,platfmPreviewLineStyle: platfmPreviewLineStyle
+                        ,renderTouchPlatfmPreview: renderTouchPlatfmPreview};
+   return _elm.Platfm.values;
+};

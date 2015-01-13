@@ -1,0 +1,104 @@
+Elm.BasicUtil = Elm.BasicUtil || {};
+Elm.BasicUtil.make = function (_elm) {
+   "use strict";
+   _elm.BasicUtil = _elm.BasicUtil || {};
+   if (_elm.BasicUtil.values)
+   return _elm.BasicUtil.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "BasicUtil",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm);
+   var any = function (p) {
+      return A2($List.foldl,
+      F2(function (elem,acc) {
+         return acc || p(elem);
+      }),
+      false);
+   };
+   var fn_map2 = F4(function (f,
+   g,
+   h,
+   x) {
+      return A2(f,g(x),h(x));
+   });
+   var fn_map = F3(function (f,
+   g,
+   x) {
+      return f(g(x));
+   });
+   var signnum = function (x) {
+      return _U.cmp(x,
+      0) > 0 ? 1 : _U.eq(x,
+      0) ? 0 : _U.cmp(x,
+      0) < 0 ? -1 : _U.badIf($moduleName,
+      "between lines 24 and 26");
+   };
+   var deepGrey = A3($Color.rgb,
+   50,
+   50,
+   50);
+   var replicate = F2(function (n,
+   x) {
+      return _U.eq(n,
+      0) ? _L.fromArray([]) : A2($List._op["::"],
+      x,
+      A2(replicate,n - 1,x));
+   });
+   var mtail = function (l) {
+      return function () {
+         switch (l.ctor)
+         {case "::":
+            return $Maybe.Just(l._1);
+            case "[]":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 17 and 18");
+      }();
+   };
+   var mhead = function (l) {
+      return function () {
+         switch (l.ctor)
+         {case "::":
+            return $Maybe.Just(l._0);
+            case "[]":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 15 and 16");
+      }();
+   };
+   var in_range = F3(function (x1,
+   x2,
+   v) {
+      return _U.cmp(x1,
+      v) < 1 && _U.cmp(v,
+      x2) < 1 || _U.cmp(x2,
+      v) < 1 && _U.cmp(v,x1) < 1;
+   });
+   var isJust = function (ma) {
+      return function () {
+         switch (ma.ctor)
+         {case "Just": return true;
+            case "Nothing": return false;}
+         _U.badCase($moduleName,
+         "between lines 9 and 11");
+      }();
+   };
+   _elm.BasicUtil.values = {_op: _op
+                           ,isJust: isJust
+                           ,in_range: in_range
+                           ,mhead: mhead
+                           ,mtail: mtail
+                           ,replicate: replicate
+                           ,deepGrey: deepGrey
+                           ,signnum: signnum
+                           ,fn_map: fn_map
+                           ,fn_map2: fn_map2
+                           ,any: any};
+   return _elm.BasicUtil.values;
+};

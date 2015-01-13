@@ -1,0 +1,26 @@
+Elm.Config = Elm.Config || {};
+Elm.Config.make = function (_elm) {
+   "use strict";
+   _elm.Config = _elm.Config || {};
+   if (_elm.Config.values)
+   return _elm.Config.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Config",
+   $Basics = Elm.Basics.make(_elm);
+   var framerate = 60;
+   var game_total_height = 1024 / 2 | 0;
+   var game_total_width = 576 / 2 | 0;
+   var game_top_margin = 15;
+   var game_side_margin = 18;
+   _elm.Config.values = {_op: _op
+                        ,game_side_margin: game_side_margin
+                        ,game_top_margin: game_top_margin
+                        ,game_total_width: game_total_width
+                        ,game_total_height: game_total_height
+                        ,framerate: framerate};
+   return _elm.Config.values;
+};

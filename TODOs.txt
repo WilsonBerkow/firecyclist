@@ -1,0 +1,48 @@
+(c) Wilson Berkow
+TODOS:
+   - GRAPICS:
+     - Try making the body (and maybe outline) of fireballs yellower (ie. orange --> yellow-orange).
+     - Try enlarging basically everything else--buttons, platfms.
+     - Make the unicyclist-graphic that I lost (because I'm an idiot who did't consistently save)
+        a while ago. It would be a huge improvement on the blue circle.
+   - GAME LOGIC:
+     - Change the code outside of 'single_fb' to handle the larger fireballs ('unit = 4', rather than the previous 'unit = 3'),
+        because honestly right now everything looks kinda retarded, and the spreading-out-the-fireballs thing I did isn't visible
+        cuz they're all just bigger.
+     - Improve fireball-disperion logic. This means not having SO MANY at one time and almost none at
+        another, and also dispersing them spatially so that it's possible to weave through them.
+     - Make the intial seed not hardcoded (do Time or something).
+     - MAKE THE GAME INDEPENDENT OF FRAMERATE. Not only is having physics based on a hard-coded framerate
+        philisophically nonsensical, but making everything framerate-independent would make fiddling with
+        the framerate really easy, and would be beautiful.
+   - INTERFACE (e.g. menus):
+     - Keep working on CompPP, and learn from what I was thinking in ElmPP, to make doing
+        this easier.
+     - Try out those repeating backgrounds that I found that were pretty nice.
+     - Make the buttons do things.
+   - FOR SIMPLICITY OR CODE QUALITY:
+     - Use types like 'HasVelocity r' and 'HasXY r' and generalize operations like
+        applying gravity.
+     - Multiple files, modularity, that kinda stuff.
+     - This is something I wrote here before, that seems kinda interesting, maybe for ElmPP:
+        """
+        -- Additionally, maybe I should specify a clearer pattern of combining components that
+        --  will allow for more scalabililty, by, for example, generalizing the inclusion of
+        --  another component's inputs, state and display properties in the Game component.
+        -- The generalization should perhaps be done well enough that one could accidentally
+        --  use players for all the fireballs and a fireball for the player.
+        """
+   - GAMEPLAY:
+     - I will probably want the ball/unicyclist to be stuck in the center-region of
+        the screen. To do this I would just change renderGame to offset the position
+        of everything except for the unicyclist (by the offset of the cyclist pos from the center),
+        instead of putting it all into the position of the player.
+     - Also with:
+        -gravity
+        -float-speed and bounciness of panels
+        -max length for platforms, and/or max number of platfms on screen, or platfms
+          fading out like in 'Bounce!'.
+        -animation of fireballs
+        -SOME WAY to test this on a mobile device. Adding the
+          tilt ability completely changes the game. Could I use
+          the FF OS Simulator for testing?
