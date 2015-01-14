@@ -11,6 +11,6 @@ fireballs around you, and get the maximum number of points!
 
 ![Screenshot 1b](screenshots/screenshot-1b-gameplay.png)
 
-![Screenshot 2](screenshots/screeshot-2-gameover.png)
+![Screenshot 2](screenshots/screenshot-2-gameover.png)
 
 *(c) Wilson Berkow*
