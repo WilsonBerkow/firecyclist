@@ -16,7 +16,6 @@ Elm.DeadScreen.make = function (_elm) {
    $Game = Elm.Game.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Text = Elm.Text.make(_elm),
-   $Time = Elm.Time.make(_elm),
    $Vect = Elm.Vect.make(_elm);
    var cDeadScreen_inputs = $Game.taps_f;
    var cDeadScreen_localvar_messageStyle = function ($) {
@@ -42,7 +41,7 @@ Elm.DeadScreen.make = function (_elm) {
                    150,
                    A2($Text.color,
                    $Color.orange,
-                   cDeadScreen_localvar_messageStyle($Text.fromString($Basics.toString($Basics.round($Time.inSeconds(g.time_playing))))))))))]));
+                   cDeadScreen_localvar_messageStyle($Text.fromString($Basics.toString($Basics.round(g.points)))))))))]));
    };
    var Replay = function (a) {
       return {ctor: "Replay"

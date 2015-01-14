@@ -40,6 +40,7 @@ component Game where
       , fb_creation_seed : Random.Seed
       , prev_tap_pos : Vect
       , time_playing : Float
+      , points : Float
       }
     Input: (Maybe Touch.Touch, Vect, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
     inputs: Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
@@ -112,6 +113,7 @@ component Game where
                       , fb_creation_seed <- new_seed
                       , prev_tap_pos <- cur_tap_pos
                       , time_playing <- g.time_playing + dt
+                      , points <- g.points + 2 * (Time.inSeconds dt) * (1 + vect_y g.player.pos / toFloat game_total_height)
                       }
             in if | vect_y g.player.pos > toFloat game_total_height -> Die new_game
                   | player_on_fire -> Die new_game
@@ -140,8 +142,7 @@ component Game where
                   ++ fireballs
                   ++ [ move_f (Vect 10 -5) btn_outline
                      , move_f (Vect (toFloat game_total_width - 10) -5) btn_outline
-                     , move_f (Vect (toFloat game_total_width / 2) 20) (Collage.toForm (Text.centered (Text.color Color.black (Text.bold (Text.typeface ["monospace", "arial"] (Text.height 30 (Text.fromString (toString (round (Time.inSeconds game.time_playing))))))))))
-                     --, move_f (Vect (toFloat game_total_width / 2) (btn_outline_rad / 2 - 25)) (Collage.filled btn_outline_clr (Collage.rect (toFloat game_total_width) btn_outline_rad))
+                     , move_f (Vect (toFloat game_total_width / 2) 20) (Collage.toForm (Text.centered (Text.color Color.black (Text.bold (Text.typeface ["monospace", "arial"] (Text.height 30 (Text.fromString (toString (round game.points)))))))))
                      ]
             forms = case plat_preview of
                       Nothing -> forms'
@@ -161,4 +162,5 @@ component Game where
          , fb_creation_seed = Random.initialSeed 1234567890987654321 -- CHANGE THIS TO MAKE IT VARY
          , prev_tap_pos = Vect 0 0
          , time_playing = 0
+         , points = 0
          }

@@ -30,5 +30,5 @@ cDeadScreen_render =
       [ toForm (cGame_render g)
       , filled (Color.rgba 200 200 200 0.5) (rect (toFloat game_total_width) (toFloat game_total_height))
       , moveY  80 <| toForm <| Text.centered (Text.height  80 (Text.color Color.orange (Text.italic (cDeadScreen_localvar_messageStyle (Text.fromString "Game\nOver\n\n")))))
-      , moveY -30 <| toForm <| Text.centered (Text.height 150 (Text.color Color.orange (cDeadScreen_localvar_messageStyle (Text.fromString (toString (round (Time.inSeconds g.time_playing)))))))
+      , moveY -30 <| toForm <| Text.centered (Text.height 150 (Text.color Color.orange (cDeadScreen_localvar_messageStyle (Text.fromString (toString (round g.points))))))
       ]

@@ -48,26 +48,29 @@ Elm.Game.make = function (_elm) {
              ,player: {_: {}
                       ,pos: A2($Vect.Vect,200,75)
                       ,vel: A2($Vect.Vect,0,0)}
+             ,points: 0
              ,prev_tap_pos: A2($Vect.Vect,
              0,
              0)
              ,preview_plat: $Maybe.Nothing
              ,time_playing: 0};
    }();
-   var Game_State = F8(function (a,
+   var Game_State = F9(function (a,
    b,
    c,
    d,
    e,
    f,
    g,
-   h) {
+   h,
+   i) {
       return {_: {}
              ,fb_creation_seed: f
              ,fireballs: c
              ,last_touch: d
              ,plats: a
              ,player: b
+             ,points: i
              ,prev_tap_pos: g
              ,preview_plat: e
              ,time_playing: h};
@@ -141,7 +144,7 @@ Elm.Game.make = function (_elm) {
                                    ,"arial"]),
                       A2($Text.height,
                       30,
-                      $Text.fromString($Basics.toString($Basics.round($Time.inSeconds(game.time_playing)))))))))))]))));
+                      $Text.fromString($Basics.toString($Basics.round(game.points))))))))))]))));
          var forms = function () {
             switch (plat_preview.ctor)
             {case "Just":
@@ -150,7 +153,7 @@ Elm.Game.make = function (_elm) {
                  forms$);
                case "Nothing": return forms$;}
             _U.badCase($moduleName,
-            "between lines 146 and 149");
+            "between lines 147 and 150");
          }();
          return A3($Graphics$Collage.collage,
          $Config.game_total_width,
@@ -230,7 +233,7 @@ Elm.Game.make = function (_elm) {
                  $Basics.toFloat($Config.game_total_height),
                  _v6._1);}
             _U.badCase($moduleName,
-            "on line 52, column 37 to 122");
+            "on line 53, column 37 to 122");
          }();
       };
       var plat_on_screen = function (_v10) {
@@ -275,7 +278,7 @@ Elm.Game.make = function (_elm) {
                             touch_to_platfm,
                             g.last_touch);}
                        _U.badCase($moduleName,
-                       "between lines 92 and 95");
+                       "between lines 93 and 96");
                     }();
                     var new_plats = function () {
                        var updated_plats = A4(update_and_filter,
@@ -297,7 +300,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_plats;}
                           _U.badCase($moduleName,
-                          "between lines 97 and 99");
+                          "between lines 98 and 100");
                        }();
                     }();
                     var $ = function () {
@@ -353,7 +356,9 @@ Elm.Game.make = function (_elm) {
                                               ,["fb_creation_seed",new_seed]
                                               ,["prev_tap_pos",_v16._1]
                                               ,["time_playing"
-                                               ,g.time_playing + _v16._2]],
+                                               ,g.time_playing + _v16._2]
+                                              ,["points"
+                                               ,g.points + $Time.inSeconds(_v16._2) * (1 + $Vect.vect_y(g.player.pos) / $Basics.toFloat($Config.game_total_height))]],
                     g);
                     var tap_target = _U.eq(_v16._1,
                     g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v16._1);
@@ -368,7 +373,7 @@ Elm.Game.make = function (_elm) {
                             break;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 73 and 76");
+                       "between lines 74 and 77");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -381,13 +386,13 @@ Elm.Game.make = function (_elm) {
                             break;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 77 and 80");
+                       "between lines 78 and 81");
                     }();
                     return _U.cmp($Vect.vect_y(g.player.pos),
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v16._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 71 and 119");
+            "between lines 72 and 121");
          }();
       });
       return step;
