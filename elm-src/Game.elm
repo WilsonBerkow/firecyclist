@@ -112,7 +112,7 @@ cGame_step =
                   , fb_creation_seed <- new_seed
                   , prev_tap_pos <- cur_tap_pos
                   , time_playing <- g.time_playing + dt
-                  , points <- g.points + (Time.inSeconds dt) * (1 + vect_y g.player.pos / toFloat game_total_height)
+                  , points <- g.points + 2 * (Time.inSeconds dt) * (1 + vect_y g.player.pos / toFloat game_total_height)
                   }
         in if | vect_y g.player.pos > toFloat game_total_height -> Die new_game
               | player_on_fire -> Die new_game
@@ -122,21 +122,22 @@ cGame_step =
                   
   in step
 cGame_render = 
- \game ->
+
+  let btnMargin = 20
+      restartBtn = (Collage.toForm (Text.plainText "⟳"))
+                     |> move_f (Vect (toFloat game_total_width - btnMargin) btnMargin)
+                     |> Collage.scale 2.3
+      pauseBtn = Collage.toForm (Text.centered (Text.bold (Text.typeface ["arial", "sans-serif", "monospace"] (Text.fromString "II"))))
+                   |> move_f (Vect btnMargin (btnMargin + 2))
+                   |> Collage.scale 2
+      btn_outline_rad = 65
+      btn_outline_clr = Color.rgba 150 150 150 0.25
+      btn_outline = (Collage.filled btn_outline_clr (Collage.circle btn_outline_rad))
+  in \game ->
     let plats = List.map renderPlatfm game.plats
         plat_preview = Maybe.map renderTouchPlatfmPreview game.preview_plat
         fireballs = List.map renderFireball game.fireballs
         
-        btnMargin = 20
-        restartBtn = (Collage.toForm (Text.plainText "&#10227;"))
-                       |> move_f (Vect (toFloat game_total_width - btnMargin) btnMargin)
-                       |> Collage.scale 2.3
-        pauseBtn = Collage.toForm (Text.centered (Text.bold (Text.typeface ["arial", "sans-serif", "monospace"] (Text.fromString "II"))))
-                     |> move_f (Vect btnMargin (btnMargin + 2))
-                     |> Collage.scale 2
-        btn_outline_rad = 65
-        btn_outline_clr = Color.rgba 150 150 150 0.25
-        btn_outline = (Collage.filled btn_outline_clr (Collage.circle btn_outline_rad))
         forms' = (pauseBtn :: restartBtn :: plats)
               ++ [renderPlayer game.player]
               ++ fireballs

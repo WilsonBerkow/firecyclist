@@ -84,85 +84,87 @@ Elm.Game.make = function (_elm) {
    A2($Graphics$Collage.rect,
    $Basics.toFloat($Config.game_total_width),
    $Basics.toFloat($Config.game_total_height)));
-   var cGame_render = function (game) {
-      return function () {
-         var btn_outline_clr = A4($Color.rgba,
-         150,
-         150,
-         150,
-         0.25);
-         var btn_outline_rad = 65;
-         var btn_outline = A2($Graphics$Collage.filled,
-         btn_outline_clr,
-         $Graphics$Collage.circle(btn_outline_rad));
-         var btnMargin = 20;
-         var restartBtn = $Graphics$Collage.scale(2.3)($Vect.move_f(A2($Vect.Vect,
-         $Basics.toFloat($Config.game_total_width) - btnMargin,
-         btnMargin))($Graphics$Collage.toForm($Text.plainText("⟳"))));
-         var pauseBtn = $Graphics$Collage.scale(2)($Vect.move_f(A2($Vect.Vect,
-         btnMargin,
-         btnMargin + 2))($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.typeface,
-         _L.fromArray(["arial"
-                      ,"sans-serif"
-                      ,"monospace"]),
-         $Text.fromString("II")))))));
-         var fireballs = A2($List.map,
-         $Fireball.renderFireball,
-         game.fireballs);
-         var plat_preview = A2($Maybe.map,
-         $Platfm.renderTouchPlatfmPreview,
-         game.preview_plat);
-         var plats = A2($List.map,
-         $Platfm.renderPlatfm,
-         game.plats);
-         var forms$ = A2($Basics._op["++"],
-         A2($List._op["::"],
-         pauseBtn,
-         A2($List._op["::"],
-         restartBtn,
-         plats)),
-         A2($Basics._op["++"],
-         _L.fromArray([$Player.renderPlayer(game.player)]),
-         A2($Basics._op["++"],
-         fireballs,
-         _L.fromArray([A2($Vect.move_f,
-                      A2($Vect.Vect,10,-5),
-                      btn_outline)
-                      ,A2($Vect.move_f,
-                      A2($Vect.Vect,
-                      $Basics.toFloat($Config.game_total_width) - 10,
-                      -5),
-                      btn_outline)
-                      ,A2($Vect.move_f,
-                      A2($Vect.Vect,
-                      $Basics.toFloat($Config.game_total_width) / 2,
-                      20),
-                      $Graphics$Collage.toForm($Text.centered(A2($Text.color,
-                      $Color.black,
-                      $Text.bold(A2($Text.typeface,
-                      _L.fromArray(["monospace"
-                                   ,"arial"]),
-                      A2($Text.height,
-                      30,
-                      $Text.fromString($Basics.toString($Basics.round(game.points))))))))))]))));
-         var forms = function () {
-            switch (plat_preview.ctor)
-            {case "Just":
-               return A2($List._op["::"],
-                 plat_preview._0,
-                 forms$);
-               case "Nothing": return forms$;}
-            _U.badCase($moduleName,
-            "between lines 147 and 150");
+   var cGame_render = function () {
+      var btn_outline_clr = A4($Color.rgba,
+      150,
+      150,
+      150,
+      0.25);
+      var btn_outline_rad = 65;
+      var btn_outline = A2($Graphics$Collage.filled,
+      btn_outline_clr,
+      $Graphics$Collage.circle(btn_outline_rad));
+      var btnMargin = 20;
+      var restartBtn = $Graphics$Collage.scale(2.3)($Vect.move_f(A2($Vect.Vect,
+      $Basics.toFloat($Config.game_total_width) - btnMargin,
+      btnMargin))($Graphics$Collage.toForm($Text.plainText("⟳"))));
+      var pauseBtn = $Graphics$Collage.scale(2)($Vect.move_f(A2($Vect.Vect,
+      btnMargin,
+      btnMargin + 2))($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.typeface,
+      _L.fromArray(["arial"
+                   ,"sans-serif"
+                   ,"monospace"]),
+      $Text.fromString("II")))))));
+      return function (game) {
+         return function () {
+            var fireballs = A2($List.map,
+            $Fireball.renderFireball,
+            game.fireballs);
+            var plat_preview = A2($Maybe.map,
+            $Platfm.renderTouchPlatfmPreview,
+            game.preview_plat);
+            var plats = A2($List.map,
+            $Platfm.renderPlatfm,
+            game.plats);
+            var forms$ = A2($Basics._op["++"],
+            A2($List._op["::"],
+            pauseBtn,
+            A2($List._op["::"],
+            restartBtn,
+            plats)),
+            A2($Basics._op["++"],
+            _L.fromArray([$Player.renderPlayer(game.player)]),
+            A2($Basics._op["++"],
+            fireballs,
+            _L.fromArray([A2($Vect.move_f,
+                         A2($Vect.Vect,10,-5),
+                         btn_outline)
+                         ,A2($Vect.move_f,
+                         A2($Vect.Vect,
+                         $Basics.toFloat($Config.game_total_width) - 10,
+                         -5),
+                         btn_outline)
+                         ,A2($Vect.move_f,
+                         A2($Vect.Vect,
+                         $Basics.toFloat($Config.game_total_width) / 2,
+                         20),
+                         $Graphics$Collage.toForm($Text.centered(A2($Text.color,
+                         $Color.black,
+                         $Text.bold(A2($Text.typeface,
+                         _L.fromArray(["monospace"
+                                      ,"arial"]),
+                         A2($Text.height,
+                         30,
+                         $Text.fromString($Basics.toString($Basics.round(game.points))))))))))]))));
+            var forms = function () {
+               switch (plat_preview.ctor)
+               {case "Just":
+                  return A2($List._op["::"],
+                    plat_preview._0,
+                    forms$);
+                  case "Nothing": return forms$;}
+               _U.badCase($moduleName,
+               "between lines 148 and 151");
+            }();
+            return A3($Graphics$Collage.collage,
+            $Config.game_total_width,
+            $Config.game_total_height,
+            A2($List._op["::"],
+            game_background,
+            forms));
          }();
-         return A3($Graphics$Collage.collage,
-         $Config.game_total_width,
-         $Config.game_total_height,
-         A2($List._op["::"],
-         game_background,
-         forms));
-      }();
-   };
+      };
+   }();
    var tovect = function (_v2) {
       return function () {
          return A2($Vect.Vect,
@@ -358,7 +360,7 @@ Elm.Game.make = function (_elm) {
                                               ,["time_playing"
                                                ,g.time_playing + _v16._2]
                                               ,["points"
-                                               ,g.points + $Time.inSeconds(_v16._2) * (1 + $Vect.vect_y(g.player.pos) / $Basics.toFloat($Config.game_total_height))]],
+                                               ,g.points + 2 * $Time.inSeconds(_v16._2) * (1 + $Vect.vect_y(g.player.pos) / $Basics.toFloat($Config.game_total_height))]],
                     g);
                     var tap_target = _U.eq(_v16._1,
                     g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v16._1);

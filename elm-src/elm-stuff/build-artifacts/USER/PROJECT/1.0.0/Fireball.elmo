@@ -100,10 +100,7 @@ Elm.Fireball.make = function (_elm) {
                                                                                       1)])));
    }();
    var renderFireball = function (f) {
-      return function () {
-         var base_clr = $Color.orange;
-         return $Vect.move_f(f.pos)(single_fb);
-      }();
+      return $Vect.move_f(f.pos)(single_fb);
    };
    var fb_height = 4 * 4.5;
    var tri = function (s) {
@@ -145,7 +142,7 @@ Elm.Fireball.make = function (_elm) {
               _v0._0,
               _v0._1 + configFireball.padded_len))) : _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 60 and 62");
+         "between lines 58 and 60");
       }();
    });
    var fbRow = F2(function (amt,
@@ -161,7 +158,7 @@ Elm.Fireball.make = function (_elm) {
               _v4._0 + configFireball.padded_len,
               _v4._1))) : _L.fromArray([]);}
          _U.badCase($moduleName,
-         "between lines 63 and 65");
+         "between lines 61 and 63");
       }();
    });
    var Fireball = F2(function (a,

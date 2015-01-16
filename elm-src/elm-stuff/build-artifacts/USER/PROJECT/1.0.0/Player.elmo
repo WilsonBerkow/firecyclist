@@ -39,10 +39,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v1._1 - _v0._1) / (_v1._0 - _v0._0);}
                     _U.badCase($moduleName,
-                    "on line 29, column 34 to 53");
+                    "on line 31, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 29, column 34 to 53");
+            "on line 31, column 34 to 53");
          }();
       });
       var line_to_func = F2(function (_v8,
@@ -57,7 +57,7 @@ Elm.Player.make = function (_elm) {
                     };
                  }();}
             _U.badCase($moduleName,
-            "between lines 32 and 33");
+            "between lines 34 and 35");
          }();
       });
       var touching = F2(function (a,
@@ -74,7 +74,7 @@ Elm.Player.make = function (_elm) {
                      return in_r(_v12._0) && _U.cmp($Basics.abs(fn(_v12._0) - _v12._1),
                        2 * configPlayer.radius) < 1;}
                   _U.badCase($moduleName,
-                  "on line 38, column 43 to 109");
+                  "on line 40, column 43 to 109");
                }();
             };
          }();
@@ -86,17 +86,17 @@ Elm.Player.make = function (_elm) {
                return function () {
                   var _raw = _v16.pos,
                   $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 43, column 65 to 68"),
+                  "on line 45, column 65 to 68"),
                   pl_x = $._0,
                   pl_y = $._1;
                   var _raw = _v17.end,
                   $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 42, column 61 to 64"),
+                  "on line 44, column 61 to 64"),
                   x2 = $._0,
                   y2 = $._1;
                   var _raw = _v17.start,
                   $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 41, column 61 to 66"),
+                  "on line 43, column 61 to 66"),
                   x1 = $._0,
                   y1 = $._1;
                   return A3(touching,
@@ -125,12 +125,12 @@ Elm.Player.make = function (_elm) {
             return function () {
                var _raw = _v20.end,
                $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-               "on line 55, column 52 to 55"),
+               "on line 57, column 52 to 55"),
                x2 = $._0,
                y2 = $._1;
                var _raw = _v20.start,
                $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-               "on line 54, column 52 to 57"),
+               "on line 56, column 52 to 57"),
                x1 = $._0,
                y1 = $._1;
                return A2(slope,
@@ -158,12 +158,12 @@ Elm.Player.make = function (_elm) {
                     player_grav,
                     p.vel);}
                _U.badCase($moduleName,
-               "between lines 65 and 68");
+               "between lines 67 and 70");
             }();
             var _raw = $Vect.vsum(_L.fromArray([p.pos
                                                ,vel])),
             $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-            "on line 68, column 45 to 62"),
+            "on line 70, column 45 to 62"),
             newx = $._0,
             newy = $._1;
             var modded_newx = _U.cmp(newx,
@@ -178,31 +178,35 @@ Elm.Player.make = function (_elm) {
       });
       return step;
    }();
+   var std_player = function () {
+      var secondary = A4($Color.rgba,
+      50,
+      50,
+      200,
+      1);
+      var blue_gray = A4($Color.rgba,
+      50,
+      50,
+      200,
+      0.7);
+      return $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
+                                                  blue_gray,
+                                                  $Graphics$Collage.circle(configPlayer.radius))
+                                                  ,A2($Graphics$Collage.outlined,
+                                                  $Graphics$Collage.solid(secondary),
+                                                  $Graphics$Collage.circle(configPlayer.radius))]));
+   }();
    var renderPlayer = function (p) {
-      return function () {
-         var secondary = A4($Color.rgba,
-         50,
-         50,
-         200,
-         1);
-         var blue_gray = A4($Color.rgba,
-         50,
-         50,
-         200,
-         0.7);
-         return $Vect.move_f(p.pos)($Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
-                                                                         blue_gray,
-                                                                         $Graphics$Collage.circle(configPlayer.radius))
-                                                                         ,A2($Graphics$Collage.outlined,
-                                                                         $Graphics$Collage.solid(secondary),
-                                                                         $Graphics$Collage.circle(configPlayer.radius))])));
-      }();
+      return A2($Vect.move_f,
+      p.pos,
+      std_player);
    };
    var Player = F2(function (a,b) {
       return {_: {},pos: a,vel: b};
    });
    _elm.Player.values = {_op: _op
                         ,Player: Player
+                        ,std_player: std_player
                         ,renderPlayer: renderPlayer
                         ,configPlayer: configPlayer
                         ,stepPlayer: stepPlayer};

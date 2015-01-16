@@ -49,9 +49,7 @@ single_fb =
 
 stepFireball : FireballInputs -> Fireball -> Fireball
 stepFireball dt fb = { pos = vect_fall fb.speed fb.pos, speed = fb.speed }
-renderFireball f = let base_clr = Color.orange--rgb 200 100 0
-                   in single_fb
-                        |> move_f f.pos
+renderFireball f = single_fb |> move_f f.pos
 
 makeFireball : Vect -> Fireball
 makeFireball pos = { pos = pos, speed = configFireball.def_speed }

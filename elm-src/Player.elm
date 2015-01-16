@@ -14,13 +14,15 @@ import Platfm (Platfm, configPlatfm)
 type alias Player = { pos : Vect, vel : Vect }
 type alias PlayerInputs = List Platfm
 
+std_player =
+  let blue_gray = Color.rgba 50 50 200 0.7
+      secondary = Color.rgba 50 50 200 1
+  in Collage.group [ Collage.filled blue_gray (Collage.circle configPlayer.radius)
+                   , Collage.outlined (Collage.solid secondary) (Collage.circle configPlayer.radius)
+                   ]
+
 renderPlayer : Player -> Collage.Form
-renderPlayer p = let blue_gray = Color.rgba 50 50 200 0.7
-                     secondary = Color.rgba 50 50 200 1
-                 in move_f p.pos <|
-                     Collage.group [ Collage.filled blue_gray (Collage.circle configPlayer.radius)
-                                   , Collage.outlined (Collage.solid secondary) (Collage.circle configPlayer.radius)
-                                   ]
+renderPlayer p = move_f p.pos std_player
 
 configPlayer = { radius = 10 }
 

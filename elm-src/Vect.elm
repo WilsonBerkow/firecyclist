@@ -17,8 +17,6 @@ vscale s (Vect x y) = Vect (s * x) (s * y)
 vect_x (Vect x _) = x
 vect_y (Vect _ y) = y
 
-arrow_to_vect {x, y} = Vect (toFloat <| x * 2) 0 -- For converting Keyboard input to a Vect. TODO: remove this
-
 distance (Vect x0 y0) (Vect x1 y1) = sqrt ((x1 - x0)^2 + (y1 - y0)^2)
 
 set_origin_context : (Int,Int) -> Vect -> Vect
