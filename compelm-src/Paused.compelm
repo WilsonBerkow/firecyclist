@@ -13,21 +13,21 @@ import Graphics.Collage as Collage
 import Color
 
 import Config (game_total_width, game_total_height)
-import Vect (Vect, vect_x)
+import HasPosition (Position)
 import Game (Game/State, Game/render, taps_f)
 
 type WhereTo = Continue Paused/State | Play Paused/State
 
 component Paused where
     State: Game/State
-    Input: Vect
+    Input: Position
     inputs: taps_f
     step: \tap_pos g ->
         let new_g = { g | prev_tap_pos <- tap_pos }
         in if tap_pos /= g.prev_tap_pos
              then Play new_g
              else Continue new_g
-    @messageStyle: Text.color Color.darkGrey << Text.bold << Text.height 60 << Text.typeface ["monospace", "arial"]
+    @messageStyle: Text.color Color.orange << Text.bold << Text.height 60 << Text.typeface ["monospace", "arial"]
     render: \g -> 
         Collage.collage game_total_width game_total_height
           [ Collage.toForm (Game/render g)

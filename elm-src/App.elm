@@ -2,7 +2,6 @@
 module App (App_State, cApp_init, cApp_step, cApp_render, App_Input, cApp_inputs) where
 import Text (plainText)
 import Config (game_total_height)
-import Vect (Vect(Vect))
 import Game (..)
 import Paused
 import Paused (cPaused_step, cPaused_render)
@@ -20,6 +19,7 @@ type alias App_Input =
  Game_Input
 cApp_inputs = 
  cGame_inputs
+cApp_step : App_Input -> St -> St
 cApp_step = 
  \inputs st ->
   case st of

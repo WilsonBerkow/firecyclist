@@ -13,8 +13,8 @@ Elm.Platfm.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Time = Elm.Time.make(_elm);
    var platfmLineStyle = function () {
       var df = $Graphics$Collage.defaultLine;
       return _U.replace([["width",6]
@@ -32,7 +32,7 @@ Elm.Platfm.make = function (_elm) {
                   0,
                   $Time.inSeconds(p.time_left))]],
       platfmLineStyle),
-      A2($Vect.segment_f,
+      A2($HasPosition.segment_f,
       p.start,
       p.end));
    };
@@ -44,7 +44,7 @@ Elm.Platfm.make = function (_elm) {
                                             0.5)]],
    platfmLineStyle);
    var renderTouchPlatfmPreview = function (p) {
-      return $Graphics$Collage.traced(platfmPreviewLineStyle)(A2($Vect.segment_f,
+      return $Graphics$Collage.traced(platfmPreviewLineStyle)(A2($HasPosition.segment_f,
       p.start,
       p.end));
    };
@@ -56,10 +56,10 @@ Elm.Platfm.make = function (_elm) {
          return function () {
             var fall_rate = configPlatfm.fall_rate;
             return {_: {}
-                   ,end: A2($Vect.vect_rise,
+                   ,end: A2($HasPosition.vect_rise,
                    fall_rate,
                    _v0.end)
-                   ,start: A2($Vect.vect_rise,
+                   ,start: A2($HasPosition.vect_rise,
                    fall_rate,
                    _v0.start)
                    ,time_left: _v0.time_left - dt};

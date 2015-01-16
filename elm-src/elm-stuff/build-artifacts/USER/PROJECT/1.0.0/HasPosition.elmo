@@ -1,0 +1,121 @@
+Elm.HasPosition = Elm.HasPosition || {};
+Elm.HasPosition.make = function (_elm) {
+   "use strict";
+   _elm.HasPosition = _elm.HasPosition || {};
+   if (_elm.HasPosition.values)
+   return _elm.HasPosition.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "HasPosition",
+   $Basics = Elm.Basics.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm);
+   var set_origin_context = F2(function (_v0,
+   r) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return _U.replace([["x"
+                               ,r.x - $Basics.toFloat(_v0._0) / 2]
+                              ,["y"
+                               ,0 - r.y + $Basics.toFloat(_v0._1) / 2]],
+              r);}
+         _U.badCase($moduleName,
+         "on line 22, column 56 to 134");
+      }();
+   });
+   var fix_origin = set_origin_context({ctor: "_Tuple2"
+                                       ,_0: $Config.game_total_width
+                                       ,_1: $Config.game_total_height});
+   var pt_to_fp = function (pt) {
+      return function () {
+         var $ = fix_origin(pt),
+         x = $.x,
+         y = $.y;
+         return {ctor: "_Tuple2"
+                ,_0: x
+                ,_1: y};
+      }();
+   };
+   var move_f = F2(function (pt,
+   form) {
+      return A2($Graphics$Collage.move,
+      pt_to_fp(pt),
+      form);
+   });
+   var segment_f = F2(function (pt1,
+   pt2) {
+      return A2($Graphics$Collage.segment,
+      pt_to_fp(pt1),
+      pt_to_fp(pt2));
+   });
+   var distance = F2(function (p0,
+   p1) {
+      return $Basics.sqrt(Math.pow(p1.x - p0.x,
+      2) + Math.pow(p1.y - p0.y,2));
+   });
+   var vscale = F2(function (s,r) {
+      return _U.replace([["x"
+                         ,s * r.x]
+                        ,["y",s * r.y]],
+      r);
+   });
+   var vect_rise = F2(function (dy,
+   r) {
+      return _U.replace([["x",r.x]
+                        ,["y",r.y - dy]],
+      r);
+   });
+   var vect_fall = F2(function (dy,
+   r) {
+      return _U.replace([["x",r.x]
+                        ,["y",r.y + dy]],
+      r);
+   });
+   var vect_subtract = F2(function (xy,
+   xy$) {
+      return {_: {}
+             ,x: xy.x - xy$.x
+             ,y: xy.y - xy$.y};
+   });
+   var vect_add = F2(function (xy,
+   xy$) {
+      return {_: {}
+             ,x: xy.x + xy$.x
+             ,y: xy.y + xy$.y};
+   });
+   var vsum = A2($List.foldl,
+   vect_add,
+   {_: {},x: 0,y: 0});
+   var Position = F2(function (a,
+   b) {
+      return {_: {},x: a,y: b};
+   });
+   var HasPosition = F3(function (a,
+   b,
+   c) {
+      return _U.insert("y",
+      b,
+      _U.insert("x",a,c));
+   });
+   _elm.HasPosition.values = {_op: _op
+                             ,HasPosition: HasPosition
+                             ,Position: Position
+                             ,vect_add: vect_add
+                             ,vect_subtract: vect_subtract
+                             ,vsum: vsum
+                             ,vect_fall: vect_fall
+                             ,vect_rise: vect_rise
+                             ,vscale: vscale
+                             ,distance: distance
+                             ,set_origin_context: set_origin_context
+                             ,fix_origin: fix_origin
+                             ,pt_to_fp: pt_to_fp
+                             ,move_f: move_f
+                             ,segment_f: segment_f};
+   return _elm.HasPosition.values;
+};

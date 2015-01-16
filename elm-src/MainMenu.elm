@@ -6,8 +6,8 @@ import Graphics.Element as Element
 import Graphics.Collage (collage, moveY, rect, toForm, filled, group)
 import Color
 import Config (game_total_width, game_total_height)
-import Vect (Vect(Vect), vect_x)
 import Game (Game_State, cGame_render, taps_f, game_background)
+import HasPosition (Position)
 import BasicUtil (deepGrey)
 type WhereTo = Continue MainMenu_State | PlayGame
 -- COMPONENT: MainMenu
@@ -15,9 +15,9 @@ cMainMenu_localvar_messageStyle = Text.color Color.darkGrey << Text.bold << Text
 cMainMenu_localvar_monospace = Text.typeface ["monospace", "arial"]
 
 type alias MainMenu_State = 
- Vect -- the prev pos
+ Position -- the prev pos
 type alias MainMenu_Input = 
- Vect
+ Position
 cMainMenu_inputs = 
  taps_f
 cMainMenu_step = 
@@ -31,11 +31,11 @@ cMainMenu_render =
       [ game_background
       , filled (Color.rgba 200 200 200 0.5) (rect (toFloat game_total_width) (toFloat game_total_height))
       , moveY 40 <| group
-          [ moveY   75 <| toForm <| Text.centered (Text.bold (Text.color Color.orange   (Text.height 132 (cMainMenu_localvar_monospace (Text.fromString "Fire")))))
-          , moveY    0 <| toForm <| Text.centered (Text.bold (Text.color Color.orange   (Text.height  72 (cMainMenu_localvar_monospace (Text.fromString "cyclist")))))
+          [ moveY   70 <| toForm <| Text.centered (Text.bold (Text.color Color.orange   (Text.height 140 (cMainMenu_localvar_monospace (Text.fromString "Fire")))))
+          , moveY    0 <| toForm <| Text.centered (Text.bold (Text.color Color.orange   (Text.height  85 (cMainMenu_localvar_monospace (Text.fromString "cyclist")))))
           , moveY -100 <| toForm <| Text.centered (Text.bold (Text.color deepGrey       (Text.height  60 (Text.italic (cMainMenu_localvar_monospace (Text.fromString "Play"))))))
           ]
       ]
 cMainMenu_init = 
- Vect 0 0
+ {x=0,y=0}
   

@@ -15,8 +15,9 @@ Elm.DeadScreen.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Game = Elm.Game.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Text = Elm.Text.make(_elm);
    var cDeadScreen_inputs = $Game.taps_f;
    var cDeadScreen_localvar_messageStyle = function ($) {
       return $Text.bold($Text.typeface(_L.fromArray(["monospace"

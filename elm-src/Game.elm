@@ -14,14 +14,14 @@ import Graphics.Collage as Collage
 import Graphics.Element (Element)
 import Config (game_side_margin, game_top_margin, game_total_width, game_total_height, framerate)
 import BasicUtil (..)
-import Vect (..)
+import HasPosition (..)
 import ArbitraryRounding (arb_round)
 import Player (..)
 import Fireball (..)
 import Platfm (Platfm, configPlatfm, stepPlatfm, renderPlatfm, renderTouchPlatfmPreview)
-type WhereTo = Continue Game_State | Pause Game_State | Restart Vect | Die Game_State -- It is necessary for 'Restart' to take a Vect for the same reason it is necessary for DeadScreen.Replay to take one: so that the new game that is started records the previous tap correctly, and does not accidentally pause it or anything
-tovect {x,y} = Vect (toFloat x) (toFloat y)
-taps_f = Signal.map tovect Touch.taps -- I don't have to fix_origin on the taps, because taps are already automatically in the right coordinate system.
+type WhereTo = Continue Game_State | Pause Game_State | Restart Position | Die Game_State -- It is necessary for 'Restart' to take a Position for the same reason it is necessary for DeadScreen.Replay to take one: so that the new game that is started records the previous tap correctly, and does not accidentally pause it or anything
+toPosition {x,y} = { x = (toFloat x), y = (toFloat y) }
+taps_f = Signal.map toPosition Touch.taps -- I don't have to fix_origin on the taps, because taps are already automatically in the right coordinate system.
 game_background = Collage.filled (Color.rgba 175 175 255 0.75)
                                  (Collage.rect (toFloat game_total_width) (toFloat game_total_height))
 -- COMPONENT: Game
@@ -34,29 +34,32 @@ type alias Game_State =
   , last_touch : Maybe Touch.Touch
   , preview_plat : Maybe Platfm
   , fb_creation_seed : Random.Seed
-  , prev_tap_pos : Vect
+  , prev_tap_pos : Position
   , time_playing : Float
   , points : Float
   }
 type alias Game_Input = 
- (Maybe Touch.Touch, Vect, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
+ (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
 cGame_inputs = 
  Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
 cGame_step = 
 
   let touch_to_platfm : Touch.Touch -> Platfm
-      touch_to_platfm {x0, y0, x, y} = { start = Vect (toFloat x0) (toFloat y0)
-                                       , end = Vect (toFloat x) (toFloat y)
+      touch_to_platfm {x0, y0, x, y} = { start = { x = toFloat x0, y = toFloat y0 }
+                                       , end = { x = toFloat x, y = toFloat y }
                                        , time_left = 800
                                        }
-      point_on_screen : Vect -> Bool
-      point_on_screen (Vect x y) = (in_range 0 (toFloat game_total_width) x) && (in_range 0 (toFloat game_total_height) y)
+      point_on_screen : HasPosition r -> Bool
+      point_on_screen {x,y} = in_range 0 (toFloat game_total_width) x && in_range 0 (toFloat game_total_height) y
       
       plat_on_screen : Platfm -> Bool
       plat_on_screen {start, end} = point_on_screen start || point_on_screen end
       
       plat_alive : Platfm -> Bool
       plat_alive {time_left} = time_left > 30
+      
+      plat_should_stay : Platfm -> Bool
+      plat_should_stay = fn_map2 (&&) plat_on_screen plat_alive
       
       fb_on_screen : Fireball -> Bool
       fb_on_screen {pos} = point_on_screen pos || point_on_screen (vect_rise fb_height pos)
@@ -65,7 +68,7 @@ cGame_step =
       player_hitting_fb player fb =
         distance player.pos fb.pos < (configPlayer.radius + fb_height / 2) -- 'fb_height / 2' **approximates** the avg radius of the fb.
       
-      update_and_filter dt stepper filterer objs = List.map (stepper dt) (List.filter filterer objs)
+      update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
       
       step : Game_Input -> Game_State -> WhereTo
       step (cur_touch,cur_tap_pos,dt) g =
@@ -73,11 +76,11 @@ cGame_step =
             pause_clicked =
                 case tap_target of
                     Nothing -> False
-                    Just (Vect x y) -> x < 50 && y < 50
+                    Just {x, y} -> x < 50 && y < 50
             restart_clicked =
                 case tap_target of
                     Nothing -> False
-                    Just (Vect x y) -> x > (toFloat game_total_width - 50) && y < 50
+                    Just {x, y} -> x > (toFloat game_total_width - 50) && y < 50
             (should_create_fb, new_fb_pos, new_seed) =
               let (rand_should_create, seed') = Random.generate (Random.int 0 75) g.fb_creation_seed
                   should_create_fb = rand_should_create == 1
@@ -94,13 +97,14 @@ cGame_step =
                            Nothing -> Maybe.map touch_to_platfm g.last_touch -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
                            Just _  -> Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
             new_plats =
-              let updated_plats = update_and_filter dt stepPlatfm (fn_map2 (&&) plat_on_screen plat_alive) g.plats
+              let updated_plats : List Platfm
+                  updated_plats = update_and_filter (stepPlatfm dt) plat_should_stay g.plats
               in case drawn_plat of Just new_p -> new_p :: updated_plats
                                     Nothing    -> updated_plats
             new_fireballs =
-              let updated_fbs = update_and_filter dt stepFireball fb_on_screen g.fireballs
+              let updated_fbs = update_and_filter (stepFireball dt) fb_on_screen g.fireballs
               in if should_create_fb
-                  then (makeFireball (Vect new_fb_pos (toFloat game_total_height + fb_height))) :: updated_fbs
+                  then makeFireball { x = new_fb_pos, y = toFloat game_total_height + fb_height } :: updated_fbs
                   else updated_fbs
             player_on_fire = any (player_hitting_fb g.player) g.fireballs
             new_game =
@@ -112,23 +116,24 @@ cGame_step =
                   , fb_creation_seed <- new_seed
                   , prev_tap_pos <- cur_tap_pos
                   , time_playing <- g.time_playing + dt
-                  , points <- g.points + 2 * (Time.inSeconds dt) * (1 + vect_y g.player.pos / toFloat game_total_height)
+                  , points <- g.points + 2 * (Time.inSeconds dt) * (1 + g.player.pos.y / toFloat game_total_height)
                   }
-        in if | vect_y g.player.pos > toFloat game_total_height -> Die new_game
+        in if | g.player.pos.y > toFloat game_total_height -> Die new_game
               | player_on_fire -> Die new_game
               | pause_clicked -> Pause new_game
               | restart_clicked -> Restart cur_tap_pos
               | otherwise -> Continue new_game
                   
   in step
+cGame_render : Game_State -> Element
 cGame_render = 
 
   let btnMargin = 20
       restartBtn = (Collage.toForm (Text.plainText "⟳"))
-                     |> move_f (Vect (toFloat game_total_width - btnMargin) btnMargin)
+                     |> move_f { x = toFloat game_total_width - btnMargin, y = btnMargin }
                      |> Collage.scale 2.3
       pauseBtn = Collage.toForm (Text.centered (Text.bold (Text.typeface ["arial", "sans-serif", "monospace"] (Text.fromString "II"))))
-                   |> move_f (Vect btnMargin (btnMargin + 2))
+                   |> move_f { x = btnMargin, y = btnMargin + 2 }
                    |> Collage.scale 2
       btn_outline_rad = 65
       btn_outline_clr = Color.rgba 150 150 150 0.25
@@ -141,9 +146,9 @@ cGame_render =
         forms' = (pauseBtn :: restartBtn :: plats)
               ++ [renderPlayer game.player]
               ++ fireballs
-              ++ [ move_f (Vect 10 -5) btn_outline
-                 , move_f (Vect (toFloat game_total_width - 10) -5) btn_outline
-                 , move_f (Vect (toFloat game_total_width / 2) 20) (Collage.toForm (Text.centered (Text.color Color.black (Text.bold (Text.typeface ["monospace", "arial"] (Text.height 30 (Text.fromString (toString (round game.points)))))))))
+              ++ [ move_f {x=10, y=-5} btn_outline
+                 , move_f {x=toFloat game_total_width - 10, y=-5} btn_outline
+                 , move_f {x=toFloat game_total_width / 2, y=20} (Collage.toForm (Text.centered (Text.color Color.black (Text.bold (Text.typeface ["monospace", "arial"] (Text.height 30 (Text.fromString (toString (round game.points)))))))))
                  ]
         forms = case plat_preview of
                   Nothing -> forms'
@@ -156,12 +161,12 @@ cGame_init =
       (gw, gh) = (toFloat game_total_width, toFloat game_total_height)
       (pad_len, side_len) = (configFireball.padded_len, configFireball.side_len)
   in { plats = []
-     , player = { pos = Vect 200 75, vel = Vect 0 0 }
+     , player = { pos = {x=200,y=75}, vel = {x=0,y=0} }
      , fireballs = []
      , last_touch = Nothing
      , preview_plat = Nothing
      , fb_creation_seed = Random.initialSeed 1234567890987654321 -- CHANGE THIS TO MAKE IT VARY
-     , prev_tap_pos = Vect 0 0
+     , prev_tap_pos = {x=0,y=0}
      , time_playing = 0
      , points = 0
      }

@@ -7,15 +7,17 @@ import Graphics.Collage as Collage
 import Color
 
 import BasicUtil (..)
-import Vect (..)
+import HasPosition (..)
 
 type alias Platfm =
-  { start : Vect
-  , end : Vect
+  { start : Position
+  , end : Position
   , time_left : Time
   }
 type alias PlatfmInputs = Time
 configPlatfm = { fall_rate = 3 } -- TODO: Remove this variable, lift fall_rate to global ns or another config module.
+
+stepPlatfm : Time -> Platfm -> Platfm
 stepPlatfm dt {start, end, time_left} =
   let fall_rate = configPlatfm.fall_rate
   in { start = (vect_rise fall_rate start), end = (vect_rise fall_rate end), time_left = time_left - dt }

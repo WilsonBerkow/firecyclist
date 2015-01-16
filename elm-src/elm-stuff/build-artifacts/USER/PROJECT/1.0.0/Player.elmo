@@ -15,20 +15,78 @@ Elm.Player.make = function (_elm) {
    $Color = Elm.Color.make(_elm),
    $Config = Elm.Config.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Platfm = Elm.Platfm.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
+   $Platfm = Elm.Platfm.make(_elm);
    var configPlayer = {_: {}
                       ,radius: 10};
    var stepPlayer = function () {
       var player_grav = 0.2;
       var platfm_bounciness = 0.75;
       var vel_from_slope = function (m) {
-         return $Vect.vect_rise(platfm_bounciness)($Vect.vect_rise($Platfm.configPlatfm.fall_rate)($Vect.vscale(3)(A2($Vect.Vect,
-         $BasicUtil.signnum(m),
-         $Basics.abs(m)))));
+         return $HasPosition.vect_rise(platfm_bounciness)($HasPosition.vect_rise($Platfm.configPlatfm.fall_rate)($HasPosition.vscale(3)({_: {}
+                                                                                                                                        ,x: $BasicUtil.signnum(m)
+                                                                                                                                        ,y: $Basics.abs(m)})));
       };
+      var intersects = F2(function (player,
+      plat) {
+         return function () {
+            var $ = function () {
+               var $ = A2($HasPosition.vect_subtract,
+               plat.end,
+               player.pos),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            offsetx1 = $._0,
+            offsety1 = $._1;
+            var $ = function () {
+               var $ = A2($HasPosition.vect_subtract,
+               plat.start,
+               player.pos),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            offsetx0 = $._0,
+            offsety0 = $._1;
+            var big_D = offsetx0 * offsety1 - offsetx1 * offsety0;
+            var platlength = A2($HasPosition.distance,
+            plat.start,
+            plat.end);
+            var r = configPlayer.radius;
+            var $ = function () {
+               var $ = player.pos,
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            px = $._0,
+            py = $._1;
+            return _U.cmp(Math.pow(r * platlength,
+            2),
+            Math.pow(big_D,2)) > -1;
+         }();
+      });
+      var touching_any = F2(function (pl,
+      plats) {
+         return A3($List.foldl,
+         F2(function (plat,acc) {
+            return $BasicUtil.isJust(acc) ? acc : A2(intersects,
+            pl,
+            plat) ? $Maybe.Just(plat) : acc;
+         }),
+         $Maybe.Nothing,
+         plats);
+      });
       var slope = F2(function (_v0,
       _v1) {
          return function () {
@@ -84,19 +142,34 @@ Elm.Player.make = function (_elm) {
          return function () {
             return function () {
                return function () {
-                  var _raw = _v16.pos,
-                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 45, column 65 to 68"),
+                  var $ = function () {
+                     var $ = _v16.pos,
+                     x = $.x,
+                     y = $.y;
+                     return {ctor: "_Tuple2"
+                            ,_0: x
+                            ,_1: y};
+                  }(),
                   pl_x = $._0,
                   pl_y = $._1;
-                  var _raw = _v17.end,
-                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 44, column 61 to 64"),
+                  var $ = function () {
+                     var $ = _v17.end,
+                     x = $.x,
+                     y = $.y;
+                     return {ctor: "_Tuple2"
+                            ,_0: x
+                            ,_1: y};
+                  }(),
                   x2 = $._0,
                   y2 = $._1;
-                  var _raw = _v17.start,
-                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 43, column 61 to 66"),
+                  var $ = function () {
+                     var $ = _v17.start,
+                     x = $.x,
+                     y = $.y;
+                     return {ctor: "_Tuple2"
+                            ,_0: x
+                            ,_1: y};
+                  }(),
                   x1 = $._0,
                   y1 = $._1;
                   return A3(touching,
@@ -109,36 +182,15 @@ Elm.Player.make = function (_elm) {
             }();
          }();
       });
-      var touching_any = F2(function (pl,
-      plats) {
-         return A3($List.foldl,
-         F2(function (plat,acc) {
-            return $BasicUtil.isJust(acc) ? acc : A2(touching_plat,
-            pl,
-            plat) ? $Maybe.Just(plat) : acc;
-         }),
-         $Maybe.Nothing,
-         plats);
-      });
       var plat_slope = function (_v20) {
          return function () {
-            return function () {
-               var _raw = _v20.end,
-               $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-               "on line 57, column 52 to 55"),
-               x2 = $._0,
-               y2 = $._1;
-               var _raw = _v20.start,
-               $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-               "on line 56, column 52 to 57"),
-               x1 = $._0,
-               y1 = $._1;
-               return A2(slope,
-               {ctor: "_Tuple2",_0: x1,_1: y1},
-               {ctor: "_Tuple2"
-               ,_0: x2
-               ,_1: y2});
-            }();
+            return A2(slope,
+            {ctor: "_Tuple2"
+            ,_0: _v20.start.x
+            ,_1: _v20.start.y},
+            {ctor: "_Tuple2"
+            ,_0: _v20.end.x
+            ,_1: _v20.end.y});
          }();
       };
       var step = F2(function (plats,
@@ -154,25 +206,30 @@ Elm.Player.make = function (_elm) {
                {case "Just":
                   return vel_from_slope(plat_slope(on_plat._0));
                   case "Nothing":
-                  return A2($Vect.vect_fall,
+                  return A2($HasPosition.vect_fall,
                     player_grav,
                     p.vel);}
                _U.badCase($moduleName,
-               "between lines 67 and 70");
+               "between lines 75 and 78");
             }();
-            var _raw = $Vect.vsum(_L.fromArray([p.pos
-                                               ,vel])),
-            $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-            "on line 70, column 45 to 62"),
+            var $ = function () {
+               var $ = $HasPosition.vsum(_L.fromArray([p.pos
+                                                      ,vel])),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
             newx = $._0,
             newy = $._1;
             var modded_newx = _U.cmp(newx,
             gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
             0 - rad) < 0 ? newx + gwidth + rad : newx;
             return {_: {}
-                   ,pos: A2($Vect.Vect,
-                   modded_newx,
-                   newy)
+                   ,pos: {_: {}
+                         ,x: modded_newx
+                         ,y: newy}
                    ,vel: vel};
          }();
       });
@@ -197,7 +254,7 @@ Elm.Player.make = function (_elm) {
                                                   $Graphics$Collage.circle(configPlayer.radius))]));
    }();
    var renderPlayer = function (p) {
-      return A2($Vect.move_f,
+      return A2($HasPosition.move_f,
       p.pos,
       std_player);
    };

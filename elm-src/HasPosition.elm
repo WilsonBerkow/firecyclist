@@ -8,16 +8,18 @@ import Graphics.Collage (Form, move, Path, segment)
 import Config (game_total_width, game_total_height)
 
 type alias HasPosition r = { r | x : Float, y : Float }
-vect_add xy xy' = { x = (xy.x + xy'.x), y = (xy.y + xy'.y) }
+type alias Position = { x : Float, y : Float }
+vect_add xy xy' = { x = xy.x + xy'.x, y = xy.y + xy'.y }
+vect_subtract xy xy' = { x = xy.x - xy'.x, y = xy.y - xy'.y }
 vsum = foldl vect_add {x=0, y=0}
-vect_fall dy r = { r | x = r.x, y = (r.y + dy) }
-vect_rise dy r = { r | x = r.x, y = (r.y - dy)
-vscale s r = { r | x = (s * r.x), y = (s * r.y)
+vect_fall dy r = { r | x <- r.x, y <- (r.y + dy) }
+vect_rise dy r = { r | x <- r.x, y <- (r.y - dy) }
+vscale s r = { r | x <- (s * r.x), y <- (s * r.y) }
 
 distance p0 p1 = sqrt <| (p1.x - p0.x) ^ 2 + (p1.y - p0.y) ^ 2
 
 set_origin_context : (Int,Int) -> HasPosition r -> HasPosition r
-set_origin_context (total_width, total_height) r = { r | x = r.x - (toFloat total_width / 2), y = -r.y + (toFloat total_height / 2) }
+set_origin_context (total_width, total_height) r = { r | x <- r.x - (toFloat total_width / 2), y <- -r.y + (toFloat total_height / 2) }
 
 fix_origin = set_origin_context (game_total_width, game_total_height)
 

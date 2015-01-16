@@ -5,7 +5,6 @@ module App (App/State, App/init, App/step, App/render, App/Input, App/inputs) wh
 import Text (plainText)
 
 import Config (game_total_height)
-import Vect (Vect(Vect))
 import Game (..)
 import Paused
 import Paused (Paused/step, Paused/render)
@@ -45,6 +44,6 @@ component App where
         case st of
             (OnGame g) -> Game/render g
             (OnPaused g) -> Paused/render g
-            (OnDead s) -> DeadScreen/render s
+            (OnDead g) -> DeadScreen/render g
             (OnMainMenu p) -> MainMenu/render p
     init: OnMainMenu MainMenu/init

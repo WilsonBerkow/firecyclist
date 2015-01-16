@@ -9,14 +9,14 @@ import Graphics.Collage (collage, moveY, rect, toForm, filled, group)
 import Color
 
 import Config (game_total_width, game_total_height)
-import Vect (Vect, vect_x)
+import HasPosition (Position)
 import Game (Game/State, Game/render, taps_f)
 
-type WhereTo = Continue DeadScreen/State | Replay Vect
+type WhereTo = Continue DeadScreen/State | Replay Position
 
 component DeadScreen where
     State: Game/State
-    Input: Vect
+    Input: Position
     inputs: taps_f
     step: \tap_pos g ->
         let new_g = { g | prev_tap_pos <- tap_pos }

@@ -9,15 +9,15 @@ import Graphics.Collage (collage, moveY, rect, toForm, filled, group)
 import Color
 
 import Config (game_total_width, game_total_height)
-import Vect (Vect(Vect), vect_x)
 import Game (Game/State, Game/render, taps_f, game_background)
+import HasPosition (Position)
 import BasicUtil (deepGrey)
 
 type WhereTo = Continue MainMenu/State | PlayGame
 
 component MainMenu where
-  State: Vect -- the prev pos
-  Input: Vect
+  State: Position -- the prev pos
+  Input: Position
   inputs: taps_f
   step: \tap_pos prev_tap_pos ->
     if tap_pos /= prev_tap_pos
@@ -35,5 +35,5 @@ component MainMenu where
             , moveY -100 <| toForm <| Text.centered (Text.bold (Text.color deepGrey       (Text.height  60 (Text.italic (@monospace (Text.fromString "Play"))))))
             ]
         ]
-  init: Vect 0 0
+  init: {x=0,y=0}
     

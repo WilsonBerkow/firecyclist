@@ -35,7 +35,7 @@ Elm.App.make = function (_elm) {
          switch (_v5.ctor)
          {case "_Tuple3": return _v5._1;}
          _U.badCase($moduleName,
-         "on line 15, column 40 to 41");
+         "on line 14, column 40 to 41");
       }();
    };
    var OnMainMenu = function (a) {

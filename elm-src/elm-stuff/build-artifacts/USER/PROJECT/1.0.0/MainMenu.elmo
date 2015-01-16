@@ -16,11 +16,11 @@ Elm.MainMenu.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Game = Elm.Game.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
-   var cMainMenu_init = A2($Vect.Vect,
-   0,
-   0);
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var cMainMenu_init = {_: {}
+                        ,x: 0
+                        ,y: 0};
    var cMainMenu_inputs = $Game.taps_f;
    var cMainMenu_localvar_monospace = $Text.typeface(_L.fromArray(["monospace"
                                                                   ,"arial"]));
@@ -35,15 +35,15 @@ Elm.MainMenu.make = function (_elm) {
                       A2($Graphics$Collage.rect,
                       $Basics.toFloat($Config.game_total_width),
                       $Basics.toFloat($Config.game_total_height)))
-                      ,$Graphics$Collage.moveY(40)($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(75)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
+                      ,$Graphics$Collage.moveY(40)($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(70)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
-                                                                                        132,
+                                                                                        140,
                                                                                         cMainMenu_localvar_monospace($Text.fromString("Fire"))))))))
                                                                                         ,$Graphics$Collage.moveY(0)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
-                                                                                        72,
+                                                                                        85,
                                                                                         cMainMenu_localvar_monospace($Text.fromString("cyclist"))))))))
                                                                                         ,$Graphics$Collage.moveY(-100)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $BasicUtil.deepGrey,

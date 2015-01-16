@@ -5,11 +5,11 @@ module Fireball where
 import Time (Time)
 import List ((::))
 
-import Vect (..)
+import HasPosition (..)
 import Graphics.Collage as Collage
 import Color
 
-type alias Fireball = { pos : Vect, speed : Float }
+type alias Fireball = { pos : Position, speed : Float }
 type alias FireballInputs = Time
 
 configFireball = let side_len = 12
@@ -51,13 +51,13 @@ stepFireball : FireballInputs -> Fireball -> Fireball
 stepFireball dt fb = { pos = vect_fall fb.speed fb.pos, speed = fb.speed }
 renderFireball f = single_fb |> move_f f.pos
 
-makeFireball : Vect -> Fireball
+makeFireball : Position -> Fireball
 makeFireball pos = { pos = pos, speed = configFireball.def_speed }
-staticFb x y = { pos = (Vect x y), speed = 0 }
+staticFb x y = { pos = {x=x,y=y}, speed = 0 }
 
-fbCol amt (Vect x y) = if | amt > 0 -> (staticFb x y)
-                                       :: fbCol (amt - 1) (Vect x (y + configFireball.padded_len))
-                          | otherwise -> []
-fbRow amt (Vect x y) = if | amt > 0 -> (staticFb x y)
-                                       :: fbRow (amt - 1) (Vect (x + configFireball.padded_len) y)
-                          | otherwise -> []
+fbCol amt {x,y} = if | amt > 0 -> (staticFb x y)
+                                    :: fbCol (amt - 1) { x = x, y = y + configFireball.padded_len}
+                     | otherwise -> []
+fbRow amt {x,y} = if | amt > 0 -> (staticFb x y)
+                                    :: fbRow (amt - 1) { x = x + configFireball.padded_len, y = y }
+                     | otherwise -> []
