@@ -14,7 +14,6 @@ Elm.Fireball.make = function (_elm) {
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
-   $List = Elm.List.make(_elm),
    $Time = Elm.Time.make(_elm);
    var staticFb = F2(function (x,
    y) {
@@ -103,20 +102,6 @@ Elm.Fireball.make = function (_elm) {
       return $HasPosition.move_f(f.pos)(single_fb);
    };
    var fb_height = 4 * 4.5;
-   var tri = function (s) {
-      return function () {
-         var h = s * ($Basics.sqrt(3) / 2);
-         return $Graphics$Collage.polygon(_L.fromArray([{ctor: "_Tuple2"
-                                                        ,_0: (0 - s) / 2
-                                                        ,_1: (0 - h) / 2}
-                                                       ,{ctor: "_Tuple2"
-                                                        ,_0: s / 2
-                                                        ,_1: (0 - h) / 2}
-                                                       ,{ctor: "_Tuple2"
-                                                        ,_0: 0
-                                                        ,_1: h / 2}]));
-      }();
-   };
    var configFireball = function () {
       var side_len = 12;
       return {_: {}
@@ -129,32 +114,6 @@ Elm.Fireball.make = function (_elm) {
              ,pos: pos
              ,speed: configFireball.def_speed};
    };
-   var fbCol = F2(function (amt,
-   _v0) {
-      return function () {
-         return _U.cmp(amt,
-         0) > 0 ? A2($List._op["::"],
-         A2(staticFb,_v0.x,_v0.y),
-         A2(fbCol,
-         amt - 1,
-         {_: {}
-         ,x: _v0.x
-         ,y: _v0.y + configFireball.padded_len})) : _L.fromArray([]);
-      }();
-   });
-   var fbRow = F2(function (amt,
-   _v2) {
-      return function () {
-         return _U.cmp(amt,
-         0) > 0 ? A2($List._op["::"],
-         A2(staticFb,_v2.x,_v2.y),
-         A2(fbRow,
-         amt - 1,
-         {_: {}
-         ,x: _v2.x + configFireball.padded_len
-         ,y: _v2.y})) : _L.fromArray([]);
-      }();
-   });
    var Fireball = F2(function (a,
    b) {
       return {_: {}
@@ -164,14 +123,11 @@ Elm.Fireball.make = function (_elm) {
    _elm.Fireball.values = {_op: _op
                           ,Fireball: Fireball
                           ,configFireball: configFireball
-                          ,tri: tri
                           ,fb_height: fb_height
                           ,single_fb: single_fb
                           ,stepFireball: stepFireball
                           ,renderFireball: renderFireball
                           ,makeFireball: makeFireball
-                          ,staticFb: staticFb
-                          ,fbCol: fbCol
-                          ,fbRow: fbRow};
+                          ,staticFb: staticFb};
    return _elm.Fireball.values;
 };

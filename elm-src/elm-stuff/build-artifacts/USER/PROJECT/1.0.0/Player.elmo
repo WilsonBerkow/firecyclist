@@ -16,7 +16,6 @@ Elm.Player.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
-   $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Platfm = Elm.Platfm.make(_elm);
    var configPlayer = {_: {}
@@ -31,7 +30,13 @@ Elm.Player.make = function (_elm) {
       };
       var intersects = F2(function (player,
       plat) {
-         return function () {
+         return A3($BasicUtil.in_range,
+         plat.start.x,
+         plat.end.x,
+         player.pos.x) && (A3($BasicUtil.in_range,
+         plat.start.y,
+         plat.end.y,
+         player.pos.y) && function () {
             var $ = function () {
                var $ = A2($HasPosition.vect_subtract,
                plat.end,
@@ -74,28 +79,33 @@ Elm.Player.make = function (_elm) {
             return _U.cmp(Math.pow(r * platlength,
             2),
             Math.pow(big_D,2)) > -1;
-         }();
+         }());
       });
       var touching_any = F2(function (pl,
       plats) {
-         return A3($List.foldl,
-         F2(function (plat,acc) {
-            return $BasicUtil.isJust(acc) ? acc : A2(intersects,
-            pl,
-            plat) ? $Maybe.Just(plat) : acc;
-         }),
-         $Maybe.Nothing,
-         plats);
-      });
-      var slope = F2(function (_v0,
-      _v1) {
          return function () {
-            switch (_v1.ctor)
+            switch (plats.ctor)
+            {case "::":
+               return A2(intersects,
+                 pl,
+                 plats._0) ? $Maybe.Just(plats._0) : A2(touching_any,
+                 pl,
+                 plats._1);
+               case "[]":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 46 and 59");
+         }();
+      });
+      var slope = F2(function (_v3,
+      _v4) {
+         return function () {
+            switch (_v4.ctor)
             {case "_Tuple2":
                return function () {
-                    switch (_v0.ctor)
+                    switch (_v3.ctor)
                     {case "_Tuple2":
-                       return (_v1._1 - _v0._1) / (_v1._0 - _v0._0);}
+                       return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
                     "on line 31, column 34 to 53");
                  }();}
@@ -103,94 +113,15 @@ Elm.Player.make = function (_elm) {
             "on line 31, column 34 to 53");
          }();
       });
-      var line_to_func = F2(function (_v8,
-      b) {
-         return function () {
-            switch (_v8.ctor)
-            {case "_Tuple2":
-               return function () {
-                    var m = A2(slope,_v8,b);
-                    return function (x) {
-                       return m * (x - _v8._0) + _v8._1;
-                    };
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 34 and 35");
-         }();
-      });
-      var touching = F2(function (a,
-      b) {
-         return function () {
-            var in_r = A2($BasicUtil.in_range,
-            $Basics.fst(a),
-            $Basics.fst(b));
-            var fn = A2(line_to_func,a,b);
-            return function (_v12) {
-               return function () {
-                  switch (_v12.ctor)
-                  {case "_Tuple2":
-                     return in_r(_v12._0) && _U.cmp($Basics.abs(fn(_v12._0) - _v12._1),
-                       2 * configPlayer.radius) < 1;}
-                  _U.badCase($moduleName,
-                  "on line 40, column 43 to 109");
-               }();
-            };
-         }();
-      });
-      var touching_plat = F2(function (_v16,
-      _v17) {
-         return function () {
-            return function () {
-               return function () {
-                  var $ = function () {
-                     var $ = _v16.pos,
-                     x = $.x,
-                     y = $.y;
-                     return {ctor: "_Tuple2"
-                            ,_0: x
-                            ,_1: y};
-                  }(),
-                  pl_x = $._0,
-                  pl_y = $._1;
-                  var $ = function () {
-                     var $ = _v17.end,
-                     x = $.x,
-                     y = $.y;
-                     return {ctor: "_Tuple2"
-                            ,_0: x
-                            ,_1: y};
-                  }(),
-                  x2 = $._0,
-                  y2 = $._1;
-                  var $ = function () {
-                     var $ = _v17.start,
-                     x = $.x,
-                     y = $.y;
-                     return {ctor: "_Tuple2"
-                            ,_0: x
-                            ,_1: y};
-                  }(),
-                  x1 = $._0,
-                  y1 = $._1;
-                  return A3(touching,
-                  {ctor: "_Tuple2",_0: x1,_1: y1},
-                  {ctor: "_Tuple2",_0: x2,_1: y2},
-                  {ctor: "_Tuple2"
-                  ,_0: pl_x
-                  ,_1: pl_y});
-               }();
-            }();
-         }();
-      });
-      var plat_slope = function (_v20) {
+      var plat_slope = function (_v11) {
          return function () {
             return A2(slope,
             {ctor: "_Tuple2"
-            ,_0: _v20.start.x
-            ,_1: _v20.start.y},
+            ,_0: _v11.start.x
+            ,_1: _v11.start.y},
             {ctor: "_Tuple2"
-            ,_0: _v20.end.x
-            ,_1: _v20.end.y});
+            ,_0: _v11.end.x
+            ,_1: _v11.end.y});
          }();
       };
       var step = F2(function (plats,
@@ -210,11 +141,12 @@ Elm.Player.make = function (_elm) {
                     player_grav,
                     p.vel);}
                _U.badCase($moduleName,
-               "between lines 75 and 78");
+               "between lines 69 and 72");
             }();
             var $ = function () {
-               var $ = $HasPosition.vsum(_L.fromArray([p.pos
-                                                      ,vel])),
+               var $ = A2($HasPosition.vect_add,
+               p.pos,
+               vel),
                x = $.x,
                y = $.y;
                return {ctor: "_Tuple2"

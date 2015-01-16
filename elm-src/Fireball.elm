@@ -17,9 +17,9 @@ configFireball = let side_len = 12
                     , side_len = side_len
                     , padded_len = side_len * 1.5  -- This is for offsetting fireballs in sequence (i.e. padded_len is the distance from one's x-/y-pos to the next's x-/y-pos).
                     }
-tri : Float -> Collage.Shape -- Makes an equilateral triangle of side-length s, pointed upward (like /\, not \/).
-tri s = let h = s * ((sqrt 3) / 2)
-        in Collage.polygon [(-s/2, -h/2), (s/2, -h/2), (0, h/2)]
+--tri : Float -> Collage.Shape -- Makes an equilateral triangle of side-length s, pointed upward (like /\, not \/).
+--tri s = let h = s * ((sqrt 3) / 2)
+--        in Collage.polygon [(-s/2, -h/2), (s/2, -h/2), (0, h/2)]
 fb_height = 4 * 4.5
 single_fb =
   let unit = 4 -- TODO!!!! Change the rest of the program to deal with these larger fireballs (I changed the unit from 3 to 4 because it looks better).
@@ -54,10 +54,3 @@ renderFireball f = single_fb |> move_f f.pos
 makeFireball : Position -> Fireball
 makeFireball pos = { pos = pos, speed = configFireball.def_speed }
 staticFb x y = { pos = {x=x,y=y}, speed = 0 }
-
-fbCol amt {x,y} = if | amt > 0 -> (staticFb x y)
-                                    :: fbCol (amt - 1) { x = x, y = y + configFireball.padded_len}
-                     | otherwise -> []
-fbRow amt {x,y} = if | amt > 0 -> (staticFb x y)
-                                    :: fbRow (amt - 1) { x = x + configFireball.padded_len, y = y }
-                     | otherwise -> []
