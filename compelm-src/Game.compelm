@@ -128,7 +128,7 @@ component Game where
             fireballs = List.map renderFireball game.fireballs
             
             btnMargin = 20
-            restartBtn = (Collage.toForm (Text.plainText "⟳"))
+            restartBtn = (Collage.toForm (Text.plainText "&#10227;"))
                            |> move_f (Vect (toFloat game_total_width - btnMargin) btnMargin)
                            |> Collage.scale 2.3
             pauseBtn = Collage.toForm (Text.centered (Text.bold (Text.typeface ["arial", "sans-serif", "monospace"] (Text.fromString "II"))))
