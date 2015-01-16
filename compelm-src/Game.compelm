@@ -41,6 +41,7 @@ component Game where
       , prev_tap_pos : Position
       , time_playing : Float
       , points : Float
+      , just_a_simulation : Bool
       }
     Input: (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
     inputs: Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
@@ -167,4 +168,5 @@ component Game where
          , prev_tap_pos = {x=0,y=0}
          , time_playing = 0
          , points = 0
+         , just_a_simulation = False
          }

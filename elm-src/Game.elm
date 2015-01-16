@@ -37,11 +37,13 @@ type alias Game_State =
   , prev_tap_pos : Position
   , time_playing : Float
   , points : Float
+  , just_a_simulation : Bool
   }
 type alias Game_Input = 
  (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
 cGame_inputs = 
  Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
+cGame_step : Game_Input -> Game_State -> WhereTo
 cGame_step = 
 
   let touch_to_platfm : Touch.Touch -> Platfm
@@ -97,8 +99,7 @@ cGame_step =
                            Nothing -> Maybe.map touch_to_platfm g.last_touch -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
                            Just _  -> Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
             new_plats =
-              let updated_plats : List Platfm
-                  updated_plats = update_and_filter (stepPlatfm dt) plat_should_stay g.plats
+              let updated_plats = update_and_filter (stepPlatfm dt) plat_should_stay g.plats
               in case drawn_plat of Just new_p -> new_p :: updated_plats
                                     Nothing    -> updated_plats
             new_fireballs =
@@ -154,6 +155,7 @@ cGame_render =
                   Nothing -> forms'
                   Just p  -> p::forms'
     in Collage.collage game_total_width game_total_height (game_background :: forms)
+cGame_init : Game_State
 cGame_init = 
 
   let side_margin = game_side_margin
@@ -169,4 +171,5 @@ cGame_init =
      , prev_tap_pos = {x=0,y=0}
      , time_playing = 0
      , points = 0
+     , just_a_simulation = False
      }

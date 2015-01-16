@@ -29,17 +29,19 @@ configPlayer = { radius = 10 }
 stepPlayer : PlayerInputs -> Player -> Player
 stepPlayer =
   let slope (x1, y1) (x2, y2) = (y2 - y1) / (x2 - x1)
+      rad = configPlayer.radius
       
       intersects : Player -> Platfm -> Bool
       intersects player plat = -- This algorithm is from http://mathworld.wolfram.com/Circle-LineIntersection.html
-        in_range plat.start.x plat.end.x player.pos.x && in_range plat.start.y plat.end.y player.pos.y &&
-          (let (px, py) = let {x,y} = player.pos in (x,y)
-               r = configPlayer.radius
-               platlength = distance plat.start plat.end
-               (offsetx0, offsety0) = let {x,y} = vect_subtract plat.start player.pos in (x,y)
-               (offsetx1, offsety1) = let {x,y} = vect_subtract plat.end player.pos in (x,y)
-               big_D = offsetx0 * offsety1 - offsetx1 * offsety0
-           in (r * platlength) ^ 2 >= big_D ^ 2)
+        let (startx, starty) = (min plat.start.x plat.end.x, min plat.start.y plat.end.y)
+            (endx,   endy)   = (max plat.start.x plat.end.x, max plat.start.y plat.end.y)
+        in in_range (startx - rad) (endx + rad) player.pos.x && in_range (starty - rad) (endy + rad) player.pos.y &&
+             (let (px, py) = let {x,y} = player.pos in (x,y)
+                  platlength = distance plat.start plat.end
+                  (offsetx0, offsety0) = let {x,y} = vect_subtract plat.start player.pos in (x,y)
+                  (offsetx1, offsety1) = let {x,y} = vect_subtract plat.end player.pos in (x,y)
+                  big_D = offsetx0 * offsety1 - offsetx1 * offsety0
+              in (rad * platlength) ^ 2 >= big_D ^ 2)
       
       touching_any : Player -> List Platfm -> Maybe Platfm
       touching_any pl plats =

@@ -44,6 +44,7 @@ Elm.Game.make = function (_elm) {
       return {_: {}
              ,fb_creation_seed: $Random.initialSeed(-1318314831)
              ,fireballs: _L.fromArray([])
+             ,just_a_simulation: false
              ,last_touch: $Maybe.Nothing
              ,plats: _L.fromArray([])
              ,player: {_: {}
@@ -54,26 +55,37 @@ Elm.Game.make = function (_elm) {
              ,preview_plat: $Maybe.Nothing
              ,time_playing: 0};
    }();
-   var Game_State = F9(function (a,
-   b,
-   c,
-   d,
-   e,
-   f,
-   g,
-   h,
-   i) {
-      return {_: {}
-             ,fb_creation_seed: f
-             ,fireballs: c
-             ,last_touch: d
-             ,plats: a
-             ,player: b
-             ,points: i
-             ,prev_tap_pos: g
-             ,preview_plat: e
-             ,time_playing: h};
-   });
+   var Game_State = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return {_: {}
+                                        ,fb_creation_seed: f
+                                        ,fireballs: c
+                                        ,just_a_simulation: j
+                                        ,last_touch: d
+                                        ,plats: a
+                                        ,player: b
+                                        ,points: i
+                                        ,prev_tap_pos: g
+                                        ,preview_plat: e
+                                        ,time_playing: h};
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
    var game_background = A2($Graphics$Collage.filled,
    A4($Color.rgba,
    175,
@@ -153,7 +165,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 153 and 156");
+               "between lines 154 and 157");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -280,7 +292,7 @@ Elm.Game.make = function (_elm) {
                             touch_to_platfm,
                             g.last_touch);}
                        _U.badCase($moduleName,
-                       "between lines 96 and 99");
+                       "between lines 98 and 101");
                     }();
                     var new_plats = function () {
                        var updated_plats = A3(update_and_filter,
@@ -296,7 +308,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_plats;}
                           _U.badCase($moduleName,
-                          "between lines 102 and 104");
+                          "between lines 103 and 105");
                        }();
                     }();
                     var $ = function () {
@@ -365,7 +377,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 77 and 80");
+                       "between lines 79 and 82");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -375,13 +387,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 81 and 84");
+                       "between lines 83 and 86");
                     }();
                     return _U.cmp(g.player.pos.y,
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 75 and 125");
+            "between lines 77 and 126");
          }();
       });
       return step;
