@@ -1,6 +1,6 @@
 -- (c) Wilson Berkow
 
-module Game (game_background, State, Input, init, inputs, render, step, taps_f, WhereTo(Continue,Pause,Restart,Die)) where
+module Game (game_background, State, Input, init, {-inputs,-} render, step, taps_f, WhereTo(Continue,Pause,Restart,Die)) where
 
 import List
 import List ((::))
@@ -43,7 +43,7 @@ type alias State =
   , just_a_simulation : Bool
   }
 type alias Input = (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
-inputs = Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
+--inputs = Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
 step =
   let touch_to_platfm : Touch.Touch -> Platfm
       touch_to_platfm {x0, y0, x, y} = { start = { x = toFloat x0, y = toFloat y0 }

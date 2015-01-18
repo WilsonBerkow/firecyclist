@@ -38,7 +38,6 @@ Elm.App.make = function (_elm) {
          "on line 17, column 22 to 23");
       }();
    };
-   var inputs = $Game.inputs;
    var OnMainMenu = function (a) {
       return {ctor: "OnMainMenu"
              ,_0: a};
@@ -133,8 +132,7 @@ Elm.App.make = function (_elm) {
    _elm.App.values = {_op: _op
                      ,init: init
                      ,step: step
-                     ,render: render
-                     ,inputs: inputs};
+                     ,render: render};
    return _elm.App.values;
 };
 Elm.ArbitraryRounding = Elm.ArbitraryRounding || {};
@@ -1340,18 +1338,6 @@ Elm.Game.make = function (_elm) {
    var taps_f = A2($Signal.map,
    toPosition,
    $Touch.taps);
-   var inputs = A4($Signal.map3,
-   F3(function (v0,v1,v2) {
-      return {ctor: "_Tuple3"
-             ,_0: v0
-             ,_1: v1
-             ,_2: v2};
-   }),
-   A2($Signal.map,
-   $BasicUtil.mhead,
-   $Touch.touches),
-   taps_f,
-   $Time.fps($Config.framerate));
    var Die = function (a) {
       return {ctor: "Die",_0: a};
    };
@@ -1555,7 +1541,6 @@ Elm.Game.make = function (_elm) {
    _elm.Game.values = {_op: _op
                       ,game_background: game_background
                       ,init: init
-                      ,inputs: inputs
                       ,render: render
                       ,step: step
                       ,taps_f: taps_f
@@ -2830,11 +2815,70 @@ Elm.Main.make = function (_elm) {
    _P = _N.Ports.make(_elm),
    $moduleName = "Main",
    $App = Elm.App.make(_elm),
+   $BasicUtil = Elm.BasicUtil.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $Time = Elm.Time.make(_elm);
-   var delta = A2($Signal.map,
-   $Time.inSeconds,
-   $Time.fps(60));
+   $Time = Elm.Time.make(_elm),
+   $Touch = Elm.Touch.make(_elm);
+   var taps = _P.portIn("taps",
+   _P.incomingSignal(function (v) {
+      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "x" in v && "y" in v ? {_: {}
+                                                                                                                                   ,x: typeof v.x === "number" ? v.x : _U.badPort("a number",
+                                                                                                                                   v.x)
+                                                                                                                                   ,y: typeof v.y === "number" ? v.y : _U.badPort("a number",
+                                                                                                                                   v.y)} : _U.badPort("an object with fields \'x\', \'y\'",
+      v));
+   }));
+   var modtouches = _P.portIn("modtouches",
+   _P.incomingSignal(function (v) {
+      return typeof v === "object" && v instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.map(function (v) {
+         return typeof v === "object" && "x" in v && "y" in v && "id" in v && "x0" in v && "y0" in v && "t0" in v ? {_: {}
+                                                                                                                    ,x: typeof v.x === "number" ? v.x : _U.badPort("a number",
+                                                                                                                    v.x)
+                                                                                                                    ,y: typeof v.y === "number" ? v.y : _U.badPort("a number",
+                                                                                                                    v.y)
+                                                                                                                    ,id: typeof v.id === "number" ? v.id : _U.badPort("a number",
+                                                                                                                    v.id)
+                                                                                                                    ,x0: typeof v.x0 === "number" ? v.x0 : _U.badPort("a number",
+                                                                                                                    v.x0)
+                                                                                                                    ,y0: typeof v.y0 === "number" ? v.y0 : _U.badPort("a number",
+                                                                                                                    v.y0)
+                                                                                                                    ,t0: typeof v.t0 === "number" ? v.t0 : _U.badPort("a number",
+                                                                                                                    v.t0)} : _U.badPort("an object with fields \'x\', \'y\', \'id\', \'x0\', \'y0\', \'t0\'",
+         v);
+      })) : _U.badPort("an array",v);
+   }));
+   var touches = _P.portOut("touches",
+   _P.outgoingSignal(function (v) {
+      return Elm.Native.List.make(_elm).toArray(v).map(function (v) {
+         return {x: v.x
+                ,y: v.y
+                ,id: v.id
+                ,x0: v.x0
+                ,y0: v.y0
+                ,t0: v.t0};
+      });
+   }),
+   $Touch.touches);
+   var delta = $Time.fps($Config.framerate);
+   var inputs = A4($Signal.map3,
+   F3(function (v0,v1,v2) {
+      return {ctor: "_Tuple3"
+             ,_0: v0
+             ,_1: v1
+             ,_2: v2};
+   }),
+   A2($Signal.map,
+   $BasicUtil.mhead,
+   modtouches),
+   A2($Signal.map,
+   $Maybe.withDefault({_: {}
+                      ,x: 0
+                      ,y: 0}),
+   taps),
+   delta);
    var main = A2($Signal.map,
    $App.render,
    A3($Signal.foldp,
@@ -2842,10 +2886,11 @@ Elm.Main.make = function (_elm) {
    $App.init,
    A2($Signal.sampleOn,
    delta,
-   $App.inputs)));
+   inputs)));
    _elm.Main.values = {_op: _op
                       ,main: main
-                      ,delta: delta};
+                      ,delta: delta
+                      ,inputs: inputs};
    return _elm.Main.values;
 };
 Elm.MainMenu = Elm.MainMenu || {};

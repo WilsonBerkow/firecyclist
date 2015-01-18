@@ -37,7 +37,6 @@ Elm.App.make = function (_elm) {
          "on line 17, column 22 to 23");
       }();
    };
-   var inputs = $Game.inputs;
    var OnMainMenu = function (a) {
       return {ctor: "OnMainMenu"
              ,_0: a};
@@ -132,7 +131,6 @@ Elm.App.make = function (_elm) {
    _elm.App.values = {_op: _op
                      ,init: init
                      ,step: step
-                     ,render: render
-                     ,inputs: inputs};
+                     ,render: render};
    return _elm.App.values;
 };

@@ -186,18 +186,6 @@ Elm.Game.make = function (_elm) {
    var taps_f = A2($Signal.map,
    toPosition,
    $Touch.taps);
-   var inputs = A4($Signal.map3,
-   F3(function (v0,v1,v2) {
-      return {ctor: "_Tuple3"
-             ,_0: v0
-             ,_1: v1
-             ,_2: v2};
-   }),
-   A2($Signal.map,
-   $BasicUtil.mhead,
-   $Touch.touches),
-   taps_f,
-   $Time.fps($Config.framerate));
    var Die = function (a) {
       return {ctor: "Die",_0: a};
    };
@@ -401,7 +389,6 @@ Elm.Game.make = function (_elm) {
    _elm.Game.values = {_op: _op
                       ,game_background: game_background
                       ,init: init
-                      ,inputs: inputs
                       ,render: render
                       ,step: step
                       ,taps_f: taps_f

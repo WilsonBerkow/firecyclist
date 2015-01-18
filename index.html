@@ -11,50 +11,48 @@
                 user-select: none;
                 cursor: default;
             }
-            .module {
-                background-color: black;
-                border-radius: 10px;
-                padding: 20px;
-                display: inline-block;
-            }
-            .module > #snd {
-                text-align: center;
-                color: gray;
-                font-weight: bold;
-                font-size: 3em;
-            }
-            .module > #Main {
-                background-color: white;
-            }
         </style>
     </head>
-    <body>
-        <!--<div class="module">
-            <div id="Main"></div>
-            <div id="snd">●</div>
-        </div>-->
+    <body data-role="page">
         <div id="Main"></div>
-        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="jquery-1.11.2.min.js"></script>
+        <script src="jquery.mobile-1.4.5.min.js"></script>
         <script src="elm.js"></script>
         <script>
             (function () {
-                Elm.embed(Elm.Main, jQuery('#Main')[0]);
-                // TODO: find a good way to handle the resize within the game (because
-                //  we need to scale the positions of the Touches and Taps by the
-                //  'pageScaleFactor' below). I'll need to use a port.
-                //  Atm, 'resize' is just sitting here, not used.
-                var resize = function () {
-                    var scaleX = jQuery(window).width() / (576 / 2), // These 1024 and 576 are not about the canvas,
-                        scaleY = jQuery(window).height() / (1024 / 2); //  they are about the whole game's dims.
-                    pageScaleFactor = Math.min(scaleX, scaleY);
-                    jQuery("body").css("-moz-transform-origin", "0 0")
-                        .css("-moz-transform", "scale(" + pageScaleFactor + ")")
-                        .css("-webkit-transform-origin", "0 0")
-                        .css("-webkit-transform", "scale(" + pageScaleFactor + ")")
-                        .css("-ms-transform-origin", "0 0")
-                        .css("-ms-transform", "scale(" + pageScaleFactor + ")");
-                    jQuery("body").width(576 / 2).height(1024 / 2);
-                };
+                var module = Elm.embed(Elm.Main, jQuery('#Main')[0], {taps: null, modtouches: []}),
+                    pageScaleFactor = 1,
+                    resize = function () { // This zooms the page so that the Firecyclist module (initially always (576/2) by (1024/2) in dimensions), fits to the page.
+                        var scaleX = jQuery(window).width() / (576 / 2),
+                            scaleY = jQuery(window).height() / (1024 / 2);
+                        pageScaleFactor = Math.min(scaleX, scaleY);
+                        jQuery("body")
+                            .css("-moz-transform-origin", "0 0")
+                            .css("-moz-transform", "scale(" + pageScaleFactor + ")")
+                            .css("-webkit-transform-origin", "0 0")
+                            .css("-webkit-transform", "scale(" + pageScaleFactor + ")")
+                            .css("-ms-transform-origin", "0 0")
+                            .css("-ms-transform", "scale(" + pageScaleFactor + ")");
+                        jQuery("body").width(576 / 2).height(1024 / 2);
+                    },
+                    transform = function (coordinate) { return coordinate / pageScaleFactor; }, // For converting tap and touch event values, so that the visual zoom of the page registers in where the program sees the taps happening.
+                    transformTouch = function (touch) {
+                        return {
+                            "x": transform(touch.x),
+                            "y": transform(touch.y),
+                            "x0": transform(touch.x0),
+                            "y0": transform(touch.y0),
+                            "t0": touch.t0,
+                            "id": touch.id
+                        };
+                    };
+                resize();
+                jQuery("#Main").tap(function (event) {
+                    module.ports.taps.send({"x": transform(event.clientX), "y": transform(event.clientY)});
+                });
+                module.ports.touches.subscribe(function (event) {
+                    module.ports.modtouches.send(event.map(transformTouch));
+                });
             }());
         </script>
     </body>
