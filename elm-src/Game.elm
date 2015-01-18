@@ -1,5 +1,7 @@
 -- (c) Wilson Berkow
-module Game where
+
+module Game (game_background, State, Input, init, inputs, render, step, taps_f, WhereTo(Continue,Pause,Restart,Die)) where
+
 import List
 import List ((::))
 import Signal
@@ -12,6 +14,7 @@ import Time
 import Color
 import Graphics.Collage as Collage
 import Graphics.Element (Element)
+
 import Config (game_side_margin, game_top_margin, game_total_width, game_total_height, framerate)
 import BasicUtil (..)
 import HasPosition (..)
@@ -19,15 +22,15 @@ import ArbitraryRounding (arb_round)
 import Player (..)
 import Fireball (..)
 import Platfm (Platfm, configPlatfm, stepPlatfm, renderPlatfm, renderTouchPlatfmPreview)
-type WhereTo = Continue Game_State | Pause Game_State | Restart Position | Die Game_State -- It is necessary for 'Restart' to take a Position for the same reason it is necessary for DeadScreen.Replay to take one: so that the new game that is started records the previous tap correctly, and does not accidentally pause it or anything
+
+type WhereTo = Continue State | Pause State | Restart Position | Die State -- It is necessary for 'Restart' to take a Position for the same reason it is necessary for DeadScreen.Replay to take one: so that the new game that is started records the previous tap correctly, and does not accidentally pause it or anything
 toPosition {x,y} = { x = (toFloat x), y = (toFloat y) }
 taps_f = Signal.map toPosition Touch.taps -- I don't have to fix_origin on the taps, because taps are already automatically in the right coordinate system.
+
 game_background = Collage.filled (Color.rgba 175 175 255 0.75)
                                  (Collage.rect (toFloat game_total_width) (toFloat game_total_height))
--- COMPONENT: Game
 
-type alias Game_State = 
-
+type alias State =
   { plats : List Platfm
   , player : Player
   , fireballs : List Fireball
@@ -39,13 +42,9 @@ type alias Game_State =
   , points : Float
   , just_a_simulation : Bool
   }
-type alias Game_Input = 
- (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
-cGame_inputs = 
- Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
-cGame_step : Game_Input -> Game_State -> WhereTo
-cGame_step = 
-
+type alias Input = (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
+inputs = Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
+step =
   let touch_to_platfm : Touch.Touch -> Platfm
       touch_to_platfm {x0, y0, x, y} = { start = { x = toFloat x0, y = toFloat y0 }
                                        , end = { x = toFloat x, y = toFloat y }
@@ -72,7 +71,7 @@ cGame_step =
       
       update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
       
-      step : Game_Input -> Game_State -> WhereTo
+      step : Input -> State -> WhereTo
       step (cur_touch,cur_tap_pos,dt) g =
         let tap_target = if cur_tap_pos == g.prev_tap_pos then Nothing else Just cur_tap_pos
             pause_clicked =
@@ -124,13 +123,12 @@ cGame_step =
               | pause_clicked -> Pause new_game
               | restart_clicked -> Restart cur_tap_pos
               | otherwise -> Continue new_game
-                  
   in step
-cGame_render : Game_State -> Element
-cGame_render = 
 
+render : State -> Element
+render =
   let btnMargin = 20
-      restartBtn = (Collage.toForm (Text.plainText "⟳"))
+      restartBtn = (Collage.toForm (Text.plainText "&#10227;"))
                      |> move_f { x = toFloat game_total_width - btnMargin, y = btnMargin }
                      |> Collage.scale 2.3
       pauseBtn = Collage.toForm (Text.centered (Text.bold (Text.typeface ["arial", "sans-serif", "monospace"] (Text.fromString "II"))))
@@ -155,9 +153,8 @@ cGame_render =
                   Nothing -> forms'
                   Just p  -> p::forms'
     in Collage.collage game_total_width game_total_height (game_background :: forms)
-cGame_init : Game_State
-cGame_init = 
 
+init =
   let side_margin = game_side_margin
       top_margin = game_top_margin
       (gw, gh) = (toFloat game_total_width, toFloat game_total_height)

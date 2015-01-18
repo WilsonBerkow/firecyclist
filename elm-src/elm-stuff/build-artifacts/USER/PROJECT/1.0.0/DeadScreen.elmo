@@ -15,19 +15,17 @@ Elm.DeadScreen.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Game = Elm.Game.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Text = Elm.Text.make(_elm);
-   var cDeadScreen_inputs = $Game.taps_f;
-   var cDeadScreen_localvar_messageStyle = function ($) {
+   var messageStyle = function ($) {
       return $Text.bold($Text.typeface(_L.fromArray(["monospace"
                                                     ,"arial"]))($));
    };
-   var cDeadScreen_render = function (g) {
+   var render = function (g) {
       return A3($Graphics$Collage.collage,
       $Config.game_total_width,
       $Config.game_total_height,
-      _L.fromArray([$Graphics$Collage.toForm($Game.cGame_render(g))
+      _L.fromArray([$Graphics$Collage.toForm($Game.render(g))
                    ,A2($Graphics$Collage.filled,
                    A4($Color.rgba,200,200,200,0.5),
                    A2($Graphics$Collage.rect,
@@ -37,13 +35,14 @@ Elm.DeadScreen.make = function (_elm) {
                    80,
                    A2($Text.color,
                    $Color.orange,
-                   $Text.italic(cDeadScreen_localvar_messageStyle($Text.fromString("Game\nOver\n\n"))))))))
+                   $Text.italic(messageStyle($Text.fromString("Game\nOver\n\n"))))))))
                    ,$Graphics$Collage.moveY(-30)($Graphics$Collage.toForm($Text.centered(A2($Text.height,
                    150,
                    A2($Text.color,
                    $Color.orange,
-                   cDeadScreen_localvar_messageStyle($Text.fromString($Basics.toString($Basics.round(g.points)))))))))]));
+                   messageStyle($Text.fromString($Basics.toString($Basics.round(g.points)))))))))]));
    };
+   var inputs = $Game.taps_f;
    var Replay = function (a) {
       return {ctor: "Replay"
              ,_0: a};
@@ -52,7 +51,7 @@ Elm.DeadScreen.make = function (_elm) {
       return {ctor: "Continue"
              ,_0: a};
    };
-   var cDeadScreen_step = F2(function (tap_pos,
+   var step = F2(function (tap_pos,
    g) {
       return function () {
          var new_g = _U.replace([["prev_tap_pos"
@@ -63,11 +62,9 @@ Elm.DeadScreen.make = function (_elm) {
       }();
    });
    _elm.DeadScreen.values = {_op: _op
+                            ,step: step
+                            ,render: render
                             ,Continue: Continue
-                            ,Replay: Replay
-                            ,cDeadScreen_localvar_messageStyle: cDeadScreen_localvar_messageStyle
-                            ,cDeadScreen_inputs: cDeadScreen_inputs
-                            ,cDeadScreen_step: cDeadScreen_step
-                            ,cDeadScreen_render: cDeadScreen_render};
+                            ,Replay: Replay};
    return _elm.DeadScreen.values;
 };

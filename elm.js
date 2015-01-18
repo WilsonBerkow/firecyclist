@@ -15,35 +15,35 @@ Elm.App.make = function (_elm) {
    $Game = Elm.Game.make(_elm),
    $MainMenu = Elm.MainMenu.make(_elm),
    $Paused = Elm.Paused.make(_elm);
-   var cApp_render = function (st) {
+   var render = function (st) {
       return function () {
          switch (st.ctor)
          {case "OnDead":
-            return $DeadScreen.cDeadScreen_render(st._0);
+            return $DeadScreen.render(st._0);
             case "OnGame":
-            return $Game.cGame_render(st._0);
+            return $Game.render(st._0);
             case "OnMainMenu":
-            return $MainMenu.cMainMenu_render(st._0);
+            return $MainMenu.render(st._0);
             case "OnPaused":
-            return $Paused.cPaused_render(st._0);}
+            return $Paused.render(st._0);}
          _U.badCase($moduleName,
-         "between lines 46 and 50");
+         "between lines 41 and 45");
       }();
    };
-   var cApp_inputs = $Game.cGame_inputs;
-   var cApp_localvar_sndOfThree = function (_v5) {
+   var sndOfThree = function (_v5) {
       return function () {
          switch (_v5.ctor)
          {case "_Tuple3": return _v5._1;}
          _U.badCase($moduleName,
-         "on line 15, column 40 to 41");
+         "on line 17, column 22 to 23");
       }();
    };
+   var inputs = $Game.inputs;
    var OnMainMenu = function (a) {
       return {ctor: "OnMainMenu"
              ,_0: a};
    };
-   var cApp_init = OnMainMenu($MainMenu.cMainMenu_init);
+   var init = OnMainMenu($MainMenu.init);
    var OnPaused = function (a) {
       return {ctor: "OnPaused"
              ,_0: a};
@@ -56,28 +56,31 @@ Elm.App.make = function (_elm) {
       return {ctor: "OnGame"
              ,_0: a};
    };
-   var cApp_step = F2(function (inputs,
+   var step = F2(function (inputs,
    st) {
       return function () {
          switch (st.ctor)
          {case "OnDead":
             return function () {
-                 var _v15 = A2($DeadScreen.cDeadScreen_step,
-                 cApp_localvar_sndOfThree(inputs),
+                 var _v15 = A2($DeadScreen.step,
+                 sndOfThree(inputs),
                  st._0);
                  switch (_v15.ctor)
                  {case "Continue":
                     return OnDead(_v15._0);
                     case "Replay":
-                    return OnGame(_U.replace([["prev_tap_pos"
-                                              ,_v15._0]],
-                      $Game.cGame_init));}
+                    return function () {
+                         var i = $Game.init;
+                         return OnGame(_U.replace([["prev_tap_pos"
+                                                   ,_v15._0]],
+                         i));
+                      }();}
                  _U.badCase($moduleName,
-                 "between lines 37 and 40");
+                 "between lines 32 and 35");
               }();
             case "OnGame":
             return function () {
-                 var _v18 = A2($Game.cGame_step,
+                 var _v18 = A2($Game.step,
                  inputs,
                  st._0);
                  switch (_v18.ctor)
@@ -88,29 +91,32 @@ Elm.App.make = function (_elm) {
                     case "Pause":
                     return OnPaused(_v18._0);
                     case "Restart":
-                    return OnGame(_U.replace([["prev_tap_pos"
-                                              ,_v18._0]],
-                      $Game.cGame_init));}
+                    return function () {
+                         var i = $Game.init;
+                         return OnGame(_U.replace([["prev_tap_pos"
+                                                   ,_v18._0]],
+                         i));
+                      }();}
                  _U.badCase($moduleName,
-                 "between lines 27 and 32");
+                 "between lines 22 and 27");
               }();
             case "OnMainMenu":
             return function () {
-                 var _v23 = A2($MainMenu.cMainMenu_step,
-                 cApp_localvar_sndOfThree(inputs),
+                 var _v23 = A2($MainMenu.step,
+                 sndOfThree(inputs),
                  st._0);
                  switch (_v23.ctor)
                  {case "Continue":
                     return OnMainMenu(_v23._0);
                     case "PlayGame":
-                    return OnGame($Game.cGame_init);}
+                    return OnGame($Game.init);}
                  _U.badCase($moduleName,
-                 "between lines 41 and 43");
+                 "between lines 36 and 38");
               }();
             case "OnPaused":
             return function () {
-                 var _v25 = A2($Paused.cPaused_step,
-                 cApp_localvar_sndOfThree(inputs),
+                 var _v25 = A2($Paused.step,
+                 sndOfThree(inputs),
                  st._0);
                  switch (_v25.ctor)
                  {case "Continue":
@@ -118,17 +124,17 @@ Elm.App.make = function (_elm) {
                     case "Play":
                     return OnGame(_v25._0);}
                  _U.badCase($moduleName,
-                 "between lines 33 and 36");
+                 "between lines 28 and 31");
               }();}
          _U.badCase($moduleName,
-         "between lines 25 and 43");
+         "between lines 20 and 38");
       }();
    });
    _elm.App.values = {_op: _op
-                     ,cApp_init: cApp_init
-                     ,cApp_step: cApp_step
-                     ,cApp_render: cApp_render
-                     ,cApp_inputs: cApp_inputs};
+                     ,init: init
+                     ,step: step
+                     ,render: render
+                     ,inputs: inputs};
    return _elm.App.values;
 };
 Elm.ArbitraryRounding = Elm.ArbitraryRounding || {};
@@ -960,19 +966,17 @@ Elm.DeadScreen.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Game = Elm.Game.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
-   var cDeadScreen_inputs = $Game.taps_f;
-   var cDeadScreen_localvar_messageStyle = function ($) {
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var messageStyle = function ($) {
       return $Text.bold($Text.typeface(_L.fromArray(["monospace"
                                                     ,"arial"]))($));
    };
-   var cDeadScreen_render = function (g) {
+   var render = function (g) {
       return A3($Graphics$Collage.collage,
       $Config.game_total_width,
       $Config.game_total_height,
-      _L.fromArray([$Graphics$Collage.toForm($Game.cGame_render(g))
+      _L.fromArray([$Graphics$Collage.toForm($Game.render(g))
                    ,A2($Graphics$Collage.filled,
                    A4($Color.rgba,200,200,200,0.5),
                    A2($Graphics$Collage.rect,
@@ -982,13 +986,14 @@ Elm.DeadScreen.make = function (_elm) {
                    80,
                    A2($Text.color,
                    $Color.orange,
-                   $Text.italic(cDeadScreen_localvar_messageStyle($Text.fromString("Game\nOver\n\n"))))))))
+                   $Text.italic(messageStyle($Text.fromString("Game\nOver\n\n"))))))))
                    ,$Graphics$Collage.moveY(-30)($Graphics$Collage.toForm($Text.centered(A2($Text.height,
                    150,
                    A2($Text.color,
                    $Color.orange,
-                   cDeadScreen_localvar_messageStyle($Text.fromString($Basics.toString($Basics.round($Time.inSeconds(g.time_playing))))))))))]));
+                   messageStyle($Text.fromString($Basics.toString($Basics.round(g.points)))))))))]));
    };
+   var inputs = $Game.taps_f;
    var Replay = function (a) {
       return {ctor: "Replay"
              ,_0: a};
@@ -997,7 +1002,7 @@ Elm.DeadScreen.make = function (_elm) {
       return {ctor: "Continue"
              ,_0: a};
    };
-   var cDeadScreen_step = F2(function (tap_pos,
+   var step = F2(function (tap_pos,
    g) {
       return function () {
          var new_g = _U.replace([["prev_tap_pos"
@@ -1008,12 +1013,10 @@ Elm.DeadScreen.make = function (_elm) {
       }();
    });
    _elm.DeadScreen.values = {_op: _op
+                            ,step: step
+                            ,render: render
                             ,Continue: Continue
-                            ,Replay: Replay
-                            ,cDeadScreen_localvar_messageStyle: cDeadScreen_localvar_messageStyle
-                            ,cDeadScreen_inputs: cDeadScreen_inputs
-                            ,cDeadScreen_step: cDeadScreen_step
-                            ,cDeadScreen_render: cDeadScreen_render};
+                            ,Replay: Replay};
    return _elm.DeadScreen.values;
 };
 Elm.Fireball = Elm.Fireball || {};
@@ -1031,19 +1034,18 @@ Elm.Fireball.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Time = Elm.Time.make(_elm);
    var staticFb = F2(function (x,
    y) {
       return {_: {}
-             ,pos: A2($Vect.Vect,x,y)
+             ,pos: {_: {},x: x,y: y}
              ,speed: 0};
    });
    var stepFireball = F2(function (dt,
    fb) {
       return {_: {}
-             ,pos: A2($Vect.vect_fall,
+             ,pos: A2($HasPosition.vect_fall,
              fb.speed,
              fb.pos)
              ,speed: fb.speed};
@@ -1118,26 +1120,9 @@ Elm.Fireball.make = function (_elm) {
                                                                                       1)])));
    }();
    var renderFireball = function (f) {
-      return function () {
-         var base_clr = $Color.orange;
-         return $Vect.move_f(f.pos)(single_fb);
-      }();
+      return $HasPosition.move_f(f.pos)(single_fb);
    };
    var fb_height = 4 * 4.5;
-   var tri = function (s) {
-      return function () {
-         var h = s * ($Basics.sqrt(3) / 2);
-         return $Graphics$Collage.polygon(_L.fromArray([{ctor: "_Tuple2"
-                                                        ,_0: (0 - s) / 2
-                                                        ,_1: (0 - h) / 2}
-                                                       ,{ctor: "_Tuple2"
-                                                        ,_0: s / 2
-                                                        ,_1: (0 - h) / 2}
-                                                       ,{ctor: "_Tuple2"
-                                                        ,_0: 0
-                                                        ,_1: h / 2}]));
-      }();
-   };
    var configFireball = function () {
       var side_len = 12;
       return {_: {}
@@ -1150,38 +1135,6 @@ Elm.Fireball.make = function (_elm) {
              ,pos: pos
              ,speed: configFireball.def_speed};
    };
-   var fbCol = F2(function (amt,
-   _v0) {
-      return function () {
-         switch (_v0.ctor)
-         {case "Vect": return _U.cmp(amt,
-              0) > 0 ? A2($List._op["::"],
-              A2(staticFb,_v0._0,_v0._1),
-              A2(fbCol,
-              amt - 1,
-              A2($Vect.Vect,
-              _v0._0,
-              _v0._1 + configFireball.padded_len))) : _L.fromArray([]);}
-         _U.badCase($moduleName,
-         "between lines 60 and 62");
-      }();
-   });
-   var fbRow = F2(function (amt,
-   _v4) {
-      return function () {
-         switch (_v4.ctor)
-         {case "Vect": return _U.cmp(amt,
-              0) > 0 ? A2($List._op["::"],
-              A2(staticFb,_v4._0,_v4._1),
-              A2(fbRow,
-              amt - 1,
-              A2($Vect.Vect,
-              _v4._0 + configFireball.padded_len,
-              _v4._1))) : _L.fromArray([]);}
-         _U.badCase($moduleName,
-         "between lines 63 and 65");
-      }();
-   });
    var Fireball = F2(function (a,
    b) {
       return {_: {}
@@ -1191,15 +1144,12 @@ Elm.Fireball.make = function (_elm) {
    _elm.Fireball.values = {_op: _op
                           ,Fireball: Fireball
                           ,configFireball: configFireball
-                          ,tri: tri
                           ,fb_height: fb_height
                           ,single_fb: single_fb
                           ,stepFireball: stepFireball
                           ,renderFireball: renderFireball
                           ,makeFireball: makeFireball
-                          ,staticFb: staticFb
-                          ,fbCol: fbCol
-                          ,fbRow: fbRow};
+                          ,staticFb: staticFb};
    return _elm.Fireball.values;
 };
 Elm.Game = Elm.Game || {};
@@ -1221,6 +1171,8 @@ Elm.Game.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Fireball = Elm.Fireball.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Platfm = Elm.Platfm.make(_elm),
@@ -1229,9 +1181,8 @@ Elm.Game.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
-   $Touch = Elm.Touch.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
-   var cGame_init = function () {
+   $Touch = Elm.Touch.make(_elm);
+   var init = function () {
       var $ = {ctor: "_Tuple2"
               ,_0: $Fireball.configFireball.padded_len
               ,_1: $Fireball.configFireball.side_len},
@@ -1247,35 +1198,48 @@ Elm.Game.make = function (_elm) {
       return {_: {}
              ,fb_creation_seed: $Random.initialSeed(-1318314831)
              ,fireballs: _L.fromArray([])
+             ,just_a_simulation: false
              ,last_touch: $Maybe.Nothing
              ,plats: _L.fromArray([])
              ,player: {_: {}
-                      ,pos: A2($Vect.Vect,200,75)
-                      ,vel: A2($Vect.Vect,0,0)}
-             ,prev_tap_pos: A2($Vect.Vect,
-             0,
-             0)
+                      ,pos: {_: {},x: 200,y: 75}
+                      ,vel: {_: {},x: 0,y: 0}}
+             ,points: 0
+             ,prev_tap_pos: {_: {},x: 0,y: 0}
              ,preview_plat: $Maybe.Nothing
              ,time_playing: 0};
    }();
-   var Game_State = F8(function (a,
-   b,
-   c,
-   d,
-   e,
-   f,
-   g,
-   h) {
-      return {_: {}
-             ,fb_creation_seed: f
-             ,fireballs: c
-             ,last_touch: d
-             ,plats: a
-             ,player: b
-             ,prev_tap_pos: g
-             ,preview_plat: e
-             ,time_playing: h};
-   });
+   var State = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return {_: {}
+                                        ,fb_creation_seed: f
+                                        ,fireballs: c
+                                        ,just_a_simulation: j
+                                        ,last_touch: d
+                                        ,plats: a
+                                        ,player: b
+                                        ,points: i
+                                        ,prev_tap_pos: g
+                                        ,preview_plat: e
+                                        ,time_playing: h};
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
    var game_background = A2($Graphics$Collage.filled,
    A4($Color.rgba,
    175,
@@ -1285,96 +1249,98 @@ Elm.Game.make = function (_elm) {
    A2($Graphics$Collage.rect,
    $Basics.toFloat($Config.game_total_width),
    $Basics.toFloat($Config.game_total_height)));
-   var cGame_render = function (game) {
-      return function () {
-         var btn_outline_clr = A4($Color.rgba,
-         150,
-         150,
-         150,
-         0.25);
-         var btn_outline_rad = 65;
-         var btn_outline = A2($Graphics$Collage.filled,
-         btn_outline_clr,
-         $Graphics$Collage.circle(btn_outline_rad));
-         var btnMargin = 20;
-         var restartBtn = $Graphics$Collage.scale(2.3)($Vect.move_f(A2($Vect.Vect,
-         $Basics.toFloat($Config.game_total_width) - btnMargin,
-         btnMargin))($Graphics$Collage.toForm($Text.plainText("⟳"))));
-         var pauseBtn = $Graphics$Collage.scale(2)($Vect.move_f(A2($Vect.Vect,
-         btnMargin,
-         btnMargin + 2))($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.typeface,
-         _L.fromArray(["arial"
-                      ,"sans-serif"
-                      ,"monospace"]),
-         $Text.fromString("II")))))));
-         var fireballs = A2($List.map,
-         $Fireball.renderFireball,
-         game.fireballs);
-         var plat_preview = A2($Maybe.map,
-         $Platfm.renderTouchPlatfmPreview,
-         game.preview_plat);
-         var plats = A2($List.map,
-         $Platfm.renderPlatfm,
-         game.plats);
-         var forms$ = A2($Basics._op["++"],
-         A2($List._op["::"],
-         pauseBtn,
-         A2($List._op["::"],
-         restartBtn,
-         plats)),
-         A2($Basics._op["++"],
-         _L.fromArray([$Player.renderPlayer(game.player)]),
-         A2($Basics._op["++"],
-         fireballs,
-         _L.fromArray([A2($Vect.move_f,
-                      A2($Vect.Vect,10,-5),
-                      btn_outline)
-                      ,A2($Vect.move_f,
-                      A2($Vect.Vect,
-                      $Basics.toFloat($Config.game_total_width) - 10,
-                      -5),
-                      btn_outline)
-                      ,A2($Vect.move_f,
-                      A2($Vect.Vect,
-                      $Basics.toFloat($Config.game_total_width) / 2,
-                      20),
-                      $Graphics$Collage.toForm($Text.centered(A2($Text.color,
-                      $Color.black,
-                      $Text.bold(A2($Text.typeface,
-                      _L.fromArray(["monospace"
-                                   ,"arial"]),
-                      A2($Text.height,
-                      30,
-                      $Text.fromString($Basics.toString($Basics.round($Time.inSeconds(game.time_playing)))))))))))]))));
-         var forms = function () {
-            switch (plat_preview.ctor)
-            {case "Just":
-               return A2($List._op["::"],
-                 plat_preview._0,
-                 forms$);
-               case "Nothing": return forms$;}
-            _U.badCase($moduleName,
-            "between lines 146 and 149");
+   var render = function () {
+      var btn_outline_clr = A4($Color.rgba,
+      150,
+      150,
+      150,
+      0.25);
+      var btn_outline_rad = 65;
+      var btn_outline = A2($Graphics$Collage.filled,
+      btn_outline_clr,
+      $Graphics$Collage.circle(btn_outline_rad));
+      var btnMargin = 20;
+      var restartBtn = $Graphics$Collage.scale(2.3)($HasPosition.move_f({_: {}
+                                                                        ,x: $Basics.toFloat($Config.game_total_width) - btnMargin
+                                                                        ,y: btnMargin})($Graphics$Collage.toForm($Text.plainText("&#10227;"))));
+      var pauseBtn = $Graphics$Collage.scale(2)($HasPosition.move_f({_: {}
+                                                                    ,x: btnMargin
+                                                                    ,y: btnMargin + 2})($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.typeface,
+      _L.fromArray(["arial"
+                   ,"sans-serif"
+                   ,"monospace"]),
+      $Text.fromString("II")))))));
+      return function (game) {
+         return function () {
+            var fireballs = A2($List.map,
+            $Fireball.renderFireball,
+            game.fireballs);
+            var plat_preview = A2($Maybe.map,
+            $Platfm.renderTouchPlatfmPreview,
+            game.preview_plat);
+            var plats = A2($List.map,
+            $Platfm.renderPlatfm,
+            game.plats);
+            var forms$ = A2($Basics._op["++"],
+            A2($List._op["::"],
+            pauseBtn,
+            A2($List._op["::"],
+            restartBtn,
+            plats)),
+            A2($Basics._op["++"],
+            _L.fromArray([$Player.renderPlayer(game.player)]),
+            A2($Basics._op["++"],
+            fireballs,
+            _L.fromArray([A2($HasPosition.move_f,
+                         {_: {},x: 10,y: -5},
+                         btn_outline)
+                         ,A2($HasPosition.move_f,
+                         {_: {}
+                         ,x: $Basics.toFloat($Config.game_total_width) - 10
+                         ,y: -5},
+                         btn_outline)
+                         ,A2($HasPosition.move_f,
+                         {_: {}
+                         ,x: $Basics.toFloat($Config.game_total_width) / 2
+                         ,y: 20},
+                         $Graphics$Collage.toForm($Text.centered(A2($Text.color,
+                         $Color.black,
+                         $Text.bold(A2($Text.typeface,
+                         _L.fromArray(["monospace"
+                                      ,"arial"]),
+                         A2($Text.height,
+                         30,
+                         $Text.fromString($Basics.toString($Basics.round(game.points))))))))))]))));
+            var forms = function () {
+               switch (plat_preview.ctor)
+               {case "Just":
+                  return A2($List._op["::"],
+                    plat_preview._0,
+                    forms$);
+                  case "Nothing": return forms$;}
+               _U.badCase($moduleName,
+               "between lines 152 and 155");
+            }();
+            return A3($Graphics$Collage.collage,
+            $Config.game_total_width,
+            $Config.game_total_height,
+            A2($List._op["::"],
+            game_background,
+            forms));
          }();
-         return A3($Graphics$Collage.collage,
-         $Config.game_total_width,
-         $Config.game_total_height,
-         A2($List._op["::"],
-         game_background,
-         forms));
-      }();
-   };
-   var tovect = function (_v2) {
+      };
+   }();
+   var toPosition = function (_v2) {
       return function () {
-         return A2($Vect.Vect,
-         $Basics.toFloat(_v2.x),
-         $Basics.toFloat(_v2.y));
+         return {_: {}
+                ,x: $Basics.toFloat(_v2.x)
+                ,y: $Basics.toFloat(_v2.y)};
       }();
    };
    var taps_f = A2($Signal.map,
-   tovect,
+   toPosition,
    $Touch.taps);
-   var cGame_inputs = A4($Signal.map3,
+   var inputs = A4($Signal.map3,
    F3(function (v0,v1,v2) {
       return {ctor: "_Tuple3"
              ,_0: v0
@@ -1400,18 +1366,17 @@ Elm.Game.make = function (_elm) {
       return {ctor: "Continue"
              ,_0: a};
    };
-   var cGame_step = function () {
-      var update_and_filter = F4(function (dt,
-      stepper,
+   var step = function () {
+      var update_and_filter = F3(function (stepper,
       filterer,
       objs) {
          return A2($List.map,
-         stepper(dt),
+         stepper,
          A2($List.filter,filterer,objs));
       });
       var player_hitting_fb = F2(function (player,
       fb) {
-         return _U.cmp(A2($Vect.distance,
+         return _U.cmp(A2($HasPosition.distance,
          player.pos,
          fb.pos),
          $Player.configPlayer.radius + $Fireball.fb_height / 2) < 0;
@@ -1424,54 +1389,56 @@ Elm.Game.make = function (_elm) {
       };
       var point_on_screen = function (_v6) {
          return function () {
-            switch (_v6.ctor)
-            {case "Vect":
-               return A3($BasicUtil.in_range,
-                 0,
-                 $Basics.toFloat($Config.game_total_width),
-                 _v6._0) && A3($BasicUtil.in_range,
-                 0,
-                 $Basics.toFloat($Config.game_total_height),
-                 _v6._1);}
-            _U.badCase($moduleName,
-            "on line 52, column 37 to 122");
+            return A3($BasicUtil.in_range,
+            0,
+            $Basics.toFloat($Config.game_total_width),
+            _v6.x) && A3($BasicUtil.in_range,
+            0,
+            $Basics.toFloat($Config.game_total_height),
+            _v6.y);
          }();
       };
-      var plat_on_screen = function (_v10) {
+      var plat_on_screen = function (_v8) {
          return function () {
-            return point_on_screen(_v10.start) || point_on_screen(_v10.end);
+            return point_on_screen(_v8.start) || point_on_screen(_v8.end);
          }();
       };
-      var fb_on_screen = function (_v12) {
+      var plat_should_stay = A3($BasicUtil.fn_map2,
+      F2(function (x,y) {
+         return x && y;
+      }),
+      plat_on_screen,
+      plat_alive);
+      var fb_on_screen = function (_v10) {
          return function () {
-            return point_on_screen(_v12.pos) || point_on_screen(A2($Vect.vect_rise,
+            return point_on_screen(_v10.pos) || point_on_screen(A2($HasPosition.vect_rise,
             $Fireball.fb_height,
-            _v12.pos));
+            _v10.pos));
          }();
       };
-      var touch_to_platfm = function (_v14) {
+      var touch_to_platfm = function (_v12) {
          return function () {
             return {_: {}
-                   ,end: A2($Vect.Vect,
-                   $Basics.toFloat(_v14.x),
-                   $Basics.toFloat(_v14.y))
-                   ,start: A2($Vect.Vect,
-                   $Basics.toFloat(_v14.x0),
-                   $Basics.toFloat(_v14.y0))
+                   ,end: {_: {}
+                         ,x: $Basics.toFloat(_v12.x)
+                         ,y: $Basics.toFloat(_v12.y)}
+                   ,start: {_: {}
+                           ,x: $Basics.toFloat(_v12.x0)
+                           ,y: $Basics.toFloat(_v12.y0)}
                    ,time_left: 800};
          }();
       };
-      var step = F2(function (_v16,
+      var step = F2(function (_v14,
       g) {
          return function () {
-            switch (_v16.ctor)
+            switch (_v14.ctor)
             {case "_Tuple3":
                return function () {
                     var player_on_fire = A2($BasicUtil.any,
                     player_hitting_fb(g.player),
                     g.fireballs);
                     var drawn_plat = function () {
-                       switch (_v16._0.ctor)
+                       switch (_v14._0.ctor)
                        {case "Just":
                           return $Maybe.Nothing;
                           case "Nothing":
@@ -1479,18 +1446,12 @@ Elm.Game.make = function (_elm) {
                             touch_to_platfm,
                             g.last_touch);}
                        _U.badCase($moduleName,
-                       "between lines 92 and 95");
+                       "between lines 97 and 100");
                     }();
                     var new_plats = function () {
-                       var updated_plats = A4(update_and_filter,
-                       _v16._2,
-                       $Platfm.stepPlatfm,
-                       A3($BasicUtil.fn_map2,
-                       F2(function (x,y) {
-                          return x && y;
-                       }),
-                       plat_on_screen,
-                       plat_alive),
+                       var updated_plats = A3(update_and_filter,
+                       $Platfm.stepPlatfm(_v14._2),
+                       plat_should_stay,
                        g.plats);
                        return function () {
                           switch (drawn_plat.ctor)
@@ -1501,7 +1462,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_plats;}
                           _U.badCase($moduleName,
-                          "between lines 97 and 99");
+                          "between lines 102 and 104");
                        }();
                     }();
                     var $ = function () {
@@ -1532,15 +1493,14 @@ Elm.Game.make = function (_elm) {
                     new_fb_pos = $._1,
                     new_seed = $._2;
                     var new_fireballs = function () {
-                       var updated_fbs = A4(update_and_filter,
-                       _v16._2,
-                       $Fireball.stepFireball,
+                       var updated_fbs = A3(update_and_filter,
+                       $Fireball.stepFireball(_v14._2),
                        fb_on_screen,
                        g.fireballs);
                        return should_create_fb ? A2($List._op["::"],
-                       $Fireball.makeFireball(A2($Vect.Vect,
-                       new_fb_pos,
-                       $Basics.toFloat($Config.game_total_height) + $Fireball.fb_height)),
+                       $Fireball.makeFireball({_: {}
+                                              ,x: new_fb_pos
+                                              ,y: $Basics.toFloat($Config.game_total_height) + $Fireball.fb_height}),
                        updated_fbs) : updated_fbs;
                     }();
                     var new_game = _U.replace([["player"
@@ -1548,67 +1508,62 @@ Elm.Game.make = function (_elm) {
                                                new_plats,
                                                g.player)]
                                               ,["plats",new_plats]
-                                              ,["last_touch",_v16._0]
+                                              ,["last_touch",_v14._0]
                                               ,["fireballs",new_fireballs]
                                               ,["preview_plat"
                                                ,A2($Maybe.map,
                                                touch_to_platfm,
-                                               _v16._0)]
+                                               _v14._0)]
                                               ,["fb_creation_seed",new_seed]
-                                              ,["prev_tap_pos",_v16._1]
+                                              ,["prev_tap_pos",_v14._1]
                                               ,["time_playing"
-                                               ,g.time_playing + _v16._2]],
+                                               ,g.time_playing + _v14._2]
+                                              ,["points"
+                                               ,g.points + 2 * $Time.inSeconds(_v14._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height))]],
                     g);
-                    var tap_target = _U.eq(_v16._1,
-                    g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v16._1);
+                    var tap_target = _U.eq(_v14._1,
+                    g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v14._1);
                     var pause_clicked = function () {
                        switch (tap_target.ctor)
                        {case "Just":
-                          switch (tap_target._0.ctor)
-                            {case "Vect":
-                               return _U.cmp(tap_target._0._0,
-                                 50) < 0 && _U.cmp(tap_target._0._1,
-                                 50) < 0;}
-                            break;
+                          return _U.cmp(tap_target._0.x,
+                            50) < 0 && _U.cmp(tap_target._0.y,
+                            50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 73 and 76");
+                       "between lines 78 and 81");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
                        {case "Just":
-                          switch (tap_target._0.ctor)
-                            {case "Vect":
-                               return _U.cmp(tap_target._0._0,
-                                 $Basics.toFloat($Config.game_total_width) - 50) > 0 && _U.cmp(tap_target._0._1,
-                                 50) < 0;}
-                            break;
+                          return _U.cmp(tap_target._0.x,
+                            $Basics.toFloat($Config.game_total_width) - 50) > 0 && _U.cmp(tap_target._0.y,
+                            50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 77 and 80");
+                       "between lines 82 and 85");
                     }();
-                    return _U.cmp($Vect.vect_y(g.player.pos),
-                    $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v16._1) : Continue(new_game);
+                    return _U.cmp(g.player.pos.y,
+                    $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 71 and 119");
+            "between lines 76 and 125");
          }();
       });
       return step;
    }();
    _elm.Game.values = {_op: _op
+                      ,game_background: game_background
+                      ,init: init
+                      ,inputs: inputs
+                      ,render: render
+                      ,step: step
+                      ,taps_f: taps_f
+                      ,State: State
                       ,Continue: Continue
                       ,Pause: Pause
                       ,Restart: Restart
-                      ,Die: Die
-                      ,tovect: tovect
-                      ,taps_f: taps_f
-                      ,game_background: game_background
-                      ,Game_State: Game_State
-                      ,cGame_inputs: cGame_inputs
-                      ,cGame_step: cGame_step
-                      ,cGame_render: cGame_render
-                      ,cGame_init: cGame_init};
+                      ,Die: Die};
    return _elm.Game.values;
 };
 Elm.Graphics = Elm.Graphics || {};
@@ -2509,6 +2464,127 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,outward: outward};
    return _elm.Graphics.Element.values;
 };
+Elm.HasPosition = Elm.HasPosition || {};
+Elm.HasPosition.make = function (_elm) {
+   "use strict";
+   _elm.HasPosition = _elm.HasPosition || {};
+   if (_elm.HasPosition.values)
+   return _elm.HasPosition.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "HasPosition",
+   $Basics = Elm.Basics.make(_elm),
+   $Config = Elm.Config.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm);
+   var set_origin_context = F2(function (_v0,
+   r) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return _U.replace([["x"
+                               ,r.x - $Basics.toFloat(_v0._0) / 2]
+                              ,["y"
+                               ,0 - r.y + $Basics.toFloat(_v0._1) / 2]],
+              r);}
+         _U.badCase($moduleName,
+         "on line 22, column 56 to 134");
+      }();
+   });
+   var fix_origin = set_origin_context({ctor: "_Tuple2"
+                                       ,_0: $Config.game_total_width
+                                       ,_1: $Config.game_total_height});
+   var pt_to_fp = function (pt) {
+      return function () {
+         var $ = fix_origin(pt),
+         x = $.x,
+         y = $.y;
+         return {ctor: "_Tuple2"
+                ,_0: x
+                ,_1: y};
+      }();
+   };
+   var move_f = F2(function (pt,
+   form) {
+      return A2($Graphics$Collage.move,
+      pt_to_fp(pt),
+      form);
+   });
+   var segment_f = F2(function (pt1,
+   pt2) {
+      return A2($Graphics$Collage.segment,
+      pt_to_fp(pt1),
+      pt_to_fp(pt2));
+   });
+   var distance = F2(function (p0,
+   p1) {
+      return $Basics.sqrt(Math.pow(p1.x - p0.x,
+      2) + Math.pow(p1.y - p0.y,2));
+   });
+   var vscale = F2(function (s,r) {
+      return _U.replace([["x"
+                         ,s * r.x]
+                        ,["y",s * r.y]],
+      r);
+   });
+   var vect_rise = F2(function (dy,
+   r) {
+      return _U.replace([["x",r.x]
+                        ,["y",r.y - dy]],
+      r);
+   });
+   var vect_fall = F2(function (dy,
+   r) {
+      return _U.replace([["x",r.x]
+                        ,["y",r.y + dy]],
+      r);
+   });
+   var vect_subtract = F2(function (xy,
+   xy$) {
+      return {_: {}
+             ,x: xy.x - xy$.x
+             ,y: xy.y - xy$.y};
+   });
+   var vect_add = F2(function (xy,
+   xy$) {
+      return {_: {}
+             ,x: xy.x + xy$.x
+             ,y: xy.y + xy$.y};
+   });
+   var vsum = A2($List.foldl,
+   vect_add,
+   {_: {},x: 0,y: 0});
+   var Position = F2(function (a,
+   b) {
+      return {_: {},x: a,y: b};
+   });
+   var HasPosition = F3(function (a,
+   b,
+   c) {
+      return _U.insert("y",
+      b,
+      _U.insert("x",a,c));
+   });
+   _elm.HasPosition.values = {_op: _op
+                             ,HasPosition: HasPosition
+                             ,Position: Position
+                             ,vect_add: vect_add
+                             ,vect_subtract: vect_subtract
+                             ,vsum: vsum
+                             ,vect_fall: vect_fall
+                             ,vect_rise: vect_rise
+                             ,vscale: vscale
+                             ,distance: distance
+                             ,set_origin_context: set_origin_context
+                             ,fix_origin: fix_origin
+                             ,pt_to_fp: pt_to_fp
+                             ,move_f: move_f
+                             ,segment_f: segment_f};
+   return _elm.HasPosition.values;
+};
 Elm.List = Elm.List || {};
 Elm.List.make = function (_elm) {
    "use strict";
@@ -2760,13 +2836,13 @@ Elm.Main.make = function (_elm) {
    $Time.inSeconds,
    $Time.fps(60));
    var main = A2($Signal.map,
-   $App.cApp_render,
+   $App.render,
    A3($Signal.foldp,
-   $App.cApp_step,
-   $App.cApp_init,
+   $App.step,
+   $App.init,
    A2($Signal.sampleOn,
    delta,
-   $App.cApp_inputs)));
+   $App.inputs)));
    _elm.Main.values = {_op: _op
                       ,main: main
                       ,delta: delta};
@@ -2790,15 +2866,12 @@ Elm.MainMenu.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Game = Elm.Game.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
-   var cMainMenu_init = A2($Vect.Vect,
-   0,
-   0);
-   var cMainMenu_inputs = $Game.taps_f;
-   var cMainMenu_localvar_monospace = $Text.typeface(_L.fromArray(["monospace"
-                                                                  ,"arial"]));
-   var cMainMenu_render = function (_v0) {
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var init = {_: {},x: 0,y: 0};
+   var monospace = $Text.typeface(_L.fromArray(["monospace"
+                                               ,"arial"]));
+   var render = function (_v0) {
       return function () {
          return A3($Graphics$Collage.collage,
          $Config.game_total_width,
@@ -2809,45 +2882,44 @@ Elm.MainMenu.make = function (_elm) {
                       A2($Graphics$Collage.rect,
                       $Basics.toFloat($Config.game_total_width),
                       $Basics.toFloat($Config.game_total_height)))
-                      ,$Graphics$Collage.moveY(40)($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(75)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
+                      ,$Graphics$Collage.moveY(40)($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(70)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
-                                                                                        132,
-                                                                                        cMainMenu_localvar_monospace($Text.fromString("Fire"))))))))
+                                                                                        140,
+                                                                                        monospace($Text.fromString("Fire"))))))))
                                                                                         ,$Graphics$Collage.moveY(0)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
-                                                                                        72,
-                                                                                        cMainMenu_localvar_monospace($Text.fromString("cyclist"))))))))
+                                                                                        85,
+                                                                                        monospace($Text.fromString("cyclist"))))))))
                                                                                         ,$Graphics$Collage.moveY(-100)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $BasicUtil.deepGrey,
                                                                                         A2($Text.height,
                                                                                         60,
-                                                                                        $Text.italic(cMainMenu_localvar_monospace($Text.fromString("Play")))))))))])))]));
+                                                                                        $Text.italic(monospace($Text.fromString("Play")))))))))])))]));
       }();
    };
-   var cMainMenu_localvar_messageStyle = function ($) {
-      return $Text.color($Color.darkGrey)($Text.bold($Text.height(40)(cMainMenu_localvar_monospace($))));
+   var messageStyle = function ($) {
+      return $Text.color($Color.darkGrey)($Text.bold($Text.height(40)(monospace($))));
    };
+   var inputs = $Game.taps_f;
    var PlayGame = {ctor: "PlayGame"};
    var Continue = function (a) {
       return {ctor: "Continue"
              ,_0: a};
    };
-   var cMainMenu_step = F2(function (tap_pos,
+   var step = F2(function (tap_pos,
    prev_tap_pos) {
       return !_U.eq(tap_pos,
       prev_tap_pos) ? PlayGame : Continue(tap_pos);
    });
    _elm.MainMenu.values = {_op: _op
+                          ,inputs: inputs
+                          ,step: step
+                          ,render: render
+                          ,init: init
                           ,Continue: Continue
-                          ,PlayGame: PlayGame
-                          ,cMainMenu_localvar_messageStyle: cMainMenu_localvar_messageStyle
-                          ,cMainMenu_localvar_monospace: cMainMenu_localvar_monospace
-                          ,cMainMenu_inputs: cMainMenu_inputs
-                          ,cMainMenu_step: cMainMenu_step
-                          ,cMainMenu_render: cMainMenu_render
-                          ,cMainMenu_init: cMainMenu_init};
+                          ,PlayGame: PlayGame};
    return _elm.MainMenu.values;
 };
 Elm.Maybe = Elm.Maybe || {};
@@ -6206,18 +6278,17 @@ Elm.Paused.make = function (_elm) {
    $Config = Elm.Config.make(_elm),
    $Game = Elm.Game.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
-   var cPaused_inputs = $Game.taps_f;
-   var cPaused_localvar_messageStyle = function ($) {
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var messageStyle = function ($) {
       return $Text.color($Color.orange)($Text.bold($Text.height(60)($Text.typeface(_L.fromArray(["monospace"
                                                                                                 ,"arial"]))($))));
    };
-   var cPaused_render = function (g) {
+   var render = function (g) {
       return A3($Graphics$Collage.collage,
       $Config.game_total_width,
       $Config.game_total_height,
-      _L.fromArray([$Graphics$Collage.toForm($Game.cGame_render(g))
+      _L.fromArray([$Graphics$Collage.toForm($Game.render(g))
                    ,A2($Graphics$Collage.filled,
                    A4($Color.rgba,200,200,200,0.5),
                    A2($Graphics$Collage.rect,
@@ -6225,8 +6296,9 @@ Elm.Paused.make = function (_elm) {
                    $Basics.toFloat($Config.game_total_height)))
                    ,A2($Graphics$Collage.moveY,
                    20,
-                   $Graphics$Collage.toForm($Text.centered(cPaused_localvar_messageStyle($Text.fromString("Paused")))))]));
+                   $Graphics$Collage.toForm($Text.centered(messageStyle($Text.fromString("Paused")))))]));
    };
+   var inputs = $Game.taps_f;
    var Play = function (a) {
       return {ctor: "Play",_0: a};
    };
@@ -6234,7 +6306,7 @@ Elm.Paused.make = function (_elm) {
       return {ctor: "Continue"
              ,_0: a};
    };
-   var cPaused_step = F2(function (tap_pos,
+   var step = F2(function (tap_pos,
    g) {
       return function () {
          var new_g = _U.replace([["prev_tap_pos"
@@ -6245,9 +6317,9 @@ Elm.Paused.make = function (_elm) {
       }();
    });
    _elm.Paused.values = {_op: _op
-                        ,cPaused_step: cPaused_step
-                        ,cPaused_render: cPaused_render
-                        ,cPaused_inputs: cPaused_inputs
+                        ,step: step
+                        ,render: render
+                        ,inputs: inputs
                         ,Continue: Continue
                         ,Play: Play};
    return _elm.Paused.values;
@@ -6267,8 +6339,8 @@ Elm.Platfm.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Color = Elm.Color.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Time = Elm.Time.make(_elm);
    var platfmLineStyle = function () {
       var df = $Graphics$Collage.defaultLine;
       return _U.replace([["width",6]
@@ -6286,7 +6358,7 @@ Elm.Platfm.make = function (_elm) {
                   0,
                   $Time.inSeconds(p.time_left))]],
       platfmLineStyle),
-      A2($Vect.segment_f,
+      A2($HasPosition.segment_f,
       p.start,
       p.end));
    };
@@ -6298,7 +6370,7 @@ Elm.Platfm.make = function (_elm) {
                                             0.5)]],
    platfmLineStyle);
    var renderTouchPlatfmPreview = function (p) {
-      return $Graphics$Collage.traced(platfmPreviewLineStyle)(A2($Vect.segment_f,
+      return $Graphics$Collage.traced(platfmPreviewLineStyle)(A2($HasPosition.segment_f,
       p.start,
       p.end));
    };
@@ -6310,10 +6382,10 @@ Elm.Platfm.make = function (_elm) {
          return function () {
             var fall_rate = configPlatfm.fall_rate;
             return {_: {}
-                   ,end: A2($Vect.vect_rise,
+                   ,end: A2($HasPosition.vect_rise,
                    fall_rate,
                    _v0.end)
-                   ,start: A2($Vect.vect_rise,
+                   ,start: A2($HasPosition.vect_rise,
                    fall_rate,
                    _v0.start)
                    ,time_left: _v0.time_left - dt};
@@ -6355,130 +6427,133 @@ Elm.Player.make = function (_elm) {
    $Color = Elm.Color.make(_elm),
    $Config = Elm.Config.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $List = Elm.List.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Platfm = Elm.Platfm.make(_elm),
-   $Vect = Elm.Vect.make(_elm);
+   $Platfm = Elm.Platfm.make(_elm);
    var configPlayer = {_: {}
                       ,radius: 10};
    var stepPlayer = function () {
       var player_grav = 0.2;
       var platfm_bounciness = 0.75;
       var vel_from_slope = function (m) {
-         return $Vect.vect_rise(platfm_bounciness)($Vect.vect_rise($Platfm.configPlatfm.fall_rate)($Vect.vscale(3)(A2($Vect.Vect,
-         $BasicUtil.signnum(m),
-         $Basics.abs(m)))));
+         return $HasPosition.vect_rise(platfm_bounciness)($HasPosition.vect_rise($Platfm.configPlatfm.fall_rate)($HasPosition.vscale(3)({_: {}
+                                                                                                                                        ,x: $BasicUtil.signnum(m)
+                                                                                                                                        ,y: $Basics.abs(m)})));
       };
-      var slope = F2(function (_v0,
-      _v1) {
+      var rad = configPlayer.radius;
+      var intersects = F2(function (player,
+      plat) {
          return function () {
-            switch (_v1.ctor)
-            {case "_Tuple2":
-               return function () {
-                    switch (_v0.ctor)
-                    {case "_Tuple2":
-                       return (_v1._1 - _v0._1) / (_v1._0 - _v0._0);}
-                    _U.badCase($moduleName,
-                    "on line 29, column 34 to 53");
-                 }();}
-            _U.badCase($moduleName,
-            "on line 29, column 34 to 53");
-         }();
-      });
-      var line_to_func = F2(function (_v8,
-      b) {
-         return function () {
-            switch (_v8.ctor)
-            {case "_Tuple2":
-               return function () {
-                    var m = A2(slope,_v8,b);
-                    return function (x) {
-                       return m * (x - _v8._0) + _v8._1;
-                    };
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 32 and 33");
-         }();
-      });
-      var touching = F2(function (a,
-      b) {
-         return function () {
-            var in_r = A2($BasicUtil.in_range,
-            $Basics.fst(a),
-            $Basics.fst(b));
-            var fn = A2(line_to_func,a,b);
-            return function (_v12) {
-               return function () {
-                  switch (_v12.ctor)
-                  {case "_Tuple2":
-                     return in_r(_v12._0) && _U.cmp($Basics.abs(fn(_v12._0) - _v12._1),
-                       2 * configPlayer.radius) < 1;}
-                  _U.badCase($moduleName,
-                  "on line 38, column 43 to 109");
-               }();
-            };
-         }();
-      });
-      var touching_plat = F2(function (_v16,
-      _v17) {
-         return function () {
-            return function () {
-               return function () {
-                  var _raw = _v16.pos,
-                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 43, column 65 to 68"),
-                  pl_x = $._0,
-                  pl_y = $._1;
-                  var _raw = _v17.end,
-                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 42, column 61 to 64"),
-                  x2 = $._0,
-                  y2 = $._1;
-                  var _raw = _v17.start,
-                  $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-                  "on line 41, column 61 to 66"),
-                  x1 = $._0,
-                  y1 = $._1;
-                  return A3(touching,
-                  {ctor: "_Tuple2",_0: x1,_1: y1},
-                  {ctor: "_Tuple2",_0: x2,_1: y2},
-                  {ctor: "_Tuple2"
-                  ,_0: pl_x
-                  ,_1: pl_y});
-               }();
-            }();
+            var $ = {ctor: "_Tuple2"
+                    ,_0: A2($Basics.max,
+                    plat.start.x,
+                    plat.end.x)
+                    ,_1: A2($Basics.max,
+                    plat.start.y,
+                    plat.end.y)},
+            endx = $._0,
+            endy = $._1;
+            var $ = {ctor: "_Tuple2"
+                    ,_0: A2($Basics.min,
+                    plat.start.x,
+                    plat.end.x)
+                    ,_1: A2($Basics.min,
+                    plat.start.y,
+                    plat.end.y)},
+            startx = $._0,
+            starty = $._1;
+            return A3($BasicUtil.in_range,
+            startx - rad,
+            endx + rad,
+            player.pos.x) && (A3($BasicUtil.in_range,
+            starty - rad,
+            endy + rad,
+            player.pos.y) && function () {
+               var $ = function () {
+                  var $ = A2($HasPosition.vect_subtract,
+                  plat.end,
+                  player.pos),
+                  x = $.x,
+                  y = $.y;
+                  return {ctor: "_Tuple2"
+                         ,_0: x
+                         ,_1: y};
+               }(),
+               offsetx1 = $._0,
+               offsety1 = $._1;
+               var $ = function () {
+                  var $ = A2($HasPosition.vect_subtract,
+                  plat.start,
+                  player.pos),
+                  x = $.x,
+                  y = $.y;
+                  return {ctor: "_Tuple2"
+                         ,_0: x
+                         ,_1: y};
+               }(),
+               offsetx0 = $._0,
+               offsety0 = $._1;
+               var big_D = offsetx0 * offsety1 - offsetx1 * offsety0;
+               var platlength = A2($HasPosition.distance,
+               plat.start,
+               plat.end);
+               var $ = function () {
+                  var $ = player.pos,
+                  x = $.x,
+                  y = $.y;
+                  return {ctor: "_Tuple2"
+                         ,_0: x
+                         ,_1: y};
+               }(),
+               px = $._0,
+               py = $._1;
+               return _U.cmp(Math.pow(rad * platlength,
+               2),
+               Math.pow(big_D,2)) > -1;
+            }());
          }();
       });
       var touching_any = F2(function (pl,
       plats) {
-         return A3($List.foldl,
-         F2(function (plat,acc) {
-            return $BasicUtil.isJust(acc) ? acc : A2(touching_plat,
-            pl,
-            plat) ? $Maybe.Just(plat) : acc;
-         }),
-         $Maybe.Nothing,
-         plats);
-      });
-      var plat_slope = function (_v20) {
          return function () {
-            return function () {
-               var _raw = _v20.end,
-               $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-               "on line 55, column 52 to 55"),
-               x2 = $._0,
-               y2 = $._1;
-               var _raw = _v20.start,
-               $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-               "on line 54, column 52 to 57"),
-               x1 = $._0,
-               y1 = $._1;
-               return A2(slope,
-               {ctor: "_Tuple2",_0: x1,_1: y1},
-               {ctor: "_Tuple2"
-               ,_0: x2
-               ,_1: y2});
-            }();
+            switch (plats.ctor)
+            {case "::":
+               return A2(intersects,
+                 pl,
+                 plats._0) ? $Maybe.Just(plats._0) : A2(touching_any,
+                 pl,
+                 plats._1);
+               case "[]":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 48 and 55");
+         }();
+      });
+      var slope = F2(function (_v3,
+      _v4) {
+         return function () {
+            switch (_v4.ctor)
+            {case "_Tuple2":
+               return function () {
+                    switch (_v3.ctor)
+                    {case "_Tuple2":
+                       return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
+                    _U.badCase($moduleName,
+                    "on line 31, column 34 to 53");
+                 }();}
+            _U.badCase($moduleName,
+            "on line 31, column 34 to 53");
+         }();
+      });
+      var plat_slope = function (_v11) {
+         return function () {
+            return A2(slope,
+            {ctor: "_Tuple2"
+            ,_0: _v11.start.x
+            ,_1: _v11.start.y},
+            {ctor: "_Tuple2"
+            ,_0: _v11.end.x
+            ,_1: _v11.end.y});
          }();
       };
       var step = F2(function (plats,
@@ -6494,55 +6569,65 @@ Elm.Player.make = function (_elm) {
                {case "Just":
                   return vel_from_slope(plat_slope(on_plat._0));
                   case "Nothing":
-                  return A2($Vect.vect_fall,
+                  return A2($HasPosition.vect_fall,
                     player_grav,
                     p.vel);}
                _U.badCase($moduleName,
                "between lines 65 and 68");
             }();
-            var _raw = $Vect.vsum(_L.fromArray([p.pos
-                                               ,vel])),
-            $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-            "on line 68, column 45 to 62"),
+            var $ = function () {
+               var $ = A2($HasPosition.vect_add,
+               p.pos,
+               vel),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
             newx = $._0,
             newy = $._1;
             var modded_newx = _U.cmp(newx,
             gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
             0 - rad) < 0 ? newx + gwidth + rad : newx;
             return {_: {}
-                   ,pos: A2($Vect.Vect,
-                   modded_newx,
-                   newy)
+                   ,pos: {_: {}
+                         ,x: modded_newx
+                         ,y: newy}
                    ,vel: vel};
          }();
       });
       return step;
    }();
+   var std_player = function () {
+      var secondary = A4($Color.rgba,
+      50,
+      50,
+      200,
+      1);
+      var blue_gray = A4($Color.rgba,
+      50,
+      50,
+      200,
+      0.7);
+      return $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
+                                                  blue_gray,
+                                                  $Graphics$Collage.circle(configPlayer.radius))
+                                                  ,A2($Graphics$Collage.outlined,
+                                                  $Graphics$Collage.solid(secondary),
+                                                  $Graphics$Collage.circle(configPlayer.radius))]));
+   }();
    var renderPlayer = function (p) {
-      return function () {
-         var secondary = A4($Color.rgba,
-         50,
-         50,
-         200,
-         1);
-         var blue_gray = A4($Color.rgba,
-         50,
-         50,
-         200,
-         0.7);
-         return $Vect.move_f(p.pos)($Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
-                                                                         blue_gray,
-                                                                         $Graphics$Collage.circle(configPlayer.radius))
-                                                                         ,A2($Graphics$Collage.outlined,
-                                                                         $Graphics$Collage.solid(secondary),
-                                                                         $Graphics$Collage.circle(configPlayer.radius))])));
-      }();
+      return A2($HasPosition.move_f,
+      p.pos,
+      std_player);
    };
    var Player = F2(function (a,b) {
       return {_: {},pos: a,vel: b};
    });
    _elm.Player.values = {_op: _op
                         ,Player: Player
+                        ,std_player: std_player
                         ,renderPlayer: renderPlayer
                         ,configPlayer: configPlayer
                         ,stepPlayer: stepPlayer};
@@ -7463,181 +7548,4 @@ Elm.Transform2D.make = function (_elm) {
                              ,scaleX: scaleX
                              ,scaleY: scaleY};
    return _elm.Transform2D.values;
-};
-Elm.Vect = Elm.Vect || {};
-Elm.Vect.make = function (_elm) {
-   "use strict";
-   _elm.Vect = _elm.Vect || {};
-   if (_elm.Vect.values)
-   return _elm.Vect.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   _P = _N.Ports.make(_elm),
-   $moduleName = "Vect",
-   $Basics = Elm.Basics.make(_elm),
-   $Config = Elm.Config.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $List = Elm.List.make(_elm);
-   var distance = F2(function (_v0,
-   _v1) {
-      return function () {
-         switch (_v1.ctor)
-         {case "Vect":
-            return function () {
-                 switch (_v0.ctor)
-                 {case "Vect":
-                    return $Basics.sqrt(Math.pow(_v1._0 - _v0._0,
-                      2) + Math.pow(_v1._1 - _v0._1,
-                      2));}
-                 _U.badCase($moduleName,
-                 "on line 22, column 38 to 69");
-              }();}
-         _U.badCase($moduleName,
-         "on line 22, column 38 to 69");
-      }();
-   });
-   var vect_y = function (_v8) {
-      return function () {
-         switch (_v8.ctor)
-         {case "Vect": return _v8._1;}
-         _U.badCase($moduleName,
-         "on line 18, column 21 to 22");
-      }();
-   };
-   var vect_x = function (_v12) {
-      return function () {
-         switch (_v12.ctor)
-         {case "Vect": return _v12._0;}
-         _U.badCase($moduleName,
-         "on line 17, column 21 to 22");
-      }();
-   };
-   var Vect = F2(function (a,b) {
-      return {ctor: "Vect"
-             ,_0: a
-             ,_1: b};
-   });
-   var vect_add = F2(function (_v16,
-   _v17) {
-      return function () {
-         switch (_v17.ctor)
-         {case "Vect":
-            return function () {
-                 switch (_v16.ctor)
-                 {case "Vect": return A2(Vect,
-                      _v16._0 + _v17._0,
-                      _v16._1 + _v17._1);}
-                 _U.badCase($moduleName,
-                 "on line 11, column 36 to 57");
-              }();}
-         _U.badCase($moduleName,
-         "on line 11, column 36 to 57");
-      }();
-   });
-   var vsum = A2($List.foldl,
-   vect_add,
-   A2(Vect,0,0));
-   var vect_fall = F2(function (dy,
-   _v24) {
-      return function () {
-         switch (_v24.ctor)
-         {case "Vect": return A2(Vect,
-              _v24._0,
-              _v24._1 + dy);}
-         _U.badCase($moduleName,
-         "on line 13, column 27 to 41");
-      }();
-   });
-   var vect_rise = F2(function (dy,
-   _v28) {
-      return function () {
-         switch (_v28.ctor)
-         {case "Vect": return A2(Vect,
-              _v28._0,
-              _v28._1 - dy);}
-         _U.badCase($moduleName,
-         "on line 14, column 27 to 41");
-      }();
-   });
-   var vscale = F2(function (s,
-   _v32) {
-      return function () {
-         switch (_v32.ctor)
-         {case "Vect": return A2(Vect,
-              s * _v32._0,
-              s * _v32._1);}
-         _U.badCase($moduleName,
-         "on line 15, column 23 to 42");
-      }();
-   });
-   var arrow_to_vect = function (_v36) {
-      return function () {
-         return A2(Vect,
-         $Basics.toFloat(_v36.x * 2),
-         0);
-      }();
-   };
-   var set_origin_context = F2(function (_v38,
-   _v39) {
-      return function () {
-         switch (_v39.ctor)
-         {case "Vect":
-            return function () {
-                 switch (_v38.ctor)
-                 {case "_Tuple2": return A2(Vect,
-                      _v39._0 - $Basics.toFloat(_v38._0) / 2,
-                      0 - _v39._1 + $Basics.toFloat(_v38._1) / 2);}
-                 _U.badCase($moduleName,
-                 "on line 25, column 61 to 129");
-              }();}
-         _U.badCase($moduleName,
-         "on line 25, column 61 to 129");
-      }();
-   });
-   var fix_origin = set_origin_context({ctor: "_Tuple2"
-                                       ,_0: $Config.game_total_width
-                                       ,_1: $Config.game_total_height});
-   var pt_to_fp = function (pt) {
-      return function () {
-         var _raw = fix_origin(pt),
-         $ = _raw.ctor === "Vect" ? _raw : _U.badCase($moduleName,
-         "on line 30, column 32 to 45"),
-         x = $._0,
-         y = $._1;
-         return {ctor: "_Tuple2"
-                ,_0: x
-                ,_1: y};
-      }();
-   };
-   var move_f = F2(function (pt,
-   form) {
-      return A2($Graphics$Collage.move,
-      pt_to_fp(pt),
-      form);
-   });
-   var segment_f = F2(function (pt1,
-   pt2) {
-      return A2($Graphics$Collage.segment,
-      pt_to_fp(pt1),
-      pt_to_fp(pt2));
-   });
-   _elm.Vect.values = {_op: _op
-                      ,Vect: Vect
-                      ,vect_add: vect_add
-                      ,vsum: vsum
-                      ,vect_fall: vect_fall
-                      ,vect_rise: vect_rise
-                      ,vscale: vscale
-                      ,vect_x: vect_x
-                      ,vect_y: vect_y
-                      ,arrow_to_vect: arrow_to_vect
-                      ,distance: distance
-                      ,set_origin_context: set_origin_context
-                      ,fix_origin: fix_origin
-                      ,pt_to_fp: pt_to_fp
-                      ,move_f: move_f
-                      ,segment_f: segment_f};
-   return _elm.Vect.values;
 };

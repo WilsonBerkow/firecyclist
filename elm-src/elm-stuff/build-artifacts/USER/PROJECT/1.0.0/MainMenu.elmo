@@ -18,13 +18,10 @@ Elm.MainMenu.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Text = Elm.Text.make(_elm);
-   var cMainMenu_init = {_: {}
-                        ,x: 0
-                        ,y: 0};
-   var cMainMenu_inputs = $Game.taps_f;
-   var cMainMenu_localvar_monospace = $Text.typeface(_L.fromArray(["monospace"
-                                                                  ,"arial"]));
-   var cMainMenu_render = function (_v0) {
+   var init = {_: {},x: 0,y: 0};
+   var monospace = $Text.typeface(_L.fromArray(["monospace"
+                                               ,"arial"]));
+   var render = function (_v0) {
       return function () {
          return A3($Graphics$Collage.collage,
          $Config.game_total_width,
@@ -39,40 +36,39 @@ Elm.MainMenu.make = function (_elm) {
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
                                                                                         140,
-                                                                                        cMainMenu_localvar_monospace($Text.fromString("Fire"))))))))
+                                                                                        monospace($Text.fromString("Fire"))))))))
                                                                                         ,$Graphics$Collage.moveY(0)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
                                                                                         85,
-                                                                                        cMainMenu_localvar_monospace($Text.fromString("cyclist"))))))))
+                                                                                        monospace($Text.fromString("cyclist"))))))))
                                                                                         ,$Graphics$Collage.moveY(-100)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $BasicUtil.deepGrey,
                                                                                         A2($Text.height,
                                                                                         60,
-                                                                                        $Text.italic(cMainMenu_localvar_monospace($Text.fromString("Play")))))))))])))]));
+                                                                                        $Text.italic(monospace($Text.fromString("Play")))))))))])))]));
       }();
    };
-   var cMainMenu_localvar_messageStyle = function ($) {
-      return $Text.color($Color.darkGrey)($Text.bold($Text.height(40)(cMainMenu_localvar_monospace($))));
+   var messageStyle = function ($) {
+      return $Text.color($Color.darkGrey)($Text.bold($Text.height(40)(monospace($))));
    };
+   var inputs = $Game.taps_f;
    var PlayGame = {ctor: "PlayGame"};
    var Continue = function (a) {
       return {ctor: "Continue"
              ,_0: a};
    };
-   var cMainMenu_step = F2(function (tap_pos,
+   var step = F2(function (tap_pos,
    prev_tap_pos) {
       return !_U.eq(tap_pos,
       prev_tap_pos) ? PlayGame : Continue(tap_pos);
    });
    _elm.MainMenu.values = {_op: _op
+                          ,inputs: inputs
+                          ,step: step
+                          ,render: render
+                          ,init: init
                           ,Continue: Continue
-                          ,PlayGame: PlayGame
-                          ,cMainMenu_localvar_messageStyle: cMainMenu_localvar_messageStyle
-                          ,cMainMenu_localvar_monospace: cMainMenu_localvar_monospace
-                          ,cMainMenu_inputs: cMainMenu_inputs
-                          ,cMainMenu_step: cMainMenu_step
-                          ,cMainMenu_render: cMainMenu_render
-                          ,cMainMenu_init: cMainMenu_init};
+                          ,PlayGame: PlayGame};
    return _elm.MainMenu.values;
 };

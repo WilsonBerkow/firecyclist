@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Completely Empty HTML Doc for Testing, w/ jQuery</title>
+        <title>Firecyclist</title>
         <meta charset="UTF-8"/>
         <style>
-            body {
+            html, body {
                 text-align: center;
                 margin: 0;
                 padding: 0;
+                user-select: none;
+                cursor: default;
             }
             .module {
                 background-color: black;
                 border-radius: 10px;
                 padding: 20px;
                 display: inline-block;
-                cursor: default;
             }
             .module > #snd {
                 text-align: center;
@@ -36,7 +37,25 @@
         <script src="http://code.jquery.com/jquery.js"></script>
         <script src="elm.js"></script>
         <script>
-            Elm.embed(Elm.Main, jQuery('#Main')[0]);
+            (function () {
+                Elm.embed(Elm.Main, jQuery('#Main')[0]);
+                // TODO: find a good way to handle the resize within the game (because
+                //  we need to scale the positions of the Touches and Taps by the
+                //  'pageScaleFactor' below). I'll need to use a port.
+                //  Atm, 'resize' is just sitting here, not used.
+                var resize = function () {
+                    var scaleX = jQuery(window).width() / (576 / 2), // These 1024 and 576 are not about the canvas,
+                        scaleY = jQuery(window).height() / (1024 / 2); //  they are about the whole game's dims.
+                    pageScaleFactor = Math.min(scaleX, scaleY);
+                    jQuery("body").css("-moz-transform-origin", "0 0")
+                        .css("-moz-transform", "scale(" + pageScaleFactor + ")")
+                        .css("-webkit-transform-origin", "0 0")
+                        .css("-webkit-transform", "scale(" + pageScaleFactor + ")")
+                        .css("-ms-transform-origin", "0 0")
+                        .css("-ms-transform", "scale(" + pageScaleFactor + ")");
+                    jQuery("body").width(576 / 2).height(1024 / 2);
+                };
+            }());
         </script>
     </body>
 </html>

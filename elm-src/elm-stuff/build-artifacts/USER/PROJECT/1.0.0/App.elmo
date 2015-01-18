@@ -14,35 +14,35 @@ Elm.App.make = function (_elm) {
    $Game = Elm.Game.make(_elm),
    $MainMenu = Elm.MainMenu.make(_elm),
    $Paused = Elm.Paused.make(_elm);
-   var cApp_render = function (st) {
+   var render = function (st) {
       return function () {
          switch (st.ctor)
          {case "OnDead":
-            return $DeadScreen.cDeadScreen_render(st._0);
+            return $DeadScreen.render(st._0);
             case "OnGame":
-            return $Game.cGame_render(st._0);
+            return $Game.render(st._0);
             case "OnMainMenu":
-            return $MainMenu.cMainMenu_render(st._0);
+            return $MainMenu.render(st._0);
             case "OnPaused":
-            return $Paused.cPaused_render(st._0);}
+            return $Paused.render(st._0);}
          _U.badCase($moduleName,
-         "between lines 46 and 50");
+         "between lines 41 and 45");
       }();
    };
-   var cApp_inputs = $Game.cGame_inputs;
-   var cApp_localvar_sndOfThree = function (_v5) {
+   var sndOfThree = function (_v5) {
       return function () {
          switch (_v5.ctor)
          {case "_Tuple3": return _v5._1;}
          _U.badCase($moduleName,
-         "on line 14, column 40 to 41");
+         "on line 17, column 22 to 23");
       }();
    };
+   var inputs = $Game.inputs;
    var OnMainMenu = function (a) {
       return {ctor: "OnMainMenu"
              ,_0: a};
    };
-   var cApp_init = OnMainMenu($MainMenu.cMainMenu_init);
+   var init = OnMainMenu($MainMenu.init);
    var OnPaused = function (a) {
       return {ctor: "OnPaused"
              ,_0: a};
@@ -55,28 +55,31 @@ Elm.App.make = function (_elm) {
       return {ctor: "OnGame"
              ,_0: a};
    };
-   var cApp_step = F2(function (inputs,
+   var step = F2(function (inputs,
    st) {
       return function () {
          switch (st.ctor)
          {case "OnDead":
             return function () {
-                 var _v15 = A2($DeadScreen.cDeadScreen_step,
-                 cApp_localvar_sndOfThree(inputs),
+                 var _v15 = A2($DeadScreen.step,
+                 sndOfThree(inputs),
                  st._0);
                  switch (_v15.ctor)
                  {case "Continue":
                     return OnDead(_v15._0);
                     case "Replay":
-                    return OnGame(_U.replace([["prev_tap_pos"
-                                              ,_v15._0]],
-                      $Game.cGame_init));}
+                    return function () {
+                         var i = $Game.init;
+                         return OnGame(_U.replace([["prev_tap_pos"
+                                                   ,_v15._0]],
+                         i));
+                      }();}
                  _U.badCase($moduleName,
-                 "between lines 37 and 40");
+                 "between lines 32 and 35");
               }();
             case "OnGame":
             return function () {
-                 var _v18 = A2($Game.cGame_step,
+                 var _v18 = A2($Game.step,
                  inputs,
                  st._0);
                  switch (_v18.ctor)
@@ -87,29 +90,32 @@ Elm.App.make = function (_elm) {
                     case "Pause":
                     return OnPaused(_v18._0);
                     case "Restart":
-                    return OnGame(_U.replace([["prev_tap_pos"
-                                              ,_v18._0]],
-                      $Game.cGame_init));}
+                    return function () {
+                         var i = $Game.init;
+                         return OnGame(_U.replace([["prev_tap_pos"
+                                                   ,_v18._0]],
+                         i));
+                      }();}
                  _U.badCase($moduleName,
-                 "between lines 27 and 32");
+                 "between lines 22 and 27");
               }();
             case "OnMainMenu":
             return function () {
-                 var _v23 = A2($MainMenu.cMainMenu_step,
-                 cApp_localvar_sndOfThree(inputs),
+                 var _v23 = A2($MainMenu.step,
+                 sndOfThree(inputs),
                  st._0);
                  switch (_v23.ctor)
                  {case "Continue":
                     return OnMainMenu(_v23._0);
                     case "PlayGame":
-                    return OnGame($Game.cGame_init);}
+                    return OnGame($Game.init);}
                  _U.badCase($moduleName,
-                 "between lines 41 and 43");
+                 "between lines 36 and 38");
               }();
             case "OnPaused":
             return function () {
-                 var _v25 = A2($Paused.cPaused_step,
-                 cApp_localvar_sndOfThree(inputs),
+                 var _v25 = A2($Paused.step,
+                 sndOfThree(inputs),
                  st._0);
                  switch (_v25.ctor)
                  {case "Continue":
@@ -117,16 +123,16 @@ Elm.App.make = function (_elm) {
                     case "Play":
                     return OnGame(_v25._0);}
                  _U.badCase($moduleName,
-                 "between lines 33 and 36");
+                 "between lines 28 and 31");
               }();}
          _U.badCase($moduleName,
-         "between lines 25 and 43");
+         "between lines 20 and 38");
       }();
    });
    _elm.App.values = {_op: _op
-                     ,cApp_init: cApp_init
-                     ,cApp_step: cApp_step
-                     ,cApp_render: cApp_render
-                     ,cApp_inputs: cApp_inputs};
+                     ,init: init
+                     ,step: step
+                     ,render: render
+                     ,inputs: inputs};
    return _elm.App.values;
 };

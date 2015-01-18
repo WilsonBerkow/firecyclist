@@ -17,13 +17,13 @@ Elm.Main.make = function (_elm) {
    $Time.inSeconds,
    $Time.fps(60));
    var main = A2($Signal.map,
-   $App.cApp_render,
+   $App.render,
    A3($Signal.foldp,
-   $App.cApp_step,
-   $App.cApp_init,
+   $App.step,
+   $App.init,
    A2($Signal.sampleOn,
    delta,
-   $App.cApp_inputs)));
+   $App.inputs)));
    _elm.Main.values = {_op: _op
                       ,main: main
                       ,delta: delta};

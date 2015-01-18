@@ -17,16 +17,15 @@ Elm.Paused.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Text = Elm.Text.make(_elm);
-   var cPaused_inputs = $Game.taps_f;
-   var cPaused_localvar_messageStyle = function ($) {
+   var messageStyle = function ($) {
       return $Text.color($Color.orange)($Text.bold($Text.height(60)($Text.typeface(_L.fromArray(["monospace"
                                                                                                 ,"arial"]))($))));
    };
-   var cPaused_render = function (g) {
+   var render = function (g) {
       return A3($Graphics$Collage.collage,
       $Config.game_total_width,
       $Config.game_total_height,
-      _L.fromArray([$Graphics$Collage.toForm($Game.cGame_render(g))
+      _L.fromArray([$Graphics$Collage.toForm($Game.render(g))
                    ,A2($Graphics$Collage.filled,
                    A4($Color.rgba,200,200,200,0.5),
                    A2($Graphics$Collage.rect,
@@ -34,8 +33,9 @@ Elm.Paused.make = function (_elm) {
                    $Basics.toFloat($Config.game_total_height)))
                    ,A2($Graphics$Collage.moveY,
                    20,
-                   $Graphics$Collage.toForm($Text.centered(cPaused_localvar_messageStyle($Text.fromString("Paused")))))]));
+                   $Graphics$Collage.toForm($Text.centered(messageStyle($Text.fromString("Paused")))))]));
    };
+   var inputs = $Game.taps_f;
    var Play = function (a) {
       return {ctor: "Play",_0: a};
    };
@@ -43,7 +43,7 @@ Elm.Paused.make = function (_elm) {
       return {ctor: "Continue"
              ,_0: a};
    };
-   var cPaused_step = F2(function (tap_pos,
+   var step = F2(function (tap_pos,
    g) {
       return function () {
          var new_g = _U.replace([["prev_tap_pos"
@@ -54,9 +54,9 @@ Elm.Paused.make = function (_elm) {
       }();
    });
    _elm.Paused.values = {_op: _op
-                        ,cPaused_step: cPaused_step
-                        ,cPaused_render: cPaused_render
-                        ,cPaused_inputs: cPaused_inputs
+                        ,step: step
+                        ,render: render
+                        ,inputs: inputs
                         ,Continue: Continue
                         ,Play: Play};
    return _elm.Paused.values;
