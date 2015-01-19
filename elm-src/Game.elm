@@ -43,7 +43,7 @@ type alias State =
   , just_a_simulation : Bool
   }
 type alias Input = (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
---inputs = Signal.map3 (,,) (Signal.map mhead Touch.touches) taps_f (Time.fps framerate)
+
 step =
   let touch_to_platfm : Touch.Touch -> Platfm
       touch_to_platfm {x0, y0, x, y} = { start = { x = toFloat x0, y = toFloat y0 }
@@ -95,8 +95,11 @@ step =
             --  and then expanding it with the '* 3', leaving spaces where fbs might have formed.
             
             drawn_plat = case cur_touch of
-                           Nothing -> Maybe.map touch_to_platfm g.last_touch -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
-                           Just _  -> Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
+                           Nothing ->
+                             Maybe.map touch_to_platfm g.last_touch -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
+                               `Maybe.andThen` (\plat -> if plat.start == plat.end then Nothing else Just plat)
+                           Just _  ->
+                             Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
             new_plats =
               let updated_plats = update_and_filter (stepPlatfm dt) plat_should_stay g.plats
               in case drawn_plat of Just new_p -> new_p :: updated_plats
