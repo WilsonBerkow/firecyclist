@@ -27,7 +27,7 @@ Elm.App.make = function (_elm) {
             case "OnPaused":
             return $Paused.render(st._0);}
          _U.badCase($moduleName,
-         "between lines 41 and 45");
+         "between lines 40 and 44");
       }();
    };
    var sndOfThree = function (_v5) {
@@ -35,7 +35,7 @@ Elm.App.make = function (_elm) {
          switch (_v5.ctor)
          {case "_Tuple3": return _v5._1;}
          _U.badCase($moduleName,
-         "on line 17, column 22 to 23");
+         "on line 16, column 22 to 23");
       }();
    };
    var OnMainMenu = function (a) {
@@ -75,7 +75,7 @@ Elm.App.make = function (_elm) {
                          i));
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 32 and 35");
+                 "between lines 31 and 34");
               }();
             case "OnGame":
             return function () {
@@ -97,7 +97,7 @@ Elm.App.make = function (_elm) {
                          i));
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 22 and 27");
+                 "between lines 21 and 26");
               }();
             case "OnMainMenu":
             return function () {
@@ -110,7 +110,7 @@ Elm.App.make = function (_elm) {
                     case "PlayGame":
                     return OnGame($Game.init);}
                  _U.badCase($moduleName,
-                 "between lines 36 and 38");
+                 "between lines 35 and 37");
               }();
             case "OnPaused":
             return function () {
@@ -123,10 +123,10 @@ Elm.App.make = function (_elm) {
                     case "Play":
                     return OnGame(_v25._0);}
                  _U.badCase($moduleName,
-                 "between lines 28 and 31");
+                 "between lines 27 and 30");
               }();}
          _U.badCase($moduleName,
-         "between lines 20 and 38");
+         "between lines 19 and 37");
       }();
    });
    _elm.App.values = {_op: _op
@@ -991,7 +991,6 @@ Elm.DeadScreen.make = function (_elm) {
                    $Color.orange,
                    messageStyle($Text.fromString($Basics.toString($Basics.round(g.points)))))))))]));
    };
-   var inputs = $Game.taps_f;
    var Replay = function (a) {
       return {ctor: "Replay"
              ,_0: a};
@@ -1176,7 +1175,6 @@ Elm.Game.make = function (_elm) {
    $Platfm = Elm.Platfm.make(_elm),
    $Player = Elm.Player.make(_elm),
    $Random = Elm.Random.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Touch = Elm.Touch.make(_elm);
@@ -1317,7 +1315,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 155 and 158");
+               "between lines 157 and 160");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -1335,9 +1333,6 @@ Elm.Game.make = function (_elm) {
                 ,y: $Basics.toFloat(_v2.y)};
       }();
    };
-   var taps_f = A2($Signal.map,
-   toPosition,
-   $Touch.taps);
    var Die = function (a) {
       return {ctor: "Die",_0: a};
    };
@@ -1432,12 +1427,19 @@ Elm.Game.make = function (_elm) {
                             A2($Maybe.map,
                             touch_to_platfm,
                             g.last_touch),
-                            function (plat) {
-                               return _U.eq(plat.start,
-                               plat.end) ? $Maybe.Nothing : $Maybe.Just(plat);
+                            function (_v21) {
+                               return function () {
+                                  return _U.eq(_v21.start,
+                                  _v21.end) ? $Maybe.Nothing : _U.eq(_v21.start.y,
+                                  _v21.end.y) ? $Maybe.Just(_U.replace([["start"
+                                                                        ,_U.replace([["y"
+                                                                                     ,_v21.start.y - 1]],
+                                                                        _v21.start)]],
+                                  _v21)) : $Maybe.Just(_v21);
+                               }();
                             });}
                        _U.badCase($moduleName,
-                       "between lines 97 and 103");
+                       "between lines 96 and 105");
                     }();
                     var new_plats = function () {
                        var updated_plats = A3(update_and_filter,
@@ -1453,7 +1455,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_plats;}
                           _U.badCase($moduleName,
-                          "between lines 105 and 107");
+                          "between lines 107 and 109");
                        }();
                     }();
                     var $ = function () {
@@ -1522,7 +1524,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 78 and 81");
+                       "between lines 77 and 80");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -1532,13 +1534,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 82 and 85");
+                       "between lines 81 and 84");
                     }();
                     return _U.cmp(g.player.pos.y,
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 76 and 128");
+            "between lines 75 and 130");
          }();
       });
       return step;
@@ -1548,7 +1550,6 @@ Elm.Game.make = function (_elm) {
                       ,init: init
                       ,render: render
                       ,step: step
-                      ,taps_f: taps_f
                       ,State: State
                       ,Continue: Continue
                       ,Pause: Pause
@@ -2952,7 +2953,6 @@ Elm.MainMenu.make = function (_elm) {
    var messageStyle = function ($) {
       return $Text.color($Color.darkGrey)($Text.bold($Text.height(40)(monospace($))));
    };
-   var inputs = $Game.taps_f;
    var PlayGame = {ctor: "PlayGame"};
    var Continue = function (a) {
       return {ctor: "Continue"
@@ -2964,7 +2964,6 @@ Elm.MainMenu.make = function (_elm) {
       prev_tap_pos) ? PlayGame : Continue(tap_pos);
    });
    _elm.MainMenu.values = {_op: _op
-                          ,inputs: inputs
                           ,step: step
                           ,render: render
                           ,init: init
@@ -6348,7 +6347,6 @@ Elm.Paused.make = function (_elm) {
                    20,
                    $Graphics$Collage.toForm($Text.centered(messageStyle($Text.fromString("Paused")))))]));
    };
-   var inputs = $Game.taps_f;
    var Play = function (a) {
       return {ctor: "Play",_0: a};
    };
@@ -6369,7 +6367,6 @@ Elm.Paused.make = function (_elm) {
    _elm.Paused.values = {_op: _op
                         ,step: step
                         ,render: render
-                        ,inputs: inputs
                         ,Continue: Continue
                         ,Play: Play};
    return _elm.Paused.values;

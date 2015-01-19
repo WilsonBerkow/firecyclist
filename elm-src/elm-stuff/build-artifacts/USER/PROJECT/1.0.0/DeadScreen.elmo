@@ -42,7 +42,6 @@ Elm.DeadScreen.make = function (_elm) {
                    $Color.orange,
                    messageStyle($Text.fromString($Basics.toString($Basics.round(g.points)))))))))]));
    };
-   var inputs = $Game.taps_f;
    var Replay = function (a) {
       return {ctor: "Replay"
              ,_0: a};

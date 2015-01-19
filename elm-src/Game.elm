@@ -1,6 +1,6 @@
 -- (c) Wilson Berkow
 
-module Game (game_background, State, Input, init, {-inputs,-} render, step, taps_f, WhereTo(Continue,Pause,Restart,Die)) where
+module Game (game_background, State, Input, init, render, step, WhereTo(Continue,Pause,Restart,Die)) where
 
 import List
 import List ((::))
@@ -25,7 +25,6 @@ import Platfm (Platfm, configPlatfm, stepPlatfm, renderPlatfm, renderTouchPlatfm
 
 type WhereTo = Continue State | Pause State | Restart Position | Die State -- It is necessary for 'Restart' to take a Position for the same reason it is necessary for DeadScreen.Replay to take one: so that the new game that is started records the previous tap correctly, and does not accidentally pause it or anything
 toPosition {x,y} = { x = (toFloat x), y = (toFloat y) }
-taps_f = Signal.map toPosition Touch.taps -- I don't have to fix_origin on the taps, because taps are already automatically in the right coordinate system.
 
 game_background = Collage.filled (Color.rgba 175 175 255 0.75)
                                  (Collage.rect (toFloat game_total_width) (toFloat game_total_height))
@@ -97,7 +96,10 @@ step =
             drawn_plat = case cur_touch of
                            Nothing ->
                              Maybe.map touch_to_platfm g.last_touch -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
-                               `Maybe.andThen` (\plat -> if plat.start == plat.end then Nothing else Just plat)
+                               `Maybe.andThen` (\({start, end} as plat) ->
+                                                   if | start == end -> Nothing
+                                                      | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
+                                                      | otherwise -> Just plat)
                            Just _  ->
                              Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
             new_plats =

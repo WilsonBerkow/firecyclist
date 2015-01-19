@@ -24,7 +24,6 @@ Elm.Game.make = function (_elm) {
    $Platfm = Elm.Platfm.make(_elm),
    $Player = Elm.Player.make(_elm),
    $Random = Elm.Random.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Touch = Elm.Touch.make(_elm);
@@ -165,7 +164,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 155 and 158");
+               "between lines 157 and 160");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -183,9 +182,6 @@ Elm.Game.make = function (_elm) {
                 ,y: $Basics.toFloat(_v2.y)};
       }();
    };
-   var taps_f = A2($Signal.map,
-   toPosition,
-   $Touch.taps);
    var Die = function (a) {
       return {ctor: "Die",_0: a};
    };
@@ -280,12 +276,19 @@ Elm.Game.make = function (_elm) {
                             A2($Maybe.map,
                             touch_to_platfm,
                             g.last_touch),
-                            function (plat) {
-                               return _U.eq(plat.start,
-                               plat.end) ? $Maybe.Nothing : $Maybe.Just(plat);
+                            function (_v21) {
+                               return function () {
+                                  return _U.eq(_v21.start,
+                                  _v21.end) ? $Maybe.Nothing : _U.eq(_v21.start.y,
+                                  _v21.end.y) ? $Maybe.Just(_U.replace([["start"
+                                                                        ,_U.replace([["y"
+                                                                                     ,_v21.start.y - 1]],
+                                                                        _v21.start)]],
+                                  _v21)) : $Maybe.Just(_v21);
+                               }();
                             });}
                        _U.badCase($moduleName,
-                       "between lines 97 and 103");
+                       "between lines 96 and 105");
                     }();
                     var new_plats = function () {
                        var updated_plats = A3(update_and_filter,
@@ -301,7 +304,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_plats;}
                           _U.badCase($moduleName,
-                          "between lines 105 and 107");
+                          "between lines 107 and 109");
                        }();
                     }();
                     var $ = function () {
@@ -370,7 +373,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 78 and 81");
+                       "between lines 77 and 80");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -380,13 +383,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 82 and 85");
+                       "between lines 81 and 84");
                     }();
                     return _U.cmp(g.player.pos.y,
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 76 and 128");
+            "between lines 75 and 130");
          }();
       });
       return step;
@@ -396,7 +399,6 @@ Elm.Game.make = function (_elm) {
                       ,init: init
                       ,render: render
                       ,step: step
-                      ,taps_f: taps_f
                       ,State: State
                       ,Continue: Continue
                       ,Pause: Pause

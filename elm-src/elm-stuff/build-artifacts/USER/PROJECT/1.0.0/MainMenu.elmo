@@ -52,7 +52,6 @@ Elm.MainMenu.make = function (_elm) {
    var messageStyle = function ($) {
       return $Text.color($Color.darkGrey)($Text.bold($Text.height(40)(monospace($))));
    };
-   var inputs = $Game.taps_f;
    var PlayGame = {ctor: "PlayGame"};
    var Continue = function (a) {
       return {ctor: "Continue"
@@ -64,7 +63,6 @@ Elm.MainMenu.make = function (_elm) {
       prev_tap_pos) ? PlayGame : Continue(tap_pos);
    });
    _elm.MainMenu.values = {_op: _op
-                          ,inputs: inputs
                           ,step: step
                           ,render: render
                           ,init: init

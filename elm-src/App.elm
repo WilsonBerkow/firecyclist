@@ -12,7 +12,6 @@ import MainMenu
 
 type State = OnGame Game.State | OnDead Game.State | OnPaused Game.State | OnMainMenu MainMenu.State
 type alias Input = Game.Input
---inputs = Game.inputs
 
 sndOfThree (_,x,_) = x
 

@@ -35,7 +35,6 @@ Elm.Paused.make = function (_elm) {
                    20,
                    $Graphics$Collage.toForm($Text.centered(messageStyle($Text.fromString("Paused")))))]));
    };
-   var inputs = $Game.taps_f;
    var Play = function (a) {
       return {ctor: "Play",_0: a};
    };
@@ -56,7 +55,6 @@ Elm.Paused.make = function (_elm) {
    _elm.Paused.values = {_op: _op
                         ,step: step
                         ,render: render
-                        ,inputs: inputs
                         ,Continue: Continue
                         ,Play: Play};
    return _elm.Paused.values;

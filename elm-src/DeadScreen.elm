@@ -17,7 +17,6 @@ type WhereTo = Continue State | Replay Position
 type alias State = Game.State
 type alias Input = Position
 
-inputs = Game.taps_f
 step tap_pos g =
   let new_g = { g | prev_tap_pos <- tap_pos }
   in if tap_pos /= g.prev_tap_pos

@@ -1,6 +1,6 @@
 -- (c) Wilson Berkow
 
-module Paused (State, Input, step, render, inputs, WhereTo(Continue,Play)) where
+module Paused (State, Input, step, render, WhereTo(Continue,Play)) where
 
 -- NOTE: It would probably be better to just make Game.State a sum type of (Playing ...) and (Paused ...), or have
 --  some .paused property, and then put all this in there. Also, for this to really be well-designed, there should
@@ -22,7 +22,6 @@ type WhereTo = Continue State | Play State
 
 type alias State = Game.State
 type alias Input = Position
-inputs = Game.taps_f
 step tap_pos g =
   let new_g = { g | prev_tap_pos <- tap_pos }
   in if tap_pos /= g.prev_tap_pos

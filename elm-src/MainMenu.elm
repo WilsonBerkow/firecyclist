@@ -1,6 +1,6 @@
 -- (c) Wilson Berkow.
 
-module MainMenu (WhereTo(Continue, PlayGame), State, Input, inputs, step, render, init) where
+module MainMenu (WhereTo(Continue, PlayGame), State, Input, step, render, init) where
 
 import Text
 import Time
@@ -16,7 +16,6 @@ import BasicUtil (deepGrey)
 type WhereTo = Continue State | PlayGame
 type alias State = Position -- the prev pos
 type alias Input = Position
-inputs = Game.taps_f
 
 step tap_pos prev_tap_pos =
   if tap_pos /= prev_tap_pos

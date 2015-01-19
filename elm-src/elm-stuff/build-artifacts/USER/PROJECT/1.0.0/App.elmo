@@ -26,7 +26,7 @@ Elm.App.make = function (_elm) {
             case "OnPaused":
             return $Paused.render(st._0);}
          _U.badCase($moduleName,
-         "between lines 41 and 45");
+         "between lines 40 and 44");
       }();
    };
    var sndOfThree = function (_v5) {
@@ -34,7 +34,7 @@ Elm.App.make = function (_elm) {
          switch (_v5.ctor)
          {case "_Tuple3": return _v5._1;}
          _U.badCase($moduleName,
-         "on line 17, column 22 to 23");
+         "on line 16, column 22 to 23");
       }();
    };
    var OnMainMenu = function (a) {
@@ -74,7 +74,7 @@ Elm.App.make = function (_elm) {
                          i));
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 32 and 35");
+                 "between lines 31 and 34");
               }();
             case "OnGame":
             return function () {
@@ -96,7 +96,7 @@ Elm.App.make = function (_elm) {
                          i));
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 22 and 27");
+                 "between lines 21 and 26");
               }();
             case "OnMainMenu":
             return function () {
@@ -109,7 +109,7 @@ Elm.App.make = function (_elm) {
                     case "PlayGame":
                     return OnGame($Game.init);}
                  _U.badCase($moduleName,
-                 "between lines 36 and 38");
+                 "between lines 35 and 37");
               }();
             case "OnPaused":
             return function () {
@@ -122,10 +122,10 @@ Elm.App.make = function (_elm) {
                     case "Play":
                     return OnGame(_v25._0);}
                  _U.badCase($moduleName,
-                 "between lines 28 and 31");
+                 "between lines 27 and 30");
               }();}
          _U.badCase($moduleName,
-         "between lines 20 and 38");
+         "between lines 19 and 37");
       }();
    });
    _elm.App.values = {_op: _op
