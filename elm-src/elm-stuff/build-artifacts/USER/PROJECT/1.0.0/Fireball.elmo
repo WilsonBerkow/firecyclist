@@ -47,7 +47,7 @@ Elm.Fireball.make = function (_elm) {
    fb) {
       return {_: {}
              ,pos: A2($HasPosition.vect_fall,
-             fb.speed,
+             dt / 20 * fb.speed,
              fb.pos)
              ,speed: fb.speed};
    });

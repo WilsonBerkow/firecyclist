@@ -5,6 +5,7 @@ module Player where
 import List
 import Graphics.Collage as Collage
 import Color
+import Time
 
 import Config (game_side_margin, game_top_margin, game_total_width, game_total_height)
 import BasicUtil (..)
@@ -12,7 +13,7 @@ import HasPosition (..)
 import Platfm (Platfm, configPlatfm)
 
 type alias Player = { pos : Position, vel : Position }
-type alias PlayerInputs = List Platfm
+type alias PlayerInputs = (List Platfm, Time.Time)
 
 std_player =
   let blue_gray = Color.rgba 50 50 200 0.7
@@ -55,23 +56,25 @@ stepPlayer =
       plat_slope : Platfm -> Float
       plat_slope {start, end} = slope (start.x, start.y) (end.x, end.y)
       platfm_bounciness = 0.75--1--.5--3 or 0, with lower sliding speed (vscale below)
-      vel_from_slope m = { x = signnum m, y = abs m }
+      vel_from_slope dt m = { x = signnum m, y = abs m }
                           |> vscale 3--6
                           |> vect_rise configPlatfm.fall_rate
                           |> vect_rise platfm_bounciness
-      player_grav = 0.2--0.3
+      player_grav = 0.3--0.2--0.3
       
-      step plats p = let on_plat = touching_any p plats
-                         vel = case on_plat of
-                                 Just plat -> vel_from_slope (plat_slope plat)
-                                 Nothing -> vect_fall player_grav p.vel
-                         (newx, newy) = let {x,y} = vect_add p.pos vel in (x,y)
-                         gwidth = toFloat game_total_width
-                         rad = configPlayer.radius
-                         modded_newx = if | newx > gwidth + rad -> newx - gwidth - rad
-                                          | newx < -rad         -> newx + gwidth + rad
-                                          | otherwise           -> newx
-                     in { pos = {x=modded_newx,y=newy}
-                        , vel = vel
-                        }
+      step (plats, dt) p =
+        let on_plat = touching_any p plats
+            vel =
+              case on_plat of
+                Just plat -> vel_from_slope dt (plat_slope plat)
+                Nothing -> vect_fall (player_grav * dt / 28) p.vel
+            (newx, newy) = let {x,y} = vect_add p.pos (vscale (dt / 20) vel) in (x,y)
+            gwidth = toFloat game_total_width
+            rad = configPlayer.radius
+            modded_newx = if | newx > gwidth + rad -> newx - gwidth - rad
+                             | newx < -rad         -> newx + gwidth + rad
+                             | otherwise           -> newx
+        in { pos = {x=modded_newx,y=newy}
+           , vel = vel
+           }
   in step

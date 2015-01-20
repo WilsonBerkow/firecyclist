@@ -82,8 +82,8 @@ step =
                     Nothing -> False
                     Just {x, y} -> x > (toFloat game_total_width - 50) && y < 50
             (should_create_fb, new_fb_pos, new_seed) =
-              let (rand_should_create, seed') = Random.generate (Random.int 0 75) g.fb_creation_seed
-                  should_create_fb = rand_should_create == 1
+              let (rand_should_create, seed') = Random.generate (Random.float 0 (100 * dt / 30)) g.fb_creation_seed
+                  should_create_fb = rand_should_create < 1
                   spacing = round configFireball.padded_len
                   (rand_fb_pos, seed'') = (Random.generate (Random.int 0 (game_total_width // 3)) seed')
                   new_fb_pos = toFloat (arb_round spacing rand_fb_pos) * 3
@@ -113,7 +113,7 @@ step =
                   else updated_fbs
             player_on_fire = any (player_hitting_fb g.player) g.fireballs
             new_game =
-              { g | player       <- stepPlayer new_plats g.player
+              { g | player       <- stepPlayer (new_plats,dt) g.player
                   , plats        <- new_plats
                   , last_touch   <- cur_touch
                   , fireballs    <- new_fireballs

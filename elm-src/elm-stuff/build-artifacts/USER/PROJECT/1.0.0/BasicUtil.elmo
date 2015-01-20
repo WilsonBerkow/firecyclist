@@ -37,7 +37,7 @@ Elm.BasicUtil.make = function (_elm) {
       0) > 0 ? 1 : _U.eq(x,
       0) ? 0 : _U.cmp(x,
       0) < 0 ? -1 : _U.badIf($moduleName,
-      "between lines 24 and 26");
+      "between lines 28 and 30");
    };
    var deepGrey = A3($Color.rgb,
    50,
@@ -58,7 +58,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 17 and 18");
+         "between lines 21 and 22");
       }();
    };
    var mhead = function (l) {
@@ -69,7 +69,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 15 and 16");
+         "between lines 19 and 20");
       }();
    };
    var in_range = F3(function (x1,
@@ -86,10 +86,16 @@ Elm.BasicUtil.make = function (_elm) {
          {case "Just": return true;
             case "Nothing": return false;}
          _U.badCase($moduleName,
-         "between lines 9 and 11");
+         "between lines 13 and 15");
       }();
    };
+   var mod = F2(function (x,y) {
+      return _U.cmp(x,
+      0) < 0 ? y + x : _U.cmp(x,
+      y) > -1 ? x - y : x;
+   });
    _elm.BasicUtil.values = {_op: _op
+                           ,mod: mod
                            ,isJust: isJust
                            ,in_range: in_range
                            ,mhead: mhead

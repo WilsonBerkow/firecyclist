@@ -54,7 +54,7 @@ Elm.Platfm.make = function (_elm) {
    _v0) {
       return function () {
          return function () {
-            var fall_rate = configPlatfm.fall_rate;
+            var fall_rate = configPlatfm.fall_rate * dt / 20;
             return {_: {}
                    ,end: A2($HasPosition.vect_rise,
                    fall_rate,

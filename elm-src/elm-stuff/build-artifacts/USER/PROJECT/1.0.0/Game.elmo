@@ -310,12 +310,14 @@ Elm.Game.make = function (_elm) {
                     var $ = function () {
                        var spacing = $Basics.round($Fireball.configFireball.padded_len);
                        var $ = A2($Random.generate,
-                       A2($Random.$int,0,75),
+                       A2($Random.$float,
+                       0,
+                       100 * _v14._2 / 30),
                        g.fb_creation_seed),
                        rand_should_create = $._0,
                        seed$ = $._1;
-                       var should_create_fb = _U.eq(rand_should_create,
-                       1);
+                       var should_create_fb = _U.cmp(rand_should_create,
+                       1) < 0;
                        var $ = A2($Random.generate,
                        A2($Random.$int,
                        0,
@@ -347,7 +349,9 @@ Elm.Game.make = function (_elm) {
                     }();
                     var new_game = _U.replace([["player"
                                                ,A2($Player.stepPlayer,
-                                               new_plats,
+                                               {ctor: "_Tuple2"
+                                               ,_0: new_plats
+                                               ,_1: _v14._2},
                                                g.player)]
                                               ,["plats",new_plats]
                                               ,["last_touch",_v14._0]

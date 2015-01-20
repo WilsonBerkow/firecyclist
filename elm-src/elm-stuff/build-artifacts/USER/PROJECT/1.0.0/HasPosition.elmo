@@ -10,6 +10,7 @@ Elm.HasPosition.make = function (_elm) {
    _L = _N.List.make(_elm),
    _P = _N.Ports.make(_elm),
    $moduleName = "HasPosition",
+   $BasicUtil = Elm.BasicUtil.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Config = Elm.Config.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
@@ -25,7 +26,7 @@ Elm.HasPosition.make = function (_elm) {
                                ,0 - r.y + $Basics.toFloat(_v0._1) / 2]],
               r);}
          _U.badCase($moduleName,
-         "on line 22, column 56 to 134");
+         "on line 44, column 56 to 134");
       }();
    });
    var fix_origin = set_origin_context({ctor: "_Tuple2"
@@ -58,6 +59,21 @@ Elm.HasPosition.make = function (_elm) {
       return $Basics.sqrt(Math.pow(p1.x - p0.x,
       2) + Math.pow(p1.y - p0.y,2));
    });
+   var polar_to_cartesian = F2(function (angle,
+   speed) {
+      return function () {
+         var vy = $Basics.sin(angle) * speed;
+         var vx = $Basics.cos(angle) * speed;
+         return {_: {},x: vx,y: vy};
+      }();
+   });
+   var dir_to_angle = function (_v4) {
+      return function () {
+         return A2($BasicUtil.mod,
+         A2($Basics.atan2,_v4.y,_v4.x),
+         $Basics.degrees(360));
+      }();
+   };
    var vscale = F2(function (s,r) {
       return _U.replace([["x"
                          ,s * r.x]
@@ -91,6 +107,33 @@ Elm.HasPosition.make = function (_elm) {
    var vsum = A2($List.foldl,
    vect_add,
    {_: {},x: 0,y: 0});
+   var the_origin = {_: {}
+                    ,x: 0
+                    ,y: 0};
+   var cartesian_to_polar = function (vect) {
+      return function () {
+         var speed = A2(distance,
+         the_origin,
+         vect);
+         var dir = A2($BasicUtil.mod,
+         A2($Basics.atan2,vect.y,vect.x),
+         $Basics.degrees(360));
+         return {ctor: "_Tuple2"
+                ,_0: dir
+                ,_1: speed};
+      }();
+   };
+   var scale_vel = F2(function (s,
+   vel) {
+      return function () {
+         var $ = cartesian_to_polar(vel),
+         dir = $._0,
+         speed = $._1;
+         return A2(polar_to_cartesian,
+         dir,
+         speed * s);
+      }();
+   });
    var Position = F2(function (a,
    b) {
       return {_: {},x: a,y: b};
@@ -105,12 +148,17 @@ Elm.HasPosition.make = function (_elm) {
    _elm.HasPosition.values = {_op: _op
                              ,HasPosition: HasPosition
                              ,Position: Position
+                             ,the_origin: the_origin
                              ,vect_add: vect_add
                              ,vect_subtract: vect_subtract
                              ,vsum: vsum
                              ,vect_fall: vect_fall
                              ,vect_rise: vect_rise
                              ,vscale: vscale
+                             ,dir_to_angle: dir_to_angle
+                             ,polar_to_cartesian: polar_to_cartesian
+                             ,cartesian_to_polar: cartesian_to_polar
+                             ,scale_vel: scale_vel
                              ,distance: distance
                              ,set_origin_context: set_origin_context
                              ,fix_origin: fix_origin

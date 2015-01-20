@@ -17,17 +17,19 @@ Elm.Player.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Platfm = Elm.Platfm.make(_elm);
+   $Platfm = Elm.Platfm.make(_elm),
+   $Time = Elm.Time.make(_elm);
    var configPlayer = {_: {}
                       ,radius: 10};
    var stepPlayer = function () {
-      var player_grav = 0.2;
+      var player_grav = 0.3;
       var platfm_bounciness = 0.75;
-      var vel_from_slope = function (m) {
+      var vel_from_slope = F2(function (dt,
+      m) {
          return $HasPosition.vect_rise(platfm_bounciness)($HasPosition.vect_rise($Platfm.configPlatfm.fall_rate)($HasPosition.vscale(3)({_: {}
                                                                                                                                         ,x: $BasicUtil.signnum(m)
                                                                                                                                         ,y: $Basics.abs(m)})));
-      };
+      });
       var rad = configPlayer.radius;
       var intersects = F2(function (player,
       plat) {
@@ -114,7 +116,7 @@ Elm.Player.make = function (_elm) {
                case "[]":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 48 and 55");
+            "between lines 49 and 56");
          }();
       });
       var slope = F2(function (_v3,
@@ -127,10 +129,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
-                    "on line 31, column 34 to 53");
+                    "on line 32, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 31, column 34 to 53");
+            "on line 32, column 34 to 53");
          }();
       });
       var plat_slope = function (_v11) {
@@ -144,45 +146,55 @@ Elm.Player.make = function (_elm) {
             ,_1: _v11.end.y});
          }();
       };
-      var step = F2(function (plats,
+      var step = F2(function (_v13,
       p) {
          return function () {
-            var rad = configPlayer.radius;
-            var gwidth = $Basics.toFloat($Config.game_total_width);
-            var on_plat = A2(touching_any,
-            p,
-            plats);
-            var vel = function () {
-               switch (on_plat.ctor)
-               {case "Just":
-                  return vel_from_slope(plat_slope(on_plat._0));
-                  case "Nothing":
-                  return A2($HasPosition.vect_fall,
-                    player_grav,
-                    p.vel);}
-               _U.badCase($moduleName,
-               "between lines 65 and 68");
-            }();
-            var $ = function () {
-               var $ = A2($HasPosition.vect_add,
-               p.pos,
-               vel),
-               x = $.x,
-               y = $.y;
-               return {ctor: "_Tuple2"
-                      ,_0: x
-                      ,_1: y};
-            }(),
-            newx = $._0,
-            newy = $._1;
-            var modded_newx = _U.cmp(newx,
-            gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
-            0 - rad) < 0 ? newx + gwidth + rad : newx;
-            return {_: {}
-                   ,pos: {_: {}
-                         ,x: modded_newx
-                         ,y: newy}
-                   ,vel: vel};
+            switch (_v13.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var rad = configPlayer.radius;
+                    var gwidth = $Basics.toFloat($Config.game_total_width);
+                    var on_plat = A2(touching_any,
+                    p,
+                    _v13._0);
+                    var vel = function () {
+                       switch (on_plat.ctor)
+                       {case "Just":
+                          return A2(vel_from_slope,
+                            _v13._1,
+                            plat_slope(on_plat._0));
+                          case "Nothing":
+                          return A2($HasPosition.vect_fall,
+                            player_grav * _v13._1 / 28,
+                            p.vel);}
+                       _U.badCase($moduleName,
+                       "between lines 68 and 71");
+                    }();
+                    var $ = function () {
+                       var $ = A2($HasPosition.vect_add,
+                       p.pos,
+                       A2($HasPosition.vscale,
+                       _v13._1 / 20,
+                       vel)),
+                       x = $.x,
+                       y = $.y;
+                       return {ctor: "_Tuple2"
+                              ,_0: x
+                              ,_1: y};
+                    }(),
+                    newx = $._0,
+                    newy = $._1;
+                    var modded_newx = _U.cmp(newx,
+                    gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
+                    0 - rad) < 0 ? newx + gwidth + rad : newx;
+                    return {_: {}
+                           ,pos: {_: {}
+                                 ,x: modded_newx
+                                 ,y: newy}
+                           ,vel: vel};
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 66 and 79");
          }();
       });
       return step;

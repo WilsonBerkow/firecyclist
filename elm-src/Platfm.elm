@@ -19,7 +19,7 @@ configPlatfm = { fall_rate = 3 } -- TODO: Remove this variable, lift fall_rate t
 
 stepPlatfm : Time -> Platfm -> Platfm
 stepPlatfm dt {start, end, time_left} =
-  let fall_rate = configPlatfm.fall_rate
+  let fall_rate = configPlatfm.fall_rate * dt / 20
   in { start = (vect_rise fall_rate start), end = (vect_rise fall_rate end), time_left = time_left - dt }
 platfmLineStyle =
  let df = Collage.defaultLine

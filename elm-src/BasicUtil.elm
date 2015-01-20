@@ -5,6 +5,10 @@ module BasicUtil where
 import List ((::), foldl)
 import Color
 
+x `mod` y = if | x < 0 -> y + x
+               | x >= y -> x - y
+               | otherwise -> x
+
 isJust ma =
   case ma of
     Just a  -> True

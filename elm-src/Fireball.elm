@@ -20,7 +20,7 @@ configFireball = let side_len = 12
 fb_height = 4 * 4.5 -- TODO: CHANGE THIS AND RELATED VARIABLES TO DESCRIBE THE NEWLY-SHAPED FIREBALLS.
 
 stepFireball : FireballInputs -> Fireball -> Fireball
-stepFireball dt fb = { pos = vect_fall fb.speed fb.pos, speed = fb.speed }
+stepFireball dt fb = { pos = vect_fall (dt / 20 * fb.speed) fb.pos, speed = fb.speed }
 
 single_fb = Collage.group [
    Collage.move (2.5*4,-1.9*4) (Collage.rotate (turns 0.75) (Collage.filled Color.red (Collage.ngon 3 (3*4))))

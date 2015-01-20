@@ -218,7 +218,7 @@ Elm.BasicUtil.make = function (_elm) {
       0) > 0 ? 1 : _U.eq(x,
       0) ? 0 : _U.cmp(x,
       0) < 0 ? -1 : _U.badIf($moduleName,
-      "between lines 24 and 26");
+      "between lines 28 and 30");
    };
    var deepGrey = A3($Color.rgb,
    50,
@@ -239,7 +239,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 17 and 18");
+         "between lines 21 and 22");
       }();
    };
    var mhead = function (l) {
@@ -250,7 +250,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 15 and 16");
+         "between lines 19 and 20");
       }();
    };
    var in_range = F3(function (x1,
@@ -267,10 +267,16 @@ Elm.BasicUtil.make = function (_elm) {
          {case "Just": return true;
             case "Nothing": return false;}
          _U.badCase($moduleName,
-         "between lines 9 and 11");
+         "between lines 13 and 15");
       }();
    };
+   var mod = F2(function (x,y) {
+      return _U.cmp(x,
+      0) < 0 ? y + x : _U.cmp(x,
+      y) > -1 ? x - y : x;
+   });
    _elm.BasicUtil.values = {_op: _op
+                           ,mod: mod
                            ,isJust: isJust
                            ,in_range: in_range
                            ,mhead: mhead
@@ -1065,7 +1071,7 @@ Elm.Fireball.make = function (_elm) {
    fb) {
       return {_: {}
              ,pos: A2($HasPosition.vect_fall,
-             fb.speed,
+             dt / 20 * fb.speed,
              fb.pos)
              ,speed: fb.speed};
    });
@@ -1410,12 +1416,14 @@ Elm.Game.make = function (_elm) {
                     var $ = function () {
                        var spacing = $Basics.round($Fireball.configFireball.padded_len);
                        var $ = A2($Random.generate,
-                       A2($Random.$int,0,75),
+                       A2($Random.$float,
+                       0,
+                       100 * _v14._2 / 30),
                        g.fb_creation_seed),
                        rand_should_create = $._0,
                        seed$ = $._1;
-                       var should_create_fb = _U.eq(rand_should_create,
-                       1);
+                       var should_create_fb = _U.cmp(rand_should_create,
+                       1) < 0;
                        var $ = A2($Random.generate,
                        A2($Random.$int,
                        0,
@@ -1447,7 +1455,9 @@ Elm.Game.make = function (_elm) {
                     }();
                     var new_game = _U.replace([["player"
                                                ,A2($Player.stepPlayer,
-                                               new_plats,
+                                               {ctor: "_Tuple2"
+                                               ,_0: new_plats
+                                               ,_1: _v14._2},
                                                g.player)]
                                               ,["plats",new_plats]
                                               ,["last_touch",_v14._0]
@@ -2416,6 +2426,7 @@ Elm.HasPosition.make = function (_elm) {
    _L = _N.List.make(_elm),
    _P = _N.Ports.make(_elm),
    $moduleName = "HasPosition",
+   $BasicUtil = Elm.BasicUtil.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Config = Elm.Config.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
@@ -2431,7 +2442,7 @@ Elm.HasPosition.make = function (_elm) {
                                ,0 - r.y + $Basics.toFloat(_v0._1) / 2]],
               r);}
          _U.badCase($moduleName,
-         "on line 22, column 56 to 134");
+         "on line 44, column 56 to 134");
       }();
    });
    var fix_origin = set_origin_context({ctor: "_Tuple2"
@@ -2464,6 +2475,21 @@ Elm.HasPosition.make = function (_elm) {
       return $Basics.sqrt(Math.pow(p1.x - p0.x,
       2) + Math.pow(p1.y - p0.y,2));
    });
+   var polar_to_cartesian = F2(function (angle,
+   speed) {
+      return function () {
+         var vy = $Basics.sin(angle) * speed;
+         var vx = $Basics.cos(angle) * speed;
+         return {_: {},x: vx,y: vy};
+      }();
+   });
+   var dir_to_angle = function (_v4) {
+      return function () {
+         return A2($BasicUtil.mod,
+         A2($Basics.atan2,_v4.y,_v4.x),
+         $Basics.degrees(360));
+      }();
+   };
    var vscale = F2(function (s,r) {
       return _U.replace([["x"
                          ,s * r.x]
@@ -2497,6 +2523,33 @@ Elm.HasPosition.make = function (_elm) {
    var vsum = A2($List.foldl,
    vect_add,
    {_: {},x: 0,y: 0});
+   var the_origin = {_: {}
+                    ,x: 0
+                    ,y: 0};
+   var cartesian_to_polar = function (vect) {
+      return function () {
+         var speed = A2(distance,
+         the_origin,
+         vect);
+         var dir = A2($BasicUtil.mod,
+         A2($Basics.atan2,vect.y,vect.x),
+         $Basics.degrees(360));
+         return {ctor: "_Tuple2"
+                ,_0: dir
+                ,_1: speed};
+      }();
+   };
+   var scale_vel = F2(function (s,
+   vel) {
+      return function () {
+         var $ = cartesian_to_polar(vel),
+         dir = $._0,
+         speed = $._1;
+         return A2(polar_to_cartesian,
+         dir,
+         speed * s);
+      }();
+   });
    var Position = F2(function (a,
    b) {
       return {_: {},x: a,y: b};
@@ -2511,12 +2564,17 @@ Elm.HasPosition.make = function (_elm) {
    _elm.HasPosition.values = {_op: _op
                              ,HasPosition: HasPosition
                              ,Position: Position
+                             ,the_origin: the_origin
                              ,vect_add: vect_add
                              ,vect_subtract: vect_subtract
                              ,vsum: vsum
                              ,vect_fall: vect_fall
                              ,vect_rise: vect_rise
                              ,vscale: vscale
+                             ,dir_to_angle: dir_to_angle
+                             ,polar_to_cartesian: polar_to_cartesian
+                             ,cartesian_to_polar: cartesian_to_polar
+                             ,scale_vel: scale_vel
                              ,distance: distance
                              ,set_origin_context: set_origin_context
                              ,fix_origin: fix_origin
@@ -6376,7 +6434,7 @@ Elm.Platfm.make = function (_elm) {
    _v0) {
       return function () {
          return function () {
-            var fall_rate = configPlatfm.fall_rate;
+            var fall_rate = configPlatfm.fall_rate * dt / 20;
             return {_: {}
                    ,end: A2($HasPosition.vect_rise,
                    fall_rate,
@@ -6425,17 +6483,19 @@ Elm.Player.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Platfm = Elm.Platfm.make(_elm);
+   $Platfm = Elm.Platfm.make(_elm),
+   $Time = Elm.Time.make(_elm);
    var configPlayer = {_: {}
                       ,radius: 10};
    var stepPlayer = function () {
-      var player_grav = 0.2;
+      var player_grav = 0.3;
       var platfm_bounciness = 0.75;
-      var vel_from_slope = function (m) {
+      var vel_from_slope = F2(function (dt,
+      m) {
          return $HasPosition.vect_rise(platfm_bounciness)($HasPosition.vect_rise($Platfm.configPlatfm.fall_rate)($HasPosition.vscale(3)({_: {}
                                                                                                                                         ,x: $BasicUtil.signnum(m)
                                                                                                                                         ,y: $Basics.abs(m)})));
-      };
+      });
       var rad = configPlayer.radius;
       var intersects = F2(function (player,
       plat) {
@@ -6522,7 +6582,7 @@ Elm.Player.make = function (_elm) {
                case "[]":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 48 and 55");
+            "between lines 49 and 56");
          }();
       });
       var slope = F2(function (_v3,
@@ -6535,10 +6595,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
-                    "on line 31, column 34 to 53");
+                    "on line 32, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 31, column 34 to 53");
+            "on line 32, column 34 to 53");
          }();
       });
       var plat_slope = function (_v11) {
@@ -6552,45 +6612,55 @@ Elm.Player.make = function (_elm) {
             ,_1: _v11.end.y});
          }();
       };
-      var step = F2(function (plats,
+      var step = F2(function (_v13,
       p) {
          return function () {
-            var rad = configPlayer.radius;
-            var gwidth = $Basics.toFloat($Config.game_total_width);
-            var on_plat = A2(touching_any,
-            p,
-            plats);
-            var vel = function () {
-               switch (on_plat.ctor)
-               {case "Just":
-                  return vel_from_slope(plat_slope(on_plat._0));
-                  case "Nothing":
-                  return A2($HasPosition.vect_fall,
-                    player_grav,
-                    p.vel);}
-               _U.badCase($moduleName,
-               "between lines 65 and 68");
-            }();
-            var $ = function () {
-               var $ = A2($HasPosition.vect_add,
-               p.pos,
-               vel),
-               x = $.x,
-               y = $.y;
-               return {ctor: "_Tuple2"
-                      ,_0: x
-                      ,_1: y};
-            }(),
-            newx = $._0,
-            newy = $._1;
-            var modded_newx = _U.cmp(newx,
-            gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
-            0 - rad) < 0 ? newx + gwidth + rad : newx;
-            return {_: {}
-                   ,pos: {_: {}
-                         ,x: modded_newx
-                         ,y: newy}
-                   ,vel: vel};
+            switch (_v13.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var rad = configPlayer.radius;
+                    var gwidth = $Basics.toFloat($Config.game_total_width);
+                    var on_plat = A2(touching_any,
+                    p,
+                    _v13._0);
+                    var vel = function () {
+                       switch (on_plat.ctor)
+                       {case "Just":
+                          return A2(vel_from_slope,
+                            _v13._1,
+                            plat_slope(on_plat._0));
+                          case "Nothing":
+                          return A2($HasPosition.vect_fall,
+                            player_grav * _v13._1 / 28,
+                            p.vel);}
+                       _U.badCase($moduleName,
+                       "between lines 68 and 71");
+                    }();
+                    var $ = function () {
+                       var $ = A2($HasPosition.vect_add,
+                       p.pos,
+                       A2($HasPosition.vscale,
+                       _v13._1 / 20,
+                       vel)),
+                       x = $.x,
+                       y = $.y;
+                       return {ctor: "_Tuple2"
+                              ,_0: x
+                              ,_1: y};
+                    }(),
+                    newx = $._0,
+                    newy = $._1;
+                    var modded_newx = _U.cmp(newx,
+                    gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
+                    0 - rad) < 0 ? newx + gwidth + rad : newx;
+                    return {_: {}
+                           ,pos: {_: {}
+                                 ,x: modded_newx
+                                 ,y: newy}
+                           ,vel: vel};
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 66 and 79");
          }();
       });
       return step;
