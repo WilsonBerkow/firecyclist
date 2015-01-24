@@ -37,7 +37,7 @@ Elm.BasicUtil.make = function (_elm) {
       0) > 0 ? 1 : _U.eq(x,
       0) ? 0 : _U.cmp(x,
       0) < 0 ? -1 : _U.badIf($moduleName,
-      "between lines 28 and 30");
+      "between lines 34 and 36");
    };
    var deepGrey = A3($Color.rgb,
    50,
@@ -58,7 +58,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 21 and 22");
+         "between lines 27 and 28");
       }();
    };
    var mhead = function (l) {
@@ -69,7 +69,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 19 and 20");
+         "between lines 25 and 26");
       }();
    };
    var in_range = F3(function (x1,
@@ -86,9 +86,36 @@ Elm.BasicUtil.make = function (_elm) {
          {case "Just": return true;
             case "Nothing": return false;}
          _U.badCase($moduleName,
-         "between lines 13 and 15");
+         "between lines 19 and 21");
       }();
    };
+   var maybeOr = F2(function (mx,
+   my) {
+      return function () {
+         var _v8 = {ctor: "_Tuple2"
+                   ,_0: mx
+                   ,_1: my};
+         switch (_v8.ctor)
+         {case "_Tuple2":
+            switch (_v8._0.ctor)
+              {case "Just":
+                 return $Maybe.Just(_v8._0._0);
+                 case "Nothing":
+                 switch (_v8._1.ctor)
+                   {case "Just":
+                      return $Maybe.Just(_v8._1._0);
+                      case "Nothing":
+                      return $Maybe.Nothing;}
+                   break;}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 13 and 17");
+      }();
+   });
+   var constant = F2(function (x,
+   y) {
+      return y;
+   });
    var mod = F2(function (x,y) {
       return _U.cmp(x,
       0) < 0 ? y + x : _U.cmp(x,
@@ -96,6 +123,8 @@ Elm.BasicUtil.make = function (_elm) {
    });
    _elm.BasicUtil.values = {_op: _op
                            ,mod: mod
+                           ,constant: constant
+                           ,maybeOr: maybeOr
                            ,isJust: isJust
                            ,in_range: in_range
                            ,mhead: mhead

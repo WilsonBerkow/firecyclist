@@ -35,6 +35,7 @@ type alias State =
   , fireballs : List Fireball
   , last_touch : Maybe Touch.Touch
   , preview_plat : Maybe Platfm
+  , t0_preview_plat_just_added : Maybe Time.Time -- Remember the t0 (used to identify platfms) of the platform that was most recently drawn on the screen as a result of it being hit by the player. This is used to make sure that that platform does not get drawn again.
   , fb_creation_seed : Random.Seed
   , prev_tap_pos : Position
   , time_playing : Float
@@ -74,13 +75,13 @@ step =
       step (cur_touch,cur_tap_pos,dt) g =
         let tap_target = if cur_tap_pos == g.prev_tap_pos then Nothing else Just cur_tap_pos
             pause_clicked =
-                case tap_target of
-                    Nothing -> False
-                    Just {x, y} -> x < 50 && y < 50
+              case tap_target of
+                Nothing -> False
+                Just {x, y} -> x < 50 && y < 50
             restart_clicked =
-                case tap_target of
-                    Nothing -> False
-                    Just {x, y} -> x > (toFloat game_total_width - 50) && y < 50
+              case tap_target of
+                Nothing -> False
+                Just {x, y} -> x > (toFloat game_total_width - 50) && y < 50
             (should_create_fb, new_fb_pos, new_seed) =
               let (rand_should_create, seed') = Random.generate (Random.float 0 (100 * dt / 30)) g.fb_creation_seed
                   should_create_fb = rand_should_create < 1
@@ -93,36 +94,59 @@ step =
             --  that two fireballs won't be too close, by scaling down the integer-pos-generation
             --  and then expanding it with the '* 3', leaving spaces where fbs might have formed.
             
-            drawn_plat = case cur_touch of
-                           Nothing ->
-                             Maybe.map touch_to_platfm g.last_touch -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
-                               `Maybe.andThen` (\({start, end} as plat) ->
-                                                   if | start == end -> Nothing
-                                                      | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
-                                                      | otherwise -> Just plat)
-                           Just _  ->
-                             Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
+            new_preview_plat = -- This does a check to make sure that the 'preview plat' has NOT already been drawn/materialized by having been landed on by the player.
+              case (g.t0_preview_plat_just_added, cur_touch) of
+                (Just prev_t0, Just cur) ->
+                  if prev_t0 == cur.t0
+                    then Nothing
+                    else Just (touch_to_platfm cur)
+                (Nothing, Just cur) -> Just (touch_to_platfm cur)
+                (_, Nothing) -> Nothing
+            drawn_plat =
+              case cur_touch of
+                Nothing -> -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
+                  Maybe.andThen (maybeOr new_preview_plat g.preview_plat) <|
+                    \({start, end} as plat) ->
+                       if | start == end -> Nothing
+                          | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
+                          | otherwise -> Just plat
+                Just _  ->
+                 Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
+            should_add_preview_plat =
+              Maybe.andThen new_preview_plat
+                (\plat ->
+                   if intersects_plat g.player plat
+                     then Just plat
+                     else Nothing)
             new_plats =
               let updated_plats = update_and_filter (stepPlatfm dt) plat_should_stay g.plats
-              in case drawn_plat of Just new_p -> new_p :: updated_plats
-                                    Nothing    -> updated_plats
+              in case (should_add_preview_plat, drawn_plat) of
+                   (_, Just new_p) -> new_p :: updated_plats
+                   (Just new_p, _) -> new_p :: updated_plats
+                   _               -> updated_plats
             new_fireballs =
               let updated_fbs = update_and_filter (stepFireball dt) fb_on_screen g.fireballs
               in if should_create_fb
                   then makeFireball { x = new_fb_pos, y = toFloat game_total_height + fb_height } :: updated_fbs
                   else updated_fbs
             player_on_fire = any (player_hitting_fb g.player) g.fireballs
+            new_game : State
             new_game =
-              { g | player       <- stepPlayer (new_plats,dt) g.player
-                  , plats        <- new_plats
-                  , last_touch   <- cur_touch
-                  , fireballs    <- new_fireballs
-                  , preview_plat <- Maybe.map touch_to_platfm cur_touch
-                  , fb_creation_seed <- new_seed
-                  , prev_tap_pos <- cur_tap_pos
-                  , time_playing <- g.time_playing + dt
-                  , points <- g.points + 2 * (Time.inSeconds dt) * (1 + g.player.pos.y / toFloat game_total_height)
-                  }
+              { player           = stepPlayer (new_plats,dt) g.player
+              , plats            = new_plats
+              , last_touch       = cur_touch
+              , fireballs        = new_fireballs
+              , preview_plat     = if isJust should_add_preview_plat then Nothing else new_preview_plat
+              , t0_preview_plat_just_added =
+                  if isJust should_add_preview_plat
+                    then Maybe.map .t0 cur_touch
+                    else g.t0_preview_plat_just_added
+              , fb_creation_seed = new_seed
+              , prev_tap_pos     = cur_tap_pos
+              , time_playing     = g.time_playing + dt
+              , points           = g.points + 2 * (Time.inSeconds dt) * (1 + g.player.pos.y / toFloat game_total_height)
+              , just_a_simulation = False
+              }
         in if | g.player.pos.y > toFloat game_total_height -> Die new_game
               | player_on_fire -> Die new_game
               | pause_clicked -> Pause new_game
@@ -159,6 +183,7 @@ render =
                   Just p  -> p::forms'
     in Collage.collage game_total_width game_total_height (game_background :: forms)
 
+init : State
 init =
   let side_margin = game_side_margin
       top_margin = game_top_margin
@@ -169,6 +194,7 @@ init =
      , fireballs = []
      , last_touch = Nothing
      , preview_plat = Nothing
+     , t0_preview_plat_just_added = Nothing
      , fb_creation_seed = Random.initialSeed 1234567890987654321 -- CHANGE THIS TO MAKE IT VARY
      , prev_tap_pos = {x=0,y=0}
      , time_playing = 0

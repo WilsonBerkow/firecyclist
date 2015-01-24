@@ -8,7 +8,13 @@ import Color
 x `mod` y = if | x < 0 -> y + x
                | x >= y -> x - y
                | otherwise -> x
-
+constant x y = y
+maybeOr mx my =
+  case (mx,my) of
+    (Just x, _) -> Just x
+    (Nothing, Just y) -> Just y
+    (Nothing, Nothing) -> Nothing
+    
 isJust ma =
   case ma of
     Just a  -> True

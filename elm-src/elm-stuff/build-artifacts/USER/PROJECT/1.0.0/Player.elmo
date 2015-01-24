@@ -21,6 +21,95 @@ Elm.Player.make = function (_elm) {
    $Time = Elm.Time.make(_elm);
    var configPlayer = {_: {}
                       ,radius: 10};
+   var intersects_plat = F2(function (player,
+   plat) {
+      return function () {
+         var $ = {ctor: "_Tuple2"
+                 ,_0: A2($Basics.max,
+                 plat.start.x,
+                 plat.end.x)
+                 ,_1: A2($Basics.max,
+                 plat.start.y,
+                 plat.end.y)},
+         endx = $._0,
+         endy = $._1;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: A2($Basics.min,
+                 plat.start.x,
+                 plat.end.x)
+                 ,_1: A2($Basics.min,
+                 plat.start.y,
+                 plat.end.y)},
+         startx = $._0,
+         starty = $._1;
+         var rad = configPlayer.radius;
+         return A3($BasicUtil.in_range,
+         startx - rad,
+         endx + rad,
+         player.pos.x) && (A3($BasicUtil.in_range,
+         starty - rad,
+         endy + rad,
+         player.pos.y) && function () {
+            var $ = function () {
+               var $ = A2($HasPosition.vect_subtract,
+               plat.end,
+               player.pos),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            offsetx1 = $._0,
+            offsety1 = $._1;
+            var $ = function () {
+               var $ = A2($HasPosition.vect_subtract,
+               plat.start,
+               player.pos),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            offsetx0 = $._0,
+            offsety0 = $._1;
+            var big_D = offsetx0 * offsety1 - offsetx1 * offsety0;
+            var platlength = A2($HasPosition.distance,
+            plat.start,
+            plat.end);
+            var $ = function () {
+               var $ = player.pos,
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            px = $._0,
+            py = $._1;
+            return _U.cmp(Math.pow(rad * platlength,
+            2),
+            Math.pow(big_D,2)) > -1;
+         }());
+      }();
+   });
+   var touching_any = F2(function (pl,
+   plats) {
+      return function () {
+         switch (plats.ctor)
+         {case "::":
+            return A2(intersects_plat,
+              pl,
+              plats._0) ? $Maybe.Just(plats._0) : A2(touching_any,
+              pl,
+              plats._1);
+            case "[]":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 45 and 50");
+      }();
+   });
    var stepPlayer = function () {
       var player_grav = 0.3;
       var platfm_bounciness = 0.75;
@@ -31,94 +120,6 @@ Elm.Player.make = function (_elm) {
                                                                                                                                         ,y: $Basics.abs(m)})));
       });
       var rad = configPlayer.radius;
-      var intersects = F2(function (player,
-      plat) {
-         return function () {
-            var $ = {ctor: "_Tuple2"
-                    ,_0: A2($Basics.max,
-                    plat.start.x,
-                    plat.end.x)
-                    ,_1: A2($Basics.max,
-                    plat.start.y,
-                    plat.end.y)},
-            endx = $._0,
-            endy = $._1;
-            var $ = {ctor: "_Tuple2"
-                    ,_0: A2($Basics.min,
-                    plat.start.x,
-                    plat.end.x)
-                    ,_1: A2($Basics.min,
-                    plat.start.y,
-                    plat.end.y)},
-            startx = $._0,
-            starty = $._1;
-            return A3($BasicUtil.in_range,
-            startx - rad,
-            endx + rad,
-            player.pos.x) && (A3($BasicUtil.in_range,
-            starty - rad,
-            endy + rad,
-            player.pos.y) && function () {
-               var $ = function () {
-                  var $ = A2($HasPosition.vect_subtract,
-                  plat.end,
-                  player.pos),
-                  x = $.x,
-                  y = $.y;
-                  return {ctor: "_Tuple2"
-                         ,_0: x
-                         ,_1: y};
-               }(),
-               offsetx1 = $._0,
-               offsety1 = $._1;
-               var $ = function () {
-                  var $ = A2($HasPosition.vect_subtract,
-                  plat.start,
-                  player.pos),
-                  x = $.x,
-                  y = $.y;
-                  return {ctor: "_Tuple2"
-                         ,_0: x
-                         ,_1: y};
-               }(),
-               offsetx0 = $._0,
-               offsety0 = $._1;
-               var big_D = offsetx0 * offsety1 - offsetx1 * offsety0;
-               var platlength = A2($HasPosition.distance,
-               plat.start,
-               plat.end);
-               var $ = function () {
-                  var $ = player.pos,
-                  x = $.x,
-                  y = $.y;
-                  return {ctor: "_Tuple2"
-                         ,_0: x
-                         ,_1: y};
-               }(),
-               px = $._0,
-               py = $._1;
-               return _U.cmp(Math.pow(rad * platlength,
-               2),
-               Math.pow(big_D,2)) > -1;
-            }());
-         }();
-      });
-      var touching_any = F2(function (pl,
-      plats) {
-         return function () {
-            switch (plats.ctor)
-            {case "::":
-               return A2(intersects,
-                 pl,
-                 plats._0) ? $Maybe.Just(plats._0) : A2(touching_any,
-                 pl,
-                 plats._1);
-               case "[]":
-               return $Maybe.Nothing;}
-            _U.badCase($moduleName,
-            "between lines 49 and 56");
-         }();
-      });
       var slope = F2(function (_v3,
       _v4) {
          return function () {
@@ -129,10 +130,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
-                    "on line 32, column 34 to 53");
+                    "on line 54, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 32, column 34 to 53");
+            "on line 54, column 34 to 53");
          }();
       });
       var plat_slope = function (_v11) {
@@ -168,7 +169,7 @@ Elm.Player.make = function (_elm) {
                             player_grav * _v13._1 / 28,
                             p.vel);}
                        _U.badCase($moduleName,
-                       "between lines 68 and 71");
+                       "between lines 69 and 72");
                     }();
                     var $ = function () {
                        var $ = A2($HasPosition.vect_add,
@@ -194,7 +195,7 @@ Elm.Player.make = function (_elm) {
                            ,vel: vel};
                  }();}
             _U.badCase($moduleName,
-            "between lines 66 and 79");
+            "between lines 67 and 80");
          }();
       });
       return step;
@@ -230,6 +231,8 @@ Elm.Player.make = function (_elm) {
                         ,std_player: std_player
                         ,renderPlayer: renderPlayer
                         ,configPlayer: configPlayer
+                        ,intersects_plat: intersects_plat
+                        ,touching_any: touching_any
                         ,stepPlayer: stepPlayer};
    return _elm.Player.values;
 };

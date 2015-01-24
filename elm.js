@@ -218,7 +218,7 @@ Elm.BasicUtil.make = function (_elm) {
       0) > 0 ? 1 : _U.eq(x,
       0) ? 0 : _U.cmp(x,
       0) < 0 ? -1 : _U.badIf($moduleName,
-      "between lines 28 and 30");
+      "between lines 34 and 36");
    };
    var deepGrey = A3($Color.rgb,
    50,
@@ -239,7 +239,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 21 and 22");
+         "between lines 27 and 28");
       }();
    };
    var mhead = function (l) {
@@ -250,7 +250,7 @@ Elm.BasicUtil.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 19 and 20");
+         "between lines 25 and 26");
       }();
    };
    var in_range = F3(function (x1,
@@ -267,9 +267,36 @@ Elm.BasicUtil.make = function (_elm) {
          {case "Just": return true;
             case "Nothing": return false;}
          _U.badCase($moduleName,
-         "between lines 13 and 15");
+         "between lines 19 and 21");
       }();
    };
+   var maybeOr = F2(function (mx,
+   my) {
+      return function () {
+         var _v8 = {ctor: "_Tuple2"
+                   ,_0: mx
+                   ,_1: my};
+         switch (_v8.ctor)
+         {case "_Tuple2":
+            switch (_v8._0.ctor)
+              {case "Just":
+                 return $Maybe.Just(_v8._0._0);
+                 case "Nothing":
+                 switch (_v8._1.ctor)
+                   {case "Just":
+                      return $Maybe.Just(_v8._1._0);
+                      case "Nothing":
+                      return $Maybe.Nothing;}
+                   break;}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 13 and 17");
+      }();
+   });
+   var constant = F2(function (x,
+   y) {
+      return y;
+   });
    var mod = F2(function (x,y) {
       return _U.cmp(x,
       0) < 0 ? y + x : _U.cmp(x,
@@ -277,6 +304,8 @@ Elm.BasicUtil.make = function (_elm) {
    });
    _elm.BasicUtil.values = {_op: _op
                            ,mod: mod
+                           ,constant: constant
+                           ,maybeOr: maybeOr
                            ,isJust: isJust
                            ,in_range: in_range
                            ,mhead: mhead
@@ -1162,6 +1191,7 @@ Elm.Game.make = function (_elm) {
              ,points: 0
              ,prev_tap_pos: {_: {},x: 0,y: 0}
              ,preview_plat: $Maybe.Nothing
+             ,t0_preview_plat_just_added: $Maybe.Nothing
              ,time_playing: 0};
    }();
    var State = function (a) {
@@ -1174,17 +1204,20 @@ Elm.Game.make = function (_elm) {
                         return function (h) {
                            return function (i) {
                               return function (j) {
-                                 return {_: {}
-                                        ,fb_creation_seed: f
-                                        ,fireballs: c
-                                        ,just_a_simulation: j
-                                        ,last_touch: d
-                                        ,plats: a
-                                        ,player: b
-                                        ,points: i
-                                        ,prev_tap_pos: g
-                                        ,preview_plat: e
-                                        ,time_playing: h};
+                                 return function (k) {
+                                    return {_: {}
+                                           ,fb_creation_seed: g
+                                           ,fireballs: c
+                                           ,just_a_simulation: k
+                                           ,last_touch: d
+                                           ,plats: a
+                                           ,player: b
+                                           ,points: j
+                                           ,prev_tap_pos: h
+                                           ,preview_plat: e
+                                           ,t0_preview_plat_just_added: f
+                                           ,time_playing: i};
+                                 };
                               };
                            };
                         };
@@ -1274,7 +1307,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 157 and 160");
+               "between lines 181 and 184");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -1377,44 +1410,82 @@ Elm.Game.make = function (_elm) {
                     var player_on_fire = A2($BasicUtil.any,
                     player_hitting_fb(g.player),
                     g.fireballs);
+                    var new_preview_plat = function () {
+                       var _v19 = {ctor: "_Tuple2"
+                                  ,_0: g.t0_preview_plat_just_added
+                                  ,_1: _v14._0};
+                       switch (_v19.ctor)
+                       {case "_Tuple2":
+                          switch (_v19._0.ctor)
+                            {case "Just":
+                               switch (_v19._1.ctor)
+                                 {case "Just":
+                                    return _U.eq(_v19._0._0,
+                                      _v19._1._0.t0) ? $Maybe.Nothing : $Maybe.Just(touch_to_platfm(_v19._1._0));}
+                                 break;
+                               case "Nothing":
+                               switch (_v19._1.ctor)
+                                 {case "Just":
+                                    return $Maybe.Just(touch_to_platfm(_v19._1._0));}
+                                 break;}
+                            switch (_v19._1.ctor)
+                            {case "Nothing":
+                               return $Maybe.Nothing;}
+                            break;}
+                       _U.badCase($moduleName,
+                       "between lines 98 and 105");
+                    }();
                     var drawn_plat = function () {
                        switch (_v14._0.ctor)
                        {case "Just":
                           return $Maybe.Nothing;
                           case "Nothing":
-                          return A2($Maybe.andThen,
-                            A2($Maybe.map,
-                            touch_to_platfm,
-                            g.last_touch),
-                            function (_v21) {
+                          return $Maybe.andThen(A2($BasicUtil.maybeOr,
+                            new_preview_plat,
+                            g.preview_plat))(function (_v27) {
                                return function () {
-                                  return _U.eq(_v21.start,
-                                  _v21.end) ? $Maybe.Nothing : _U.eq(_v21.start.y,
-                                  _v21.end.y) ? $Maybe.Just(_U.replace([["start"
+                                  return _U.eq(_v27.start,
+                                  _v27.end) ? $Maybe.Nothing : _U.eq(_v27.start.y,
+                                  _v27.end.y) ? $Maybe.Just(_U.replace([["start"
                                                                         ,_U.replace([["y"
-                                                                                     ,_v21.start.y - 1]],
-                                                                        _v21.start)]],
-                                  _v21)) : $Maybe.Just(_v21);
+                                                                                     ,_v27.start.y - 1]],
+                                                                        _v27.start)]],
+                                  _v27)) : $Maybe.Just(_v27);
                                }();
                             });}
                        _U.badCase($moduleName,
-                       "between lines 96 and 105");
+                       "between lines 106 and 115");
                     }();
+                    var should_add_preview_plat = A2($Maybe.andThen,
+                    new_preview_plat,
+                    function (plat) {
+                       return A2($Player.intersects_plat,
+                       g.player,
+                       plat) ? $Maybe.Just(plat) : $Maybe.Nothing;
+                    });
                     var new_plats = function () {
                        var updated_plats = A3(update_and_filter,
                        $Platfm.stepPlatfm(_v14._2),
                        plat_should_stay,
                        g.plats);
                        return function () {
-                          switch (drawn_plat.ctor)
-                          {case "Just":
-                             return A2($List._op["::"],
-                               drawn_plat._0,
-                               updated_plats);
-                             case "Nothing":
-                             return updated_plats;}
-                          _U.badCase($moduleName,
-                          "between lines 107 and 109");
+                          var _v29 = {ctor: "_Tuple2"
+                                     ,_0: should_add_preview_plat
+                                     ,_1: drawn_plat};
+                          switch (_v29.ctor)
+                          {case "_Tuple2":
+                             switch (_v29._1.ctor)
+                               {case "Just":
+                                  return A2($List._op["::"],
+                                    _v29._1._0,
+                                    updated_plats);}
+                               switch (_v29._0.ctor)
+                               {case "Just":
+                                  return A2($List._op["::"],
+                                    _v29._0._0,
+                                    updated_plats);}
+                               break;}
+                          return updated_plats;
                        }();
                     }();
                     var $ = function () {
@@ -1457,26 +1528,26 @@ Elm.Game.make = function (_elm) {
                                               ,y: $Basics.toFloat($Config.game_total_height) + $Fireball.fb_height}),
                        updated_fbs) : updated_fbs;
                     }();
-                    var new_game = _U.replace([["player"
-                                               ,A2($Player.stepPlayer,
-                                               {ctor: "_Tuple2"
-                                               ,_0: new_plats
-                                               ,_1: _v14._2},
-                                               g.player)]
-                                              ,["plats",new_plats]
-                                              ,["last_touch",_v14._0]
-                                              ,["fireballs",new_fireballs]
-                                              ,["preview_plat"
-                                               ,A2($Maybe.map,
-                                               touch_to_platfm,
-                                               _v14._0)]
-                                              ,["fb_creation_seed",new_seed]
-                                              ,["prev_tap_pos",_v14._1]
-                                              ,["time_playing"
-                                               ,g.time_playing + _v14._2]
-                                              ,["points"
-                                               ,g.points + 2 * $Time.inSeconds(_v14._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height))]],
-                    g);
+                    var new_game = {_: {}
+                                   ,fb_creation_seed: new_seed
+                                   ,fireballs: new_fireballs
+                                   ,just_a_simulation: false
+                                   ,last_touch: _v14._0
+                                   ,plats: new_plats
+                                   ,player: A2($Player.stepPlayer,
+                                   {ctor: "_Tuple2"
+                                   ,_0: new_plats
+                                   ,_1: _v14._2},
+                                   g.player)
+                                   ,points: g.points + 2 * $Time.inSeconds(_v14._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height))
+                                   ,prev_tap_pos: _v14._1
+                                   ,preview_plat: $BasicUtil.isJust(should_add_preview_plat) ? $Maybe.Nothing : new_preview_plat
+                                   ,t0_preview_plat_just_added: $BasicUtil.isJust(should_add_preview_plat) ? A2($Maybe.map,
+                                   function (_) {
+                                      return _.t0;
+                                   },
+                                   _v14._0) : g.t0_preview_plat_just_added
+                                   ,time_playing: g.time_playing + _v14._2};
                     var tap_target = _U.eq(_v14._1,
                     g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v14._1);
                     var pause_clicked = function () {
@@ -1487,7 +1558,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 77 and 80");
+                       "between lines 78 and 81");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -1497,13 +1568,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 81 and 84");
+                       "between lines 82 and 85");
                     }();
                     return _U.cmp(g.player.pos.y,
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 75 and 130");
+            "between lines 76 and 154");
          }();
       });
       return step;
@@ -6493,6 +6564,95 @@ Elm.Player.make = function (_elm) {
    $Time = Elm.Time.make(_elm);
    var configPlayer = {_: {}
                       ,radius: 10};
+   var intersects_plat = F2(function (player,
+   plat) {
+      return function () {
+         var $ = {ctor: "_Tuple2"
+                 ,_0: A2($Basics.max,
+                 plat.start.x,
+                 plat.end.x)
+                 ,_1: A2($Basics.max,
+                 plat.start.y,
+                 plat.end.y)},
+         endx = $._0,
+         endy = $._1;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: A2($Basics.min,
+                 plat.start.x,
+                 plat.end.x)
+                 ,_1: A2($Basics.min,
+                 plat.start.y,
+                 plat.end.y)},
+         startx = $._0,
+         starty = $._1;
+         var rad = configPlayer.radius;
+         return A3($BasicUtil.in_range,
+         startx - rad,
+         endx + rad,
+         player.pos.x) && (A3($BasicUtil.in_range,
+         starty - rad,
+         endy + rad,
+         player.pos.y) && function () {
+            var $ = function () {
+               var $ = A2($HasPosition.vect_subtract,
+               plat.end,
+               player.pos),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            offsetx1 = $._0,
+            offsety1 = $._1;
+            var $ = function () {
+               var $ = A2($HasPosition.vect_subtract,
+               plat.start,
+               player.pos),
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            offsetx0 = $._0,
+            offsety0 = $._1;
+            var big_D = offsetx0 * offsety1 - offsetx1 * offsety0;
+            var platlength = A2($HasPosition.distance,
+            plat.start,
+            plat.end);
+            var $ = function () {
+               var $ = player.pos,
+               x = $.x,
+               y = $.y;
+               return {ctor: "_Tuple2"
+                      ,_0: x
+                      ,_1: y};
+            }(),
+            px = $._0,
+            py = $._1;
+            return _U.cmp(Math.pow(rad * platlength,
+            2),
+            Math.pow(big_D,2)) > -1;
+         }());
+      }();
+   });
+   var touching_any = F2(function (pl,
+   plats) {
+      return function () {
+         switch (plats.ctor)
+         {case "::":
+            return A2(intersects_plat,
+              pl,
+              plats._0) ? $Maybe.Just(plats._0) : A2(touching_any,
+              pl,
+              plats._1);
+            case "[]":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 45 and 50");
+      }();
+   });
    var stepPlayer = function () {
       var player_grav = 0.3;
       var platfm_bounciness = 0.75;
@@ -6503,94 +6663,6 @@ Elm.Player.make = function (_elm) {
                                                                                                                                         ,y: $Basics.abs(m)})));
       });
       var rad = configPlayer.radius;
-      var intersects = F2(function (player,
-      plat) {
-         return function () {
-            var $ = {ctor: "_Tuple2"
-                    ,_0: A2($Basics.max,
-                    plat.start.x,
-                    plat.end.x)
-                    ,_1: A2($Basics.max,
-                    plat.start.y,
-                    plat.end.y)},
-            endx = $._0,
-            endy = $._1;
-            var $ = {ctor: "_Tuple2"
-                    ,_0: A2($Basics.min,
-                    plat.start.x,
-                    plat.end.x)
-                    ,_1: A2($Basics.min,
-                    plat.start.y,
-                    plat.end.y)},
-            startx = $._0,
-            starty = $._1;
-            return A3($BasicUtil.in_range,
-            startx - rad,
-            endx + rad,
-            player.pos.x) && (A3($BasicUtil.in_range,
-            starty - rad,
-            endy + rad,
-            player.pos.y) && function () {
-               var $ = function () {
-                  var $ = A2($HasPosition.vect_subtract,
-                  plat.end,
-                  player.pos),
-                  x = $.x,
-                  y = $.y;
-                  return {ctor: "_Tuple2"
-                         ,_0: x
-                         ,_1: y};
-               }(),
-               offsetx1 = $._0,
-               offsety1 = $._1;
-               var $ = function () {
-                  var $ = A2($HasPosition.vect_subtract,
-                  plat.start,
-                  player.pos),
-                  x = $.x,
-                  y = $.y;
-                  return {ctor: "_Tuple2"
-                         ,_0: x
-                         ,_1: y};
-               }(),
-               offsetx0 = $._0,
-               offsety0 = $._1;
-               var big_D = offsetx0 * offsety1 - offsetx1 * offsety0;
-               var platlength = A2($HasPosition.distance,
-               plat.start,
-               plat.end);
-               var $ = function () {
-                  var $ = player.pos,
-                  x = $.x,
-                  y = $.y;
-                  return {ctor: "_Tuple2"
-                         ,_0: x
-                         ,_1: y};
-               }(),
-               px = $._0,
-               py = $._1;
-               return _U.cmp(Math.pow(rad * platlength,
-               2),
-               Math.pow(big_D,2)) > -1;
-            }());
-         }();
-      });
-      var touching_any = F2(function (pl,
-      plats) {
-         return function () {
-            switch (plats.ctor)
-            {case "::":
-               return A2(intersects,
-                 pl,
-                 plats._0) ? $Maybe.Just(plats._0) : A2(touching_any,
-                 pl,
-                 plats._1);
-               case "[]":
-               return $Maybe.Nothing;}
-            _U.badCase($moduleName,
-            "between lines 49 and 56");
-         }();
-      });
       var slope = F2(function (_v3,
       _v4) {
          return function () {
@@ -6601,10 +6673,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
-                    "on line 32, column 34 to 53");
+                    "on line 54, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 32, column 34 to 53");
+            "on line 54, column 34 to 53");
          }();
       });
       var plat_slope = function (_v11) {
@@ -6640,7 +6712,7 @@ Elm.Player.make = function (_elm) {
                             player_grav * _v13._1 / 28,
                             p.vel);}
                        _U.badCase($moduleName,
-                       "between lines 68 and 71");
+                       "between lines 69 and 72");
                     }();
                     var $ = function () {
                        var $ = A2($HasPosition.vect_add,
@@ -6666,7 +6738,7 @@ Elm.Player.make = function (_elm) {
                            ,vel: vel};
                  }();}
             _U.badCase($moduleName,
-            "between lines 66 and 79");
+            "between lines 67 and 80");
          }();
       });
       return step;
@@ -6702,6 +6774,8 @@ Elm.Player.make = function (_elm) {
                         ,std_player: std_player
                         ,renderPlayer: renderPlayer
                         ,configPlayer: configPlayer
+                        ,intersects_plat: intersects_plat
+                        ,touching_any: touching_any
                         ,stepPlayer: stepPlayer};
    return _elm.Player.values;
 };
