@@ -1270,15 +1270,9 @@ Elm.Game.make = function (_elm) {
             $Platfm.renderPlatfm,
             game.plats);
             var forms$ = A2($Basics._op["++"],
-            A2($List._op["::"],
-            pauseBtn,
-            A2($List._op["::"],
-            restartBtn,
-            plats)),
+            _L.fromArray([pauseBtn
+                         ,restartBtn]),
             A2($Basics._op["++"],
-            _L.fromArray([$Player.renderPlayer(game.player)]),
-            A2($Basics._op["++"],
-            fireballs,
             _L.fromArray([A2($HasPosition.move_f,
                          {_: {},x: 10,y: -5},
                          btn_outline)
@@ -1298,7 +1292,12 @@ Elm.Game.make = function (_elm) {
                                       ,"arial"]),
                          A2($Text.height,
                          30,
-                         $Text.fromString($Basics.toString($Basics.round(game.points))))))))))]))));
+                         $Text.fromString($Basics.toString($Basics.round(game.points))))))))))]),
+            A2($Basics._op["++"],
+            plats,
+            A2($Basics._op["++"],
+            fireballs,
+            _L.fromArray([$Player.renderPlayer(game.player)])))));
             var forms = function () {
                switch (plat_preview.ctor)
                {case "Just":
@@ -1307,7 +1306,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 181 and 184");
+               "between lines 182 and 185");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,

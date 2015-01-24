@@ -171,13 +171,14 @@ render =
         plat_preview = Maybe.map renderTouchPlatfmPreview game.preview_plat
         fireballs = List.map renderFireball game.fireballs
         
-        forms' = (pauseBtn :: restartBtn :: plats)
-              ++ [renderPlayer game.player]
-              ++ fireballs
+        forms' = [pauseBtn, restartBtn]
               ++ [ move_f {x=10, y=-5} btn_outline
                  , move_f {x=toFloat game_total_width - 10, y=-5} btn_outline
                  , move_f {x=toFloat game_total_width / 2, y=20} (Collage.toForm (Text.centered (Text.color Color.black (Text.bold (Text.typeface ["monospace", "arial"] (Text.height 30 (Text.fromString (toString (round game.points)))))))))
                  ]
+              ++ plats
+              ++ fireballs
+              ++ [renderPlayer game.player]
         forms = case plat_preview of
                   Nothing -> forms'
                   Just p  -> p::forms'
