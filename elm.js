@@ -940,7 +940,7 @@ Elm.Config.make = function (_elm) {
    _P = _N.Ports.make(_elm),
    $moduleName = "Config",
    $Basics = Elm.Basics.make(_elm);
-   var framerate = 30;
+   var framerate = 40;
    var game_total_height = 1024 / 2 | 0;
    var game_total_width = 576 / 2 | 0;
    var game_top_margin = 15;
@@ -2927,6 +2927,8 @@ Elm.MainMenu.make = function (_elm) {
    $HasPosition = Elm.HasPosition.make(_elm),
    $Text = Elm.Text.make(_elm);
    var init = {_: {},x: 0,y: 0};
+   var arial = $Text.typeface(_L.fromArray(["arial"
+                                           ,"monospace"]));
    var monospace = $Text.typeface(_L.fromArray(["monospace"
                                                ,"arial"]));
    var render = function (_v0) {
@@ -2940,21 +2942,21 @@ Elm.MainMenu.make = function (_elm) {
                       A2($Graphics$Collage.rect,
                       $Basics.toFloat($Config.game_total_width),
                       $Basics.toFloat($Config.game_total_height)))
-                      ,$Graphics$Collage.moveY(40)($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(70)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
+                      ,$Graphics$Collage.moveY(40)($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(75)($Graphics$Collage.toForm($Text.centered($Text.bold($Text.italic(A2($Text.color,
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
-                                                                                        140,
-                                                                                        monospace($Text.fromString("Fire"))))))))
-                                                                                        ,$Graphics$Collage.moveY(0)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
+                                                                                        165,
+                                                                                        arial($Text.fromString("Fire")))))))))
+                                                                                        ,$Graphics$Collage.moveY(0)($Graphics$Collage.toForm($Text.centered($Text.bold($Text.italic(A2($Text.color,
                                                                                         $Color.orange,
                                                                                         A2($Text.height,
-                                                                                        85,
-                                                                                        monospace($Text.fromString("cyclist"))))))))
+                                                                                        95,
+                                                                                        arial($Text.fromString("cyclist")))))))))
                                                                                         ,$Graphics$Collage.moveY(-100)($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.color,
                                                                                         $BasicUtil.deepGrey,
                                                                                         A2($Text.height,
                                                                                         60,
-                                                                                        $Text.italic(monospace($Text.fromString("Play")))))))))])))]));
+                                                                                        $Basics.identity(monospace($Text.fromString("Play")))))))))])))]));
       }();
    };
    var messageStyle = function ($) {
