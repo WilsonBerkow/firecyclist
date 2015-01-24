@@ -1039,34 +1039,6 @@ Elm.Fireball.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Time = Elm.Time.make(_elm);
-   var single_fb = $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.move,
-                                                        {ctor: "_Tuple2"
-                                                        ,_0: 2.5 * 4
-                                                        ,_1: -1.9 * 4},
-                                                        A2($Graphics$Collage.rotate,
-                                                        $Basics.turns(0.75),
-                                                        A2($Graphics$Collage.filled,
-                                                        $Color.red,
-                                                        A2($Graphics$Collage.ngon,
-                                                        3,
-                                                        3 * 4))))
-                                                        ,A2($Graphics$Collage.move,
-                                                        {ctor: "_Tuple2"
-                                                        ,_0: 2.5 * 4
-                                                        ,_1: 0},
-                                                        A2($Graphics$Collage.filled,
-                                                        $Color.orange,
-                                                        $Graphics$Collage.circle(10)))
-                                                        ,A2($Graphics$Collage.move,
-                                                        {ctor: "_Tuple2"
-                                                        ,_0: 2.5 * 5 - 3
-                                                        ,_1: 0},
-                                                        A2($Graphics$Collage.outlined,
-                                                        $Graphics$Collage.solid($Color.red),
-                                                        $Graphics$Collage.circle(10)))]));
-   var renderFireball = function (f) {
-      return $HasPosition.move_f(f.pos)(single_fb);
-   };
    var stepFireball = F2(function (dt,
    fb) {
       return {_: {}
@@ -1075,7 +1047,37 @@ Elm.Fireball.make = function (_elm) {
              fb.pos)
              ,speed: fb.speed};
    });
-   var fb_height = 4 * 4.5;
+   var fb_triangle_radius = 12;
+   var fb_radius = 10;
+   var fb_height = fb_radius + 1.5 * fb_triangle_radius;
+   var single_fb = $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.move,
+                                                        {ctor: "_Tuple2"
+                                                        ,_0: 0
+                                                        ,_1: -1.9 * 4},
+                                                        A2($Graphics$Collage.rotate,
+                                                        $Basics.turns(0.75),
+                                                        A2($Graphics$Collage.filled,
+                                                        $Color.red,
+                                                        A2($Graphics$Collage.ngon,
+                                                        3,
+                                                        fb_triangle_radius))))
+                                                        ,A2($Graphics$Collage.move,
+                                                        {ctor: "_Tuple2"
+                                                        ,_0: 0
+                                                        ,_1: 0},
+                                                        A2($Graphics$Collage.filled,
+                                                        $Color.orange,
+                                                        $Graphics$Collage.circle(fb_radius)))
+                                                        ,A2($Graphics$Collage.move,
+                                                        {ctor: "_Tuple2"
+                                                        ,_0: 2.5 - 3
+                                                        ,_1: 0},
+                                                        A2($Graphics$Collage.outlined,
+                                                        $Graphics$Collage.solid($Color.red),
+                                                        $Graphics$Collage.circle(fb_radius)))]));
+   var renderFireball = function (f) {
+      return $HasPosition.move_f(f.pos)(single_fb);
+   };
    var configFireball = function () {
       var side_len = 12;
       return {_: {}
@@ -1097,6 +1099,8 @@ Elm.Fireball.make = function (_elm) {
    _elm.Fireball.values = {_op: _op
                           ,Fireball: Fireball
                           ,configFireball: configFireball
+                          ,fb_radius: fb_radius
+                          ,fb_triangle_radius: fb_triangle_radius
                           ,fb_height: fb_height
                           ,stepFireball: stepFireball
                           ,single_fb: single_fb
@@ -1315,7 +1319,7 @@ Elm.Game.make = function (_elm) {
          return _U.cmp(A2($HasPosition.distance,
          player.pos,
          fb.pos),
-         $Player.configPlayer.radius + $Fireball.fb_height / 2) < 0;
+         $Player.configPlayer.radius + $Fireball.fb_radius) < 0;
       });
       var plat_alive = function (_v4) {
          return function () {

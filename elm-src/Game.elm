@@ -66,7 +66,7 @@ step =
       
       player_hitting_fb : Player -> Fireball -> Bool
       player_hitting_fb player fb =
-        distance player.pos fb.pos < (configPlayer.radius + fb_height / 2) -- 'fb_height / 2' **approximates** the avg radius of the fb.
+        distance player.pos fb.pos < (configPlayer.radius + fb_radius) -- 'fb_height / 2' **approximates** the avg radius of the fb.
       
       update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
       

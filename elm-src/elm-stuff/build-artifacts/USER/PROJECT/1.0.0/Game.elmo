@@ -209,7 +209,7 @@ Elm.Game.make = function (_elm) {
          return _U.cmp(A2($HasPosition.distance,
          player.pos,
          fb.pos),
-         $Player.configPlayer.radius + $Fireball.fb_height / 2) < 0;
+         $Player.configPlayer.radius + $Fireball.fb_radius) < 0;
       });
       var plat_alive = function (_v4) {
          return function () {
