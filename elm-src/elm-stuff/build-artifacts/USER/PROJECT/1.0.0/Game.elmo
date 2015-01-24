@@ -111,7 +111,7 @@ Elm.Game.make = function (_elm) {
       var btnMargin = 20;
       var restartBtn = $Graphics$Collage.scale(2.3)($HasPosition.move_f({_: {}
                                                                         ,x: $Basics.toFloat($Config.game_total_width) - btnMargin
-                                                                        ,y: btnMargin})($Graphics$Collage.toForm($Text.plainText("&#10227;"))));
+                                                                        ,y: btnMargin})($Graphics$Collage.toForm($Text.plainText("R"))));
       var pauseBtn = $Graphics$Collage.scale(2)($HasPosition.move_f({_: {}
                                                                     ,x: btnMargin
                                                                     ,y: btnMargin + 2})($Graphics$Collage.toForm($Text.centered($Text.bold(A2($Text.typeface,

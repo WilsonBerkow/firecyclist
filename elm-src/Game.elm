@@ -157,7 +157,7 @@ step =
 render : State -> Element
 render =
   let btnMargin = 20
-      restartBtn = (Collage.toForm (Text.plainText "&#10227;"))
+      restartBtn = (Collage.toForm (Text.plainText "R"))--"&#10227;"))
                      |> move_f { x = toFloat game_total_width - btnMargin, y = btnMargin }
                      |> Collage.scale 2.3
       pauseBtn = Collage.toForm (Text.centered (Text.bold (Text.typeface ["arial", "sans-serif", "monospace"] (Text.fromString "II"))))

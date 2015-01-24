@@ -3,7 +3,7 @@
 import Signal (Signal, map, map3, foldp, sampleOn)
 import Time (inSeconds, fps)
 import Config (framerate)
-import Maybe (Maybe(Just,Nothing), withDefault)
+import Maybe (Maybe, withDefault)
 import Touch
 import BasicUtil (..)
 import HasPosition (Position)
@@ -27,5 +27,7 @@ port modtouches : Signal (List Touch.Touch)
 
 port taps : Signal (Maybe Position)
 
---  - TODO: Start using GlobalState, and test it out with features like "Mute" (even though
---     I still have no sound).
+-- TODO: Start using GlobalState, and test it out with highscores storage. That
+--  would most likely not be done with ordinary global state, as it would have
+--  to persist across sessions, but it is a good start to get into global state,
+--  which will be necessary for things like Mute.
