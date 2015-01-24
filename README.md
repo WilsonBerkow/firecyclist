@@ -1,9 +1,9 @@
 ﻿# Firecyclist!
 *(c) Wilson Berkow*
 
-Firecyclist is a simple, fun mobile game in which you are a unicyclist on
-fire, sliding and manuevering on platforms that you draw to avoid all the
-fireballs around you, and get the maximum number of points!
+Firecyclist is a simple, fun mobile game in which you are a unicyclist struggling to keep from being on
+fire, sliding and manuevering on platforms that you create in order to avoid all the
+fireballs around you and get the maximum number of points!
 
 ### Screenshots
 ![Screenshot 0](screenshots/screenshot-0-home.png)
@@ -25,8 +25,8 @@ fireballs around you, and get the maximum number of points!
   - Make the intial seed not hardcoded (do Time or something).
 
 - INTERFACE:
-  - Make the main-menu "Play" text be an actual button, so only when clicking there does
-     one start playing.
+  - Make the main-menu "Play" text be an actual button, so only when clicking there (rather
+     than anywhere on the screen) one start playing.
   - Make fireballs fall down in the background of the MainMenu.
 
 - FOR SIMPLICITY OR CODE QUALITY:
