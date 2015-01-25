@@ -22,6 +22,7 @@ import ArbitraryRounding (arb_round)
 import Player (..)
 import Fireball (..)
 import Platfm (Platfm, configPlatfm, stepPlatfm, renderPlatfm, renderTouchPlatfmPreview)
+import Coin (..)
 
 type WhereTo = Continue State | Pause State | Restart Position | Die State -- It is necessary for 'Restart' to take a Position for the same reason it is necessary for DeadScreen.Replay to take one: so that the new game that is started records the previous tap correctly, and does not accidentally pause it or anything
 toPosition {x,y} = { x = (toFloat x), y = (toFloat y) }
@@ -32,6 +33,7 @@ game_background = Collage.filled (Color.rgba 175 175 255 0.75)
 type alias State =
   { plats : List Platfm
   , player : Player
+  , coins : List Coin
   , fireballs : List Fireball
   , last_touch : Maybe Touch.Touch
   , preview_plat : Maybe Platfm
@@ -44,6 +46,7 @@ type alias State =
   }
 type alias Input = (Maybe Touch.Touch, Position, Time.Time) -- If and where the player's touching on the screen, and where he/she started the touch (that's part of the data of the Touch type).
 
+step : Input -> State -> WhereTo
 step =
   let touch_to_platfm : Touch.Touch -> Platfm
       touch_to_platfm {x0, y0, x, y} = { start = { x = toFloat x0, y = toFloat y0 }
@@ -65,11 +68,28 @@ step =
       fb_on_screen : Fireball -> Bool
       fb_on_screen {pos} = point_on_screen pos || point_on_screen (vect_rise fb_height pos)
       
+      coin_on_screen : Coin -> Bool
+      coin_on_screen pos = point_on_screen pos || point_on_screen (vect_rise coin_radius pos)
+      
       player_hitting_fb : Player -> Fireball -> Bool
       player_hitting_fb player fb =
         distance player.pos fb.pos < (configPlayer.radius + fb_radius) -- 'fb_height / 2' **approximates** the avg radius of the fb.
       
       update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
+      
+      randomly_create_x seed dt likelihood spacing =
+        let (rand_should_create, seed') = Random.generate (Random.float 0 (100 * dt / 30 / likelihood)) seed
+            should_create_fb = rand_should_create < 1
+            (rand_fb_pos, seed'') = (Random.generate (Random.int 0 (game_total_width // 3)) seed')
+            new_fb_pos =
+              if should_create_fb
+                then Just (toFloat (arb_round spacing rand_fb_pos) * 3)
+                else Nothing
+        in (new_fb_pos, seed'')
+        -- You might notice that there is a '// 3' in the construction of rand_fb_pos,
+        --  and a '* 3' in its modification into new_fb_pos. This serves to makes sure
+        --  that two fireballs won't be too close, by scaling down the integer-pos-generation
+        --  and then expanding it with the '* 3', leaving spaces where fbs might have formed.
       
       step : Input -> State -> WhereTo
       step (cur_touch,cur_tap_pos,dt) g =
@@ -82,18 +102,10 @@ step =
               case tap_target of
                 Nothing -> False
                 Just {x, y} -> x > (toFloat game_total_width - 50) && y < 50
-            (should_create_fb, new_fb_pos, new_seed) =
-              let (rand_should_create, seed') = Random.generate (Random.float 0 (100 * dt / 30)) g.fb_creation_seed
-                  should_create_fb = rand_should_create < 1
-                  spacing = round configFireball.padded_len
-                  (rand_fb_pos, seed'') = (Random.generate (Random.int 0 (game_total_width // 3)) seed')
-                  new_fb_pos = toFloat (arb_round spacing rand_fb_pos) * 3
-              in (should_create_fb, new_fb_pos, seed'')
-            -- You might notice that there is a '// 3' in the construction of rand_fb_pos,
-            --  and a '* 3' in its modification into new_fb_pos. This serves to makes sure
-            --  that two fireballs won't be too close, by scaling down the integer-pos-generation
-            --  and then expanding it with the '* 3', leaving spaces where fbs might have formed.
+            (new_fb_pos, seed') = randomly_create_x g.fb_creation_seed dt 1 (round configFireball.padded_len)
+            (new_coin_pos, new_seed) = randomly_create_x seed' dt 0.4 (round coin_radius)
             
+            new_preview_plat : Maybe Platfm
             new_preview_plat = -- This does a check to make sure that the 'preview plat' has NOT already been drawn/materialized by having been landed on by the player.
               case (g.t0_preview_plat_just_added, cur_touch) of
                 (Just prev_t0, Just cur) ->
@@ -102,6 +114,8 @@ step =
                     else Just (touch_to_platfm cur)
                 (Nothing, Just cur) -> Just (touch_to_platfm cur)
                 (_, Nothing) -> Nothing
+            
+            drawn_plat : Maybe Platfm
             drawn_plat =
               case cur_touch of
                 Nothing -> -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
@@ -112,28 +126,43 @@ step =
                           | otherwise -> Just plat
                 Just _  ->
                  Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
+            
+            should_add_preview_plat : Maybe Platfm
             should_add_preview_plat =
               Maybe.andThen new_preview_plat
                 (\plat ->
                    if intersects_plat g.player plat
                      then Just plat
                      else Nothing)
+            
+            new_plats : List Platfm
             new_plats =
               let updated_plats = update_and_filter (stepPlatfm dt) plat_should_stay g.plats
               in case (should_add_preview_plat, drawn_plat) of
                    (_, Just new_p) -> new_p :: updated_plats
                    (Just new_p, _) -> new_p :: updated_plats
                    _               -> updated_plats
+            
+            new_fireballs : List Fireball
             new_fireballs =
               let updated_fbs = update_and_filter (stepFireball dt) fb_on_screen g.fireballs
-              in if should_create_fb
-                  then makeFireball { x = new_fb_pos, y = toFloat game_total_height + fb_height } :: updated_fbs
-                  else updated_fbs
+              in case new_fb_pos of
+                   Just pos -> makeFireball { x = pos, y = toFloat game_total_height + fb_height } :: updated_fbs
+                   Nothing -> updated_fbs
             player_on_fire = any (player_hitting_fb g.player) g.fireballs
+            
+            new_coins : List Coin
+            new_coins =
+              let updated_coins = update_and_filter (stepCoin dt) coin_on_screen g.coins
+              in case new_coin_pos of
+                   Just pos -> { x = pos, y = toFloat game_total_height + coin_radius } :: updated_coins
+                   Nothing -> updated_coins
+            
             new_game : State
             new_game =
               { player           = stepPlayer (new_plats,dt) g.player
               , plats            = new_plats
+              , coins            = new_coins
               , last_touch       = cur_touch
               , fireballs        = new_fireballs
               , preview_plat     = if isJust should_add_preview_plat then Nothing else new_preview_plat
@@ -168,6 +197,7 @@ render =
       btn_outline = (Collage.filled btn_outline_clr (Collage.circle btn_outline_rad))
   in \game ->
     let plats = List.map renderPlatfm game.plats
+        coins = List.map renderCoin game.coins
         plat_preview = Maybe.map renderTouchPlatfmPreview game.preview_plat
         fireballs = List.map renderFireball game.fireballs
         
@@ -177,6 +207,7 @@ render =
                  , move_f {x=toFloat game_total_width / 2, y=20} (Collage.toForm (Text.centered (Text.color Color.black (Text.bold (Text.typeface ["monospace", "arial"] (Text.height 30 (Text.fromString (toString (round game.points)))))))))
                  ]
               ++ plats
+              ++ coins
               ++ fireballs
               ++ [renderPlayer game.player]
         forms = case plat_preview of
@@ -192,6 +223,7 @@ init =
       (pad_len, side_len) = (configFireball.padded_len, configFireball.side_len)
   in { plats = []
      , player = { pos = {x=200,y=75}, vel = {x=0,y=0} }
+     , coins = []
      , fireballs = []
      , last_touch = Nothing
      , preview_plat = Nothing

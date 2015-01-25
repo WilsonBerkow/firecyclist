@@ -1,0 +1,53 @@
+Elm.Coin = Elm.Coin || {};
+Elm.Coin.make = function (_elm) {
+   "use strict";
+   _elm.Coin = _elm.Coin || {};
+   if (_elm.Coin.values)
+   return _elm.Coin.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Coin",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var coin_fall_rate = 2;
+   var stepCoin = F2(function (dt,
+   st) {
+      return {_: {}
+             ,x: st.x
+             ,y: st.y - coin_fall_rate * dt / 20};
+   });
+   var coin_radius = 10;
+   var renderCoin = function (st) {
+      return function () {
+         var w = 8.5;
+         var rad = coin_radius;
+         return A2($HasPosition.move_f,
+         st,
+         $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
+                                              $Color.yellow,
+                                              $Graphics$Collage.circle(rad))
+                                              ,A2($Graphics$Collage.outlined,
+                                              $Graphics$Collage.solid($Color.darkOrange),
+                                              $Graphics$Collage.circle(rad))
+                                              ,A2($Graphics$Collage.filled,
+                                              $Color.darkOrange,
+                                              A2($Graphics$Collage.rect,w,w))
+                                              ,A2($Graphics$Collage.outlined,
+                                              $Graphics$Collage.solid($Color.orange),
+                                              A2($Graphics$Collage.rect,
+                                              w,
+                                              w))])));
+      }();
+   };
+   _elm.Coin.values = {_op: _op
+                      ,stepCoin: stepCoin
+                      ,renderCoin: renderCoin
+                      ,coin_radius: coin_radius};
+   return _elm.Coin.values;
+};

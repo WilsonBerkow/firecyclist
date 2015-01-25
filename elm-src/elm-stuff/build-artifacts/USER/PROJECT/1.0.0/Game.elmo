@@ -13,6 +13,7 @@ Elm.Game.make = function (_elm) {
    $ArbitraryRounding = Elm.ArbitraryRounding.make(_elm),
    $BasicUtil = Elm.BasicUtil.make(_elm),
    $Basics = Elm.Basics.make(_elm),
+   $Coin = Elm.Coin.make(_elm),
    $Color = Elm.Color.make(_elm),
    $Config = Elm.Config.make(_elm),
    $Fireball = Elm.Fireball.make(_elm),
@@ -41,6 +42,7 @@ Elm.Game.make = function (_elm) {
       var top_margin = $Config.game_top_margin;
       var side_margin = $Config.game_side_margin;
       return {_: {}
+             ,coins: _L.fromArray([])
              ,fb_creation_seed: $Random.initialSeed(-1318314831)
              ,fireballs: _L.fromArray([])
              ,just_a_simulation: false
@@ -66,18 +68,21 @@ Elm.Game.make = function (_elm) {
                            return function (i) {
                               return function (j) {
                                  return function (k) {
-                                    return {_: {}
-                                           ,fb_creation_seed: g
-                                           ,fireballs: c
-                                           ,just_a_simulation: k
-                                           ,last_touch: d
-                                           ,plats: a
-                                           ,player: b
-                                           ,points: j
-                                           ,prev_tap_pos: h
-                                           ,preview_plat: e
-                                           ,t0_preview_plat_just_added: f
-                                           ,time_playing: i};
+                                    return function (l) {
+                                       return {_: {}
+                                              ,coins: c
+                                              ,fb_creation_seed: h
+                                              ,fireballs: d
+                                              ,just_a_simulation: l
+                                              ,last_touch: e
+                                              ,plats: a
+                                              ,player: b
+                                              ,points: k
+                                              ,prev_tap_pos: i
+                                              ,preview_plat: f
+                                              ,t0_preview_plat_just_added: g
+                                              ,time_playing: j};
+                                    };
                                  };
                               };
                            };
@@ -127,6 +132,9 @@ Elm.Game.make = function (_elm) {
             var plat_preview = A2($Maybe.map,
             $Platfm.renderTouchPlatfmPreview,
             game.preview_plat);
+            var coins = A2($List.map,
+            $Coin.renderCoin,
+            game.coins);
             var plats = A2($List.map,
             $Platfm.renderPlatfm,
             game.plats);
@@ -157,8 +165,10 @@ Elm.Game.make = function (_elm) {
             A2($Basics._op["++"],
             plats,
             A2($Basics._op["++"],
+            coins,
+            A2($Basics._op["++"],
             fireballs,
-            _L.fromArray([$Player.renderPlayer(game.player)])))));
+            _L.fromArray([$Player.renderPlayer(game.player)]))))));
             var forms = function () {
                switch (plat_preview.ctor)
                {case "Just":
@@ -167,7 +177,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 182 and 185");
+               "between lines 213 and 216");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -200,6 +210,35 @@ Elm.Game.make = function (_elm) {
              ,_0: a};
    };
    var step = function () {
+      var randomly_create_x = F4(function (seed,
+      dt,
+      likelihood,
+      spacing) {
+         return function () {
+            var $ = A2($Random.generate,
+            A2($Random.$float,
+            0,
+            100 * dt / 30 / likelihood),
+            seed),
+            rand_should_create = $._0,
+            seed$ = $._1;
+            var should_create_fb = _U.cmp(rand_should_create,
+            1) < 0;
+            var $ = A2($Random.generate,
+            A2($Random.$int,
+            0,
+            $Config.game_total_width / 3 | 0),
+            seed$),
+            rand_fb_pos = $._0,
+            seed$$ = $._1;
+            var new_fb_pos = should_create_fb ? $Maybe.Just($Basics.toFloat(A2($ArbitraryRounding.arb_round,
+            spacing,
+            rand_fb_pos)) * 3) : $Maybe.Nothing;
+            return {ctor: "_Tuple2"
+                   ,_0: new_fb_pos
+                   ,_1: seed$$};
+         }();
+      });
       var update_and_filter = F3(function (stepper,
       filterer,
       objs) {
@@ -249,6 +288,11 @@ Elm.Game.make = function (_elm) {
             _v10.pos));
          }();
       };
+      var coin_on_screen = function (pos) {
+         return point_on_screen(pos) || point_on_screen(A2($HasPosition.vect_rise,
+         $Coin.coin_radius,
+         pos));
+      };
       var touch_to_platfm = function (_v12) {
          return function () {
             return {_: {}
@@ -293,7 +337,7 @@ Elm.Game.make = function (_elm) {
                                return $Maybe.Nothing;}
                             break;}
                        _U.badCase($moduleName,
-                       "between lines 98 and 105");
+                       "between lines 110 and 118");
                     }();
                     var drawn_plat = function () {
                        switch (_v14._0.ctor)
@@ -314,7 +358,7 @@ Elm.Game.make = function (_elm) {
                                }();
                             });}
                        _U.badCase($moduleName,
-                       "between lines 106 and 115");
+                       "between lines 120 and 130");
                     }();
                     var should_add_preview_plat = A2($Maybe.andThen,
                     new_preview_plat,
@@ -348,47 +392,60 @@ Elm.Game.make = function (_elm) {
                           return updated_plats;
                        }();
                     }();
-                    var $ = function () {
-                       var spacing = $Basics.round($Fireball.configFireball.padded_len);
-                       var $ = A2($Random.generate,
-                       A2($Random.$float,
-                       0,
-                       100 * _v14._2 / 30),
-                       g.fb_creation_seed),
-                       rand_should_create = $._0,
-                       seed$ = $._1;
-                       var should_create_fb = _U.cmp(rand_should_create,
-                       1) < 0;
-                       var $ = A2($Random.generate,
-                       A2($Random.$int,
-                       0,
-                       $Config.game_total_width / 3 | 0),
-                       seed$),
-                       rand_fb_pos = $._0,
-                       seed$$ = $._1;
-                       var new_fb_pos = $Basics.toFloat(A2($ArbitraryRounding.arb_round,
-                       spacing,
-                       rand_fb_pos)) * 3;
-                       return {ctor: "_Tuple3"
-                              ,_0: should_create_fb
-                              ,_1: new_fb_pos
-                              ,_2: seed$$};
-                    }(),
-                    should_create_fb = $._0,
-                    new_fb_pos = $._1,
-                    new_seed = $._2;
+                    var $ = A4(randomly_create_x,
+                    g.fb_creation_seed,
+                    _v14._2,
+                    1,
+                    $Basics.round($Fireball.configFireball.padded_len)),
+                    new_fb_pos = $._0,
+                    seed$ = $._1;
+                    var $ = A4(randomly_create_x,
+                    seed$,
+                    _v14._2,
+                    0.4,
+                    $Basics.round($Coin.coin_radius)),
+                    new_coin_pos = $._0,
+                    new_seed = $._1;
+                    var new_coins = function () {
+                       var updated_coins = A3(update_and_filter,
+                       $Coin.stepCoin(_v14._2),
+                       coin_on_screen,
+                       g.coins);
+                       return function () {
+                          switch (new_coin_pos.ctor)
+                          {case "Just":
+                             return A2($List._op["::"],
+                               {_: {}
+                               ,x: new_coin_pos._0
+                               ,y: $Basics.toFloat($Config.game_total_height) + $Coin.coin_radius},
+                               updated_coins);
+                             case "Nothing":
+                             return updated_coins;}
+                          _U.badCase($moduleName,
+                          "between lines 157 and 161");
+                       }();
+                    }();
                     var new_fireballs = function () {
                        var updated_fbs = A3(update_and_filter,
                        $Fireball.stepFireball(_v14._2),
                        fb_on_screen,
                        g.fireballs);
-                       return should_create_fb ? A2($List._op["::"],
-                       $Fireball.makeFireball({_: {}
-                                              ,x: new_fb_pos
-                                              ,y: $Basics.toFloat($Config.game_total_height) + $Fireball.fb_height}),
-                       updated_fbs) : updated_fbs;
+                       return function () {
+                          switch (new_fb_pos.ctor)
+                          {case "Just":
+                             return A2($List._op["::"],
+                               $Fireball.makeFireball({_: {}
+                                                      ,x: new_fb_pos._0
+                                                      ,y: $Basics.toFloat($Config.game_total_height) + $Fireball.fb_height}),
+                               updated_fbs);
+                             case "Nothing":
+                             return updated_fbs;}
+                          _U.badCase($moduleName,
+                          "between lines 149 and 152");
+                       }();
                     }();
                     var new_game = {_: {}
+                                   ,coins: new_coins
                                    ,fb_creation_seed: new_seed
                                    ,fireballs: new_fireballs
                                    ,just_a_simulation: false
@@ -418,7 +475,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 78 and 81");
+                       "between lines 98 and 101");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -428,13 +485,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 82 and 85");
+                       "between lines 102 and 105");
                     }();
                     return _U.cmp(g.player.pos.y,
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 76 and 154");
+            "between lines 96 and 183");
          }();
       });
       return step;
