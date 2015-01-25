@@ -514,6 +514,11 @@ Elm.Coin.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Time = Elm.Time.make(_elm);
+   var renderCoin = function (st) {
+      return $HasPosition.move_f(st)(A2($Graphics$Collage.filled,
+      $Color.orange,
+      $Graphics$Collage.circle(10)));
+   };
    var coin_fall_rate = 2;
    var stepCoin = F2(function (dt,
    st) {
@@ -522,28 +527,6 @@ Elm.Coin.make = function (_elm) {
              ,y: st.y - coin_fall_rate * dt / 20};
    });
    var coin_radius = 10;
-   var renderCoin = function (st) {
-      return function () {
-         var w = 8.5;
-         var rad = coin_radius;
-         return A2($HasPosition.move_f,
-         st,
-         $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
-                                              $Color.yellow,
-                                              $Graphics$Collage.circle(rad))
-                                              ,A2($Graphics$Collage.outlined,
-                                              $Graphics$Collage.solid($Color.darkOrange),
-                                              $Graphics$Collage.circle(rad))
-                                              ,A2($Graphics$Collage.filled,
-                                              $Color.darkOrange,
-                                              A2($Graphics$Collage.rect,w,w))
-                                              ,A2($Graphics$Collage.outlined,
-                                              $Graphics$Collage.solid($Color.orange),
-                                              A2($Graphics$Collage.rect,
-                                              w,
-                                              w))])));
-      }();
-   };
    _elm.Coin.values = {_op: _op
                       ,stepCoin: stepCoin
                       ,renderCoin: renderCoin
@@ -1121,6 +1104,14 @@ Elm.Fireball.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Time = Elm.Time.make(_elm);
+   var fbc = A2($Graphics$Collage.filled,
+   $Color.red,
+   $Graphics$Collage.circle(10));
+   var renderFireball = function (f) {
+      return A2($HasPosition.move_f,
+      f.pos,
+      fbc);
+   };
    var stepFireball = F2(function (dt,
    fb) {
       return {_: {}
@@ -1157,9 +1148,6 @@ Elm.Fireball.make = function (_elm) {
                                                         A2($Graphics$Collage.outlined,
                                                         $Graphics$Collage.solid($Color.red),
                                                         $Graphics$Collage.circle(fb_radius)))]));
-   var renderFireball = function (f) {
-      return $HasPosition.move_f(f.pos)(single_fb);
-   };
    var configFireball = function () {
       var side_len = 12;
       return {_: {}
@@ -1186,6 +1174,7 @@ Elm.Fireball.make = function (_elm) {
                           ,fb_height: fb_height
                           ,stepFireball: stepFireball
                           ,single_fb: single_fb
+                          ,fbc: fbc
                           ,renderFireball: renderFireball
                           ,makeFireball: makeFireball};
    return _elm.Fireball.values;
@@ -6852,6 +6841,13 @@ Elm.Player.make = function (_elm) {
       });
       return step;
    }();
+   var renderPlayer = function (p) {
+      return A2($HasPosition.move_f,
+      p.pos,
+      A2($Graphics$Collage.filled,
+      $Color.blue,
+      $Graphics$Collage.circle(10)));
+   };
    var std_player = function () {
       var secondary = A4($Color.rgba,
       50,
@@ -6870,11 +6866,6 @@ Elm.Player.make = function (_elm) {
                                                   $Graphics$Collage.solid(secondary),
                                                   $Graphics$Collage.circle(configPlayer.radius))]));
    }();
-   var renderPlayer = function (p) {
-      return A2($HasPosition.move_f,
-      p.pos,
-      std_player);
-   };
    var Player = F2(function (a,b) {
       return {_: {},pos: a,vel: b};
    });
