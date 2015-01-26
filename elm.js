@@ -1022,7 +1022,7 @@ Elm.Config.make = function (_elm) {
    _P = _N.Ports.make(_elm),
    $moduleName = "Config",
    $Basics = Elm.Basics.make(_elm);
-   var framerate = 100;
+   var framerate = 60;
    var game_total_height = 1024 / 2 | 0;
    var game_total_width = 576 / 2 | 0;
    var game_top_margin = 15;
@@ -6854,6 +6854,13 @@ Elm.Player.make = function (_elm) {
       });
       return step;
    }();
+   var renderPlayer = function (p) {
+      return A2($HasPosition.move_f,
+      p.pos,
+      A2($Graphics$Collage.filled,
+      $Color.blue,
+      $Graphics$Collage.circle(10)));
+   };
    var std_player = function () {
       var secondary = A4($Color.rgba,
       50,
@@ -6872,11 +6879,6 @@ Elm.Player.make = function (_elm) {
                                                   $Graphics$Collage.solid(secondary),
                                                   $Graphics$Collage.circle(configPlayer.radius))]));
    }();
-   var renderPlayer = function (p) {
-      return A2($HasPosition.move_f,
-      p.pos,
-      std_player);
-   };
    var Player = F2(function (a,b) {
       return {_: {},pos: a,vel: b};
    });

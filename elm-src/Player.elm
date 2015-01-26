@@ -23,7 +23,7 @@ std_player =
                    ]
 
 renderPlayer : Player -> Collage.Form
-renderPlayer p = move_f p.pos std_player
+renderPlayer p = move_f p.pos (Collage.filled Color.blue (Collage.circle 10))--std_player
 
 configPlayer = { radius = 10 }
 
