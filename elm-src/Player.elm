@@ -10,7 +10,7 @@ import Time
 import Config (game_side_margin, game_top_margin, game_total_width, game_total_height)
 import BasicUtil (..)
 import HasPosition (..)
-import Platfm (Platfm, configPlatfm)
+import Platfm (Platfm, configPlatfm, platfm_thickness)
 
 type alias Player = { pos : Position, vel : Position }
 type alias PlayerInputs = (List Platfm, Time.Time)
@@ -29,7 +29,7 @@ configPlayer = { radius = 10 }
 
 intersects_plat : Player -> Platfm -> Bool
 intersects_plat player plat = -- This algorithm is from http://mathworld.wolfram.com/Circle-LineIntersection.html
-  let rad = configPlayer.radius
+  let rad = configPlayer.radius + platfm_thickness
       (startx, starty) = (min plat.start.x plat.end.x, min plat.start.y plat.end.y)
       (endx,   endy)   = (max plat.start.x plat.end.x, max plat.start.y plat.end.y)
   in in_range (startx - rad) (endx + rad) player.pos.x && in_range (starty - rad) (endy + rad) player.pos.y &&

@@ -42,7 +42,7 @@ Elm.Player.make = function (_elm) {
                  plat.end.y)},
          startx = $._0,
          starty = $._1;
-         var rad = configPlayer.radius;
+         var rad = configPlayer.radius + $Platfm.platfm_thickness;
          return A3($BasicUtil.in_range,
          startx - rad,
          endx + rad,

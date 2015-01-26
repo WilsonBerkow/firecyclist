@@ -16,14 +16,14 @@ type alias Platfm =
   }
 type alias PlatfmInputs = Time
 configPlatfm = { fall_rate = 3 } -- TODO: Remove this variable, lift fall_rate to global ns or another config module.
-
+platfm_thickness = 6
 stepPlatfm : Time -> Platfm -> Platfm
 stepPlatfm dt {start, end, time_left} =
   let fall_rate = configPlatfm.fall_rate * dt / 20
   in { start = (vect_rise fall_rate start), end = (vect_rise fall_rate end), time_left = time_left - dt }
 platfmLineStyle =
  let df = Collage.defaultLine
- in { df | width <- 6
+ in { df | width <- platfm_thickness
          , cap <- Collage.Round
          , join <- Collage.Smooth
          }

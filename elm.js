@@ -6600,9 +6600,11 @@ Elm.Platfm.make = function (_elm) {
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Time = Elm.Time.make(_elm);
+   var platfm_thickness = 6;
    var platfmLineStyle = function () {
       var df = $Graphics$Collage.defaultLine;
-      return _U.replace([["width",6]
+      return _U.replace([["width"
+                         ,platfm_thickness]
                         ,["cap",$Graphics$Collage.Round]
                         ,["join"
                          ,$Graphics$Collage.Smooth]],
@@ -6662,6 +6664,7 @@ Elm.Platfm.make = function (_elm) {
    _elm.Platfm.values = {_op: _op
                         ,Platfm: Platfm
                         ,configPlatfm: configPlatfm
+                        ,platfm_thickness: platfm_thickness
                         ,stepPlatfm: stepPlatfm
                         ,platfmLineStyle: platfmLineStyle
                         ,renderPlatfm: renderPlatfm
@@ -6713,7 +6716,7 @@ Elm.Player.make = function (_elm) {
                  plat.end.y)},
          startx = $._0,
          starty = $._1;
-         var rad = configPlayer.radius;
+         var rad = configPlayer.radius + $Platfm.platfm_thickness;
          return A3($BasicUtil.in_range,
          startx - rad,
          endx + rad,
