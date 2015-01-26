@@ -218,7 +218,7 @@ Elm.Game.make = function (_elm) {
             var $ = A2($Random.generate,
             A2($Random.$float,
             0,
-            100 * dt / 30 / likelihood),
+            100 / (dt / 30) / likelihood),
             seed),
             rand_should_create = $._0,
             seed$ = $._1;

@@ -78,7 +78,7 @@ step =
       update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
       
       randomly_create_x seed dt likelihood spacing =
-        let (rand_should_create, seed') = Random.generate (Random.float 0 (100 * dt / 30 / likelihood)) seed
+        let (rand_should_create, seed') = Random.generate (Random.float 0 (100 / (dt / 30) / likelihood)) seed
             should_create_fb = rand_should_create < 1
             (rand_fb_pos, seed'') = (Random.generate (Random.int 0 (game_total_width // 3)) seed')
             new_fb_pos =
