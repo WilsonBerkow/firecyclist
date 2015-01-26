@@ -68,12 +68,15 @@ step =
       fb_on_screen : Fireball -> Bool
       fb_on_screen {pos} = point_on_screen pos || point_on_screen (vect_rise fb_height pos)
       
+      player_hitting_fb : Player -> Fireball -> Bool
+      player_hitting_fb player fb =
+        distance player.pos fb.pos < (configPlayer.radius + fb_radius)
+      
       coin_on_screen : Coin -> Bool
       coin_on_screen pos = point_on_screen pos || point_on_screen (vect_rise coin_radius pos)
       
-      player_hitting_fb : Player -> Fireball -> Bool
-      player_hitting_fb player fb =
-        distance player.pos fb.pos < (configPlayer.radius + fb_radius) -- 'fb_height / 2' **approximates** the avg radius of the fb.
+      coin_hitting_player : Player -> Coin -> Bool
+      coin_hitting_player pl coin = distance pl.pos coin < (configPlayer.radius + coin_radius)
       
       update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
       
@@ -151,9 +154,11 @@ step =
                    Nothing -> updated_fbs
             player_on_fire = any (player_hitting_fb g.player) g.fireballs
             
+            points_from_coins = 5 * toFloat (List.length (List.filter (coin_hitting_player g.player) g.coins))
+            
             new_coins : List Coin
             new_coins =
-              let updated_coins = update_and_filter (stepCoin dt) coin_on_screen g.coins
+              let updated_coins = update_and_filter (stepCoin dt) (fn_map2 (&&) coin_on_screen (not << coin_hitting_player g.player)) g.coins
               in case new_coin_pos of
                    Just pos -> { x = pos, y = toFloat game_total_height + coin_radius } :: updated_coins
                    Nothing -> updated_coins
@@ -173,7 +178,7 @@ step =
               , fb_creation_seed = new_seed
               , prev_tap_pos     = cur_tap_pos
               , time_playing     = g.time_playing + dt
-              , points           = g.points + 2 * (Time.inSeconds dt) * (1 + g.player.pos.y / toFloat game_total_height)
+              , points           = g.points + 2 * (Time.inSeconds dt) * (1 + g.player.pos.y / toFloat game_total_height) + points_from_coins
               , just_a_simulation = False
               }
         in if | g.player.pos.y > toFloat game_total_height -> Die new_game

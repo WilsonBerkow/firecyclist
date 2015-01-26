@@ -1022,7 +1022,7 @@ Elm.Config.make = function (_elm) {
    _P = _N.Ports.make(_elm),
    $moduleName = "Config",
    $Basics = Elm.Basics.make(_elm);
-   var framerate = 60;
+   var framerate = 30;
    var game_total_height = 1024 / 2 | 0;
    var game_total_width = 576 / 2 | 0;
    var game_top_margin = 15;
@@ -1371,7 +1371,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 213 and 216");
+               "between lines 218 and 221");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -1440,6 +1440,13 @@ Elm.Game.make = function (_elm) {
          stepper,
          A2($List.filter,filterer,objs));
       });
+      var coin_hitting_player = F2(function (pl,
+      coin) {
+         return _U.cmp(A2($HasPosition.distance,
+         pl.pos,
+         coin),
+         $Player.configPlayer.radius + $Coin.coin_radius) < 0;
+      });
       var player_hitting_fb = F2(function (player,
       fb) {
          return _U.cmp(A2($HasPosition.distance,
@@ -1505,6 +1512,9 @@ Elm.Game.make = function (_elm) {
             switch (_v14.ctor)
             {case "_Tuple3":
                return function () {
+                    var points_from_coins = 5 * $Basics.toFloat($List.length(A2($List.filter,
+                    coin_hitting_player(g.player),
+                    g.coins)));
                     var player_on_fire = A2($BasicUtil.any,
                     player_hitting_fb(g.player),
                     g.fireballs);
@@ -1531,7 +1541,7 @@ Elm.Game.make = function (_elm) {
                                return $Maybe.Nothing;}
                             break;}
                        _U.badCase($moduleName,
-                       "between lines 110 and 118");
+                       "between lines 113 and 121");
                     }();
                     var drawn_plat = function () {
                        switch (_v14._0.ctor)
@@ -1552,7 +1562,7 @@ Elm.Game.make = function (_elm) {
                                }();
                             });}
                        _U.badCase($moduleName,
-                       "between lines 120 and 130");
+                       "between lines 123 and 133");
                     }();
                     var should_add_preview_plat = A2($Maybe.andThen,
                     new_preview_plat,
@@ -1603,7 +1613,14 @@ Elm.Game.make = function (_elm) {
                     var new_coins = function () {
                        var updated_coins = A3(update_and_filter,
                        $Coin.stepCoin(_v14._2),
+                       A3($BasicUtil.fn_map2,
+                       F2(function (x,y) {
+                          return x && y;
+                       }),
                        coin_on_screen,
+                       function ($) {
+                          return $Basics.not(coin_hitting_player(g.player)($));
+                       }),
                        g.coins);
                        return function () {
                           switch (new_coin_pos.ctor)
@@ -1616,7 +1633,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_coins;}
                           _U.badCase($moduleName,
-                          "between lines 157 and 161");
+                          "between lines 162 and 166");
                        }();
                     }();
                     var new_fireballs = function () {
@@ -1635,7 +1652,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_fbs;}
                           _U.badCase($moduleName,
-                          "between lines 149 and 152");
+                          "between lines 152 and 155");
                        }();
                     }();
                     var new_game = {_: {}
@@ -1650,7 +1667,7 @@ Elm.Game.make = function (_elm) {
                                    ,_0: new_plats
                                    ,_1: _v14._2},
                                    g.player)
-                                   ,points: g.points + 2 * $Time.inSeconds(_v14._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height))
+                                   ,points: g.points + 2 * $Time.inSeconds(_v14._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height)) + points_from_coins
                                    ,prev_tap_pos: _v14._1
                                    ,preview_plat: $BasicUtil.isJust(should_add_preview_plat) ? $Maybe.Nothing : new_preview_plat
                                    ,t0_preview_plat_just_added: $BasicUtil.isJust(should_add_preview_plat) ? A2($Maybe.map,
@@ -1669,7 +1686,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 98 and 101");
+                       "between lines 101 and 104");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -1679,13 +1696,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 102 and 105");
+                       "between lines 105 and 108");
                     }();
                     return _U.cmp(g.player.pos.y,
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 96 and 183");
+            "between lines 99 and 188");
          }();
       });
       return step;
