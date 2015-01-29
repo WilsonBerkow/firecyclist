@@ -1371,7 +1371,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 218 and 221");
+               "between lines 219 and 222");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -1518,51 +1518,45 @@ Elm.Game.make = function (_elm) {
                     var player_on_fire = A2($BasicUtil.any,
                     player_hitting_fb(g.player),
                     g.fireballs);
+                    var confirm_platfm_validity = function (_v19) {
+                       return function () {
+                          return _U.eq(_v19.start,
+                          _v19.end) ? $Maybe.Nothing : _U.eq(_v19.start.y,
+                          _v19.end.y) ? $Maybe.Just(_U.replace([["start"
+                                                                ,_U.replace([["y"
+                                                                             ,_v19.start.y - 1]],
+                                                                _v19.start)]],
+                          _v19)) : $Maybe.Just(_v19);
+                       }();
+                    };
                     var new_preview_plat = function () {
-                       var _v19 = {ctor: "_Tuple2"
+                       var _v21 = {ctor: "_Tuple2"
                                   ,_0: g.t0_preview_plat_just_added
                                   ,_1: _v14._0};
-                       switch (_v19.ctor)
+                       switch (_v21.ctor)
                        {case "_Tuple2":
-                          switch (_v19._0.ctor)
+                          switch (_v21._0.ctor)
                             {case "Just":
-                               switch (_v19._1.ctor)
+                               switch (_v21._1.ctor)
                                  {case "Just":
-                                    return _U.eq(_v19._0._0,
-                                      _v19._1._0.t0) ? $Maybe.Nothing : $Maybe.Just(touch_to_platfm(_v19._1._0));}
+                                    return _U.eq(_v21._0._0,
+                                      _v21._1._0.t0) ? $Maybe.Nothing : A2($Maybe.andThen,
+                                      $Maybe.Just(touch_to_platfm(_v21._1._0)),
+                                      confirm_platfm_validity);}
                                  break;
                                case "Nothing":
-                               switch (_v19._1.ctor)
+                               switch (_v21._1.ctor)
                                  {case "Just":
-                                    return $Maybe.Just(touch_to_platfm(_v19._1._0));}
+                                    return A2($Maybe.andThen,
+                                      $Maybe.Just(touch_to_platfm(_v21._1._0)),
+                                      confirm_platfm_validity);}
                                  break;}
-                            switch (_v19._1.ctor)
+                            switch (_v21._1.ctor)
                             {case "Nothing":
                                return $Maybe.Nothing;}
                             break;}
                        _U.badCase($moduleName,
-                       "between lines 113 and 121");
-                    }();
-                    var drawn_plat = function () {
-                       switch (_v14._0.ctor)
-                       {case "Just":
-                          return $Maybe.Nothing;
-                          case "Nothing":
-                          return $Maybe.andThen(A2($BasicUtil.maybeOr,
-                            new_preview_plat,
-                            g.preview_plat))(function (_v27) {
-                               return function () {
-                                  return _U.eq(_v27.start,
-                                  _v27.end) ? $Maybe.Nothing : _U.eq(_v27.start.y,
-                                  _v27.end.y) ? $Maybe.Just(_U.replace([["start"
-                                                                        ,_U.replace([["y"
-                                                                                     ,_v27.start.y - 1]],
-                                                                        _v27.start)]],
-                                  _v27)) : $Maybe.Just(_v27);
-                               }();
-                            });}
-                       _U.badCase($moduleName,
-                       "between lines 123 and 133");
+                       "between lines 118 and 126");
                     }();
                     var should_add_preview_plat = A2($Maybe.andThen,
                     new_preview_plat,
@@ -1571,6 +1565,19 @@ Elm.Game.make = function (_elm) {
                        g.player,
                        plat) ? $Maybe.Just(plat) : $Maybe.Nothing;
                     });
+                    var drawn_plat = function () {
+                       switch (_v14._0.ctor)
+                       {case "Just":
+                          return $Maybe.Nothing;
+                          case "Nothing":
+                          return A2($Maybe.andThen,
+                            A2($BasicUtil.maybeOr,
+                            new_preview_plat,
+                            g.preview_plat),
+                            confirm_platfm_validity);}
+                       _U.badCase($moduleName,
+                       "between lines 128 and 134");
+                    }();
                     var new_plats = function () {
                        var updated_plats = A3(update_and_filter,
                        $Platfm.stepPlatfm(_v14._2),
@@ -1633,7 +1640,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_coins;}
                           _U.badCase($moduleName,
-                          "between lines 162 and 166");
+                          "between lines 163 and 167");
                        }();
                     }();
                     var new_fireballs = function () {
@@ -1652,7 +1659,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_fbs;}
                           _U.badCase($moduleName,
-                          "between lines 152 and 155");
+                          "between lines 153 and 156");
                        }();
                     }();
                     var new_game = {_: {}
@@ -1702,7 +1709,7 @@ Elm.Game.make = function (_elm) {
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 99 and 188");
+            "between lines 99 and 189");
          }();
       });
       return step;

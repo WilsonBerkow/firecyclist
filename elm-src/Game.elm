@@ -108,25 +108,26 @@ step =
             (new_fb_pos, seed') = randomly_create_x g.fb_creation_seed dt 1 (round configFireball.padded_len)
             (new_coin_pos, new_seed) = randomly_create_x seed' dt 0.4 (round coin_radius)
             
+            confirm_platfm_validity ({start, end} as plat) =
+              if | start == end -> Nothing
+                 | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
+                 | otherwise -> Just plat
+            
             new_preview_plat : Maybe Platfm
             new_preview_plat = -- This does a check to make sure that the 'preview plat' has NOT already been drawn/materialized by having been landed on by the player.
               case (g.t0_preview_plat_just_added, cur_touch) of
                 (Just prev_t0, Just cur) ->
                   if prev_t0 == cur.t0
                     then Nothing
-                    else Just (touch_to_platfm cur)
-                (Nothing, Just cur) -> Just (touch_to_platfm cur)
+                    else Just (touch_to_platfm cur) `Maybe.andThen` confirm_platfm_validity
+                (Nothing, Just cur) -> Just (touch_to_platfm cur) `Maybe.andThen` confirm_platfm_validity
                 (_, Nothing) -> Nothing
             
             drawn_plat : Maybe Platfm
             drawn_plat =
               case cur_touch of
                 Nothing -> -- If cur_touch is Nothing, that means the user MAY have just released his/her finger.
-                  Maybe.andThen (maybeOr new_preview_plat g.preview_plat) <|
-                    \({start, end} as plat) ->
-                       if | start == end -> Nothing
-                          | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
-                          | otherwise -> Just plat
+                  maybeOr new_preview_plat g.preview_plat `Maybe.andThen` confirm_platfm_validity
                 Just _  ->
                  Nothing -- If cur_touch is (Just ...), then the user is still drawing, so nothing should be placed down yet.
             
