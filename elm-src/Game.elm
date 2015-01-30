@@ -102,6 +102,11 @@ step =
         --  that two fireballs won't be too close, by scaling down the integer-pos-generation
         --  and then expanding it with the '* 3', leaving spaces where fbs might have formed.
       
+      confirm_platfm_validity ({start, end} as plat) =
+        if | start == end -> Nothing
+           | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
+           | otherwise -> Just plat
+      
       step : Input -> State -> WhereTo
       step (cur_touch,cur_tap_pos,dt) g =
         let tap_target = if cur_tap_pos == g.prev_tap_pos then Nothing else Just cur_tap_pos
@@ -117,10 +122,6 @@ step =
             (new_coin_pos, seed'') = randomly_create_x seed' dt 0.4 (round coin_radius)
             (new_target_x, seed''') = randomly_create_x seed'' dt 0.2 (round target_radius)
             (random_target_y, new_seed) = Random.generate (Random.float 25 (toFloat game_total_height * 1 / 3 + 25)) seed'''
-            confirm_platfm_validity ({start, end} as plat) =
-              if | start == end -> Nothing
-                 | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
-                 | otherwise -> Just plat
             
             new_preview_plat : Maybe Platfm
             new_preview_plat = -- This does a check to make sure that the 'preview plat' has NOT already been drawn/materialized by having been landed on by the player.

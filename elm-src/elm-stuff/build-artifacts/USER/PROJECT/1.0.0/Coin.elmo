@@ -23,27 +23,30 @@ Elm.Coin.make = function (_elm) {
              ,y: st.y - coin_fall_rate * dt / 20};
    });
    var coin_radius = 10;
+   var graphic = function () {
+      var w = 8.5;
+      var rad = coin_radius;
+      return $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
+                                                  $Color.yellow,
+                                                  $Graphics$Collage.circle(rad))
+                                                  ,A2($Graphics$Collage.outlined,
+                                                  $Graphics$Collage.solid($Color.darkOrange),
+                                                  $Graphics$Collage.circle(rad))
+                                                  ,A2($Graphics$Collage.filled,
+                                                  $Color.darkOrange,
+                                                  A2($Graphics$Collage.rect,
+                                                  w,
+                                                  w))
+                                                  ,A2($Graphics$Collage.outlined,
+                                                  $Graphics$Collage.solid($Color.orange),
+                                                  A2($Graphics$Collage.rect,
+                                                  w,
+                                                  w))]));
+   }();
    var renderCoin = function (st) {
-      return function () {
-         var w = 8.5;
-         var rad = coin_radius;
-         return A2($HasPosition.move_f,
-         st,
-         $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
-                                              $Color.yellow,
-                                              $Graphics$Collage.circle(rad))
-                                              ,A2($Graphics$Collage.outlined,
-                                              $Graphics$Collage.solid($Color.darkOrange),
-                                              $Graphics$Collage.circle(rad))
-                                              ,A2($Graphics$Collage.filled,
-                                              $Color.darkOrange,
-                                              A2($Graphics$Collage.rect,w,w))
-                                              ,A2($Graphics$Collage.outlined,
-                                              $Graphics$Collage.solid($Color.orange),
-                                              A2($Graphics$Collage.rect,
-                                              w,
-                                              w))])));
-      }();
+      return A2($HasPosition.move_f,
+      st,
+      graphic);
    };
    _elm.Coin.values = {_op: _op
                       ,stepCoin: stepCoin

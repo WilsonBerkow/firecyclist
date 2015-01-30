@@ -15,15 +15,10 @@ import Platfm (Platfm, configPlatfm, platfm_thickness)
 type alias Player = { pos : Position, vel : Position }
 type alias PlayerInputs = (List Platfm, Time.Time)
 
-std_player =
-  let blue_gray = Color.rgba 50 50 200 0.7
-      secondary = Color.rgba 50 50 200 1
-  in Collage.group [ Collage.filled blue_gray (Collage.circle configPlayer.radius)
-                   , Collage.outlined (Collage.solid secondary) (Collage.circle configPlayer.radius)
-                   ]
+graphic = Collage.filled Color.blue (Collage.circle 10)
 
 renderPlayer : Player -> Collage.Form
-renderPlayer p = move_f p.pos (Collage.filled Color.blue (Collage.circle 10))--std_player
+renderPlayer p = move_f p.pos graphic
 
 configPlayer = { radius = 10 }
 

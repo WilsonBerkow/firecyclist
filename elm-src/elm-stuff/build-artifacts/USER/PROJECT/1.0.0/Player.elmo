@@ -107,7 +107,7 @@ Elm.Player.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 45 and 50");
+         "between lines 40 and 45");
       }();
    });
    var stepPlayer = function () {
@@ -130,10 +130,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
-                    "on line 54, column 34 to 53");
+                    "on line 49, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 54, column 34 to 53");
+            "on line 49, column 34 to 53");
          }();
       });
       var plat_slope = function (_v11) {
@@ -169,7 +169,7 @@ Elm.Player.make = function (_elm) {
                             player_grav * _v13._1 / 28,
                             p.vel);}
                        _U.badCase($moduleName,
-                       "between lines 69 and 72");
+                       "between lines 64 and 67");
                     }();
                     var $ = function () {
                        var $ = A2($HasPosition.vect_add,
@@ -195,42 +195,25 @@ Elm.Player.make = function (_elm) {
                            ,vel: vel};
                  }();}
             _U.badCase($moduleName,
-            "between lines 67 and 80");
+            "between lines 62 and 75");
          }();
       });
       return step;
    }();
+   var graphic = A2($Graphics$Collage.filled,
+   $Color.blue,
+   $Graphics$Collage.circle(10));
    var renderPlayer = function (p) {
       return A2($HasPosition.move_f,
       p.pos,
-      A2($Graphics$Collage.filled,
-      $Color.blue,
-      $Graphics$Collage.circle(10)));
+      graphic);
    };
-   var std_player = function () {
-      var secondary = A4($Color.rgba,
-      50,
-      50,
-      200,
-      1);
-      var blue_gray = A4($Color.rgba,
-      50,
-      50,
-      200,
-      0.7);
-      return $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
-                                                  blue_gray,
-                                                  $Graphics$Collage.circle(configPlayer.radius))
-                                                  ,A2($Graphics$Collage.outlined,
-                                                  $Graphics$Collage.solid(secondary),
-                                                  $Graphics$Collage.circle(configPlayer.radius))]));
-   }();
    var Player = F2(function (a,b) {
       return {_: {},pos: a,vel: b};
    });
    _elm.Player.values = {_op: _op
                         ,Player: Player
-                        ,std_player: std_player
+                        ,graphic: graphic
                         ,renderPlayer: renderPlayer
                         ,configPlayer: configPlayer
                         ,intersects_plat: intersects_plat

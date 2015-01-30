@@ -16,16 +16,6 @@ Elm.Target.make = function (_elm) {
    $HasPosition = Elm.HasPosition.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Time = Elm.Time.make(_elm);
-   var circleB = function (r) {
-      return A2($Graphics$Collage.filled,
-      $Color.darkGrey,
-      $Graphics$Collage.circle(r));
-   };
-   var circleA = function (r) {
-      return A2($Graphics$Collage.filled,
-      $Color.red,
-      $Graphics$Collage.circle(r));
-   };
    var stepTarget = F2(function (dt,
    _v0) {
       return function () {
@@ -40,31 +30,30 @@ Elm.Target.make = function (_elm) {
       }();
    });
    var target_lifespan = 6000;
-   var onlyFor = F3(function (lifeleft,
-   frac,
-   graphic) {
-      return _U.cmp(lifeleft,
-      frac * target_lifespan) > -1 ? graphic : graphic;
-   });
    var target_radius = 12;
+   var circA = A2($Graphics$Collage.filled,
+   $Color.red,
+   $Graphics$Collage.circle(target_radius));
+   var circB = A2($Graphics$Collage.filled,
+   $Color.darkGrey,
+   $Graphics$Collage.circle(target_radius));
+   var graphic = $Graphics$Collage.group(_L.fromArray([circA
+                                                      ,A2($Graphics$Collage.scale,
+                                                      0.75,
+                                                      circB)
+                                                      ,A2($Graphics$Collage.scale,
+                                                      0.5,
+                                                      circA)
+                                                      ,A2($Graphics$Collage.scale,
+                                                      0.25,
+                                                      circB)]));
    var renderTarget = function (_v5) {
       return function () {
          switch (_v5.ctor)
          {case "_Tuple3":
-            return $HasPosition.move_f(_v5._0)($Graphics$Collage.scale(_v5._1 / target_lifespan)($Graphics$Collage.group(_L.fromArray([A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0.75)(circleA(target_radius))
-                                                                                                                                      ,A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0.5)(circleB(target_radius * 0.75))
-                                                                                                                                      ,A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0.25)(circleA(target_radius * 0.5))
-                                                                                                                                      ,A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0)(circleB(target_radius * 0.25))]))));}
+            return $HasPosition.move_f(_v5._0)($Graphics$Collage.scale(_v5._1 / target_lifespan)(graphic));}
          _U.badCase($moduleName,
-         "between lines 37 and 42");
+         "on line 38, column 3 to 58");
       }();
    };
    _elm.Target.values = {_op: _op

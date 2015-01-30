@@ -19,13 +19,15 @@ stepCoin : CoinInputs -> Coin -> Coin
 stepCoin dt st =
   { x = st.x, y = st.y - coin_fall_rate * dt / 20}
 
-renderCoin : Coin -> Form
-renderCoin st =
+graphic =
   let rad = coin_radius
       w = 8.5
-  in move_f st (group
+  in group
        [ filled yellow (circle rad)
        , outlined (solid darkOrange) (circle rad)
        , filled darkOrange (rect w w)
        , outlined (solid orange) (rect w w)
-       ])
+       ]
+
+renderCoin : Coin -> Form
+renderCoin st = move_f st graphic

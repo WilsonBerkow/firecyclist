@@ -23,20 +23,16 @@ target_lifespan = 6000
 stepTarget : TargetInputs -> Target -> Target
 stepTarget dt (pos, life, a) = (pos, life - dt, a)
 
-circleA r = filled red (circle r)
-circleB r = filled darkGrey (circle r)
+circA = filled red (circle target_radius)
+circB = filled darkGrey (circle target_radius)
 
-onlyFor : Float -> Float -> Form -> Form
-onlyFor lifeleft frac graphic =
-  if lifeleft >= frac * target_lifespan
-    then graphic
-    else graphic--toForm E.empty
+graphic = group -- TODO: Take advantage of (HasPosition r), make each game object implement it (maybe other than Platfm?), and have Game.render move the objects to the right location. Conceptually, it doesn't make sense for that to be done here.
+  [            circA
+  , scale 0.75 circB
+  , scale 0.5  circA
+  , scale 0.25 circB
+  ]
 
 renderTarget : Target -> Form
 renderTarget (pos, life, _) =
-  move_f pos <| scale (life / target_lifespan) <| group -- TODO: Take advantage of (HasPosition r), make each game object implement it (maybe other than Platfm?), and have Game.render move the objects to the right location. Conceptually, it doesn't make sense for that to be done here.
-    [ onlyFor life 0.75 <| circleA target_radius
-    , onlyFor life 0.5  <| circleB (target_radius * 0.75)
-    , onlyFor life 0.25 <| circleA (target_radius * 0.5)
-    , onlyFor life 0    <| circleB (target_radius * 0.25)
-    ]
+  move_f pos <| scale (life / target_lifespan) <| graphic

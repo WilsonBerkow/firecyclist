@@ -529,27 +529,30 @@ Elm.Coin.make = function (_elm) {
              ,y: st.y - coin_fall_rate * dt / 20};
    });
    var coin_radius = 10;
+   var graphic = function () {
+      var w = 8.5;
+      var rad = coin_radius;
+      return $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
+                                                  $Color.yellow,
+                                                  $Graphics$Collage.circle(rad))
+                                                  ,A2($Graphics$Collage.outlined,
+                                                  $Graphics$Collage.solid($Color.darkOrange),
+                                                  $Graphics$Collage.circle(rad))
+                                                  ,A2($Graphics$Collage.filled,
+                                                  $Color.darkOrange,
+                                                  A2($Graphics$Collage.rect,
+                                                  w,
+                                                  w))
+                                                  ,A2($Graphics$Collage.outlined,
+                                                  $Graphics$Collage.solid($Color.orange),
+                                                  A2($Graphics$Collage.rect,
+                                                  w,
+                                                  w))]));
+   }();
    var renderCoin = function (st) {
-      return function () {
-         var w = 8.5;
-         var rad = coin_radius;
-         return A2($HasPosition.move_f,
-         st,
-         $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
-                                              $Color.yellow,
-                                              $Graphics$Collage.circle(rad))
-                                              ,A2($Graphics$Collage.outlined,
-                                              $Graphics$Collage.solid($Color.darkOrange),
-                                              $Graphics$Collage.circle(rad))
-                                              ,A2($Graphics$Collage.filled,
-                                              $Color.darkOrange,
-                                              A2($Graphics$Collage.rect,w,w))
-                                              ,A2($Graphics$Collage.outlined,
-                                              $Graphics$Collage.solid($Color.orange),
-                                              A2($Graphics$Collage.rect,
-                                              w,
-                                              w))])));
-      }();
+      return A2($HasPosition.move_f,
+      st,
+      graphic);
    };
    _elm.Coin.values = {_op: _op
                       ,stepCoin: stepCoin
@@ -1195,8 +1198,8 @@ Elm.Fireball.make = function (_elm) {
                           ,fb_height: fb_height
                           ,stepFireball: stepFireball
                           ,single_fb: single_fb
-                          ,renderFireball: renderFireball
-                          ,makeFireball: makeFireball};
+                          ,makeFireball: makeFireball
+                          ,renderFireball: renderFireball};
    return _elm.Fireball.values;
 };
 Elm.Game = Elm.Game || {};
@@ -1390,7 +1393,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 238 and 241");
+               "between lines 239 and 242");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -1423,6 +1426,17 @@ Elm.Game.make = function (_elm) {
              ,_0: a};
    };
    var step = function () {
+      var confirm_platfm_validity = function (_v4) {
+         return function () {
+            return _U.eq(_v4.start,
+            _v4.end) ? $Maybe.Nothing : _U.eq(_v4.start.y,
+            _v4.end.y) ? $Maybe.Just(_U.replace([["start"
+                                                 ,_U.replace([["y"
+                                                              ,_v4.start.y - 1]],
+                                                 _v4.start)]],
+            _v4)) : $Maybe.Just(_v4);
+         }();
+      };
       var randomly_create_x = F4(function (seed,
       dt,
       likelihood,
@@ -1460,23 +1474,23 @@ Elm.Game.make = function (_elm) {
          A2($List.filter,filterer,objs));
       });
       var target_hitting_player = F2(function (pl,
-      _v4) {
+      _v6) {
          return function () {
-            switch (_v4.ctor)
+            switch (_v6.ctor)
             {case "_Tuple3":
                return _U.cmp(A2($HasPosition.distance,
                  pl.pos,
-                 _v4._0),
-                 $Player.configPlayer.radius + $Target.target_radius * (_v4._1 / $Target.target_lifespan)) < 0;}
+                 _v6._0),
+                 $Player.configPlayer.radius + $Target.target_radius * (_v6._1 / $Target.target_lifespan)) < 0;}
             _U.badCase($moduleName,
             "on line 87, column 53 to 141");
          }();
       });
-      var target_alive = function (_v9) {
+      var target_alive = function (_v11) {
          return function () {
-            switch (_v9.ctor)
+            switch (_v11.ctor)
             {case "_Tuple3":
-               return _U.cmp(_v9._1,0) > -1;}
+               return _U.cmp(_v11._1,0) > -1;}
             _U.badCase($moduleName,
             "on line 84, column 39 to 52");
          }();
@@ -1495,26 +1509,26 @@ Elm.Game.make = function (_elm) {
          fb.pos),
          $Player.configPlayer.radius + $Fireball.fb_radius) < 0;
       });
-      var plat_alive = function (_v14) {
+      var plat_alive = function (_v16) {
          return function () {
-            return _U.cmp(_v14.time_left,
+            return _U.cmp(_v16.time_left,
             30) > 0;
          }();
       };
-      var point_on_screen = function (_v16) {
+      var point_on_screen = function (_v18) {
          return function () {
             return A3($BasicUtil.in_range,
             0,
             $Basics.toFloat($Config.game_total_width),
-            _v16.x) && A3($BasicUtil.in_range,
+            _v18.x) && A3($BasicUtil.in_range,
             0,
             $Basics.toFloat($Config.game_total_height),
-            _v16.y);
+            _v18.y);
          }();
       };
-      var plat_on_screen = function (_v18) {
+      var plat_on_screen = function (_v20) {
          return function () {
-            return point_on_screen(_v18.start) || point_on_screen(_v18.end);
+            return point_on_screen(_v20.start) || point_on_screen(_v20.end);
          }();
       };
       var plat_should_stay = A3($BasicUtil.fn_map2,
@@ -1523,11 +1537,11 @@ Elm.Game.make = function (_elm) {
       }),
       plat_on_screen,
       plat_alive);
-      var fb_on_screen = function (_v20) {
+      var fb_on_screen = function (_v22) {
          return function () {
-            return point_on_screen(_v20.pos) || point_on_screen(A2($HasPosition.vect_rise,
+            return point_on_screen(_v22.pos) || point_on_screen(A2($HasPosition.vect_rise,
             $Fireball.fb_height,
-            _v20.pos));
+            _v22.pos));
          }();
       };
       var coin_on_screen = function (pos) {
@@ -1535,22 +1549,22 @@ Elm.Game.make = function (_elm) {
          $Coin.coin_radius,
          pos));
       };
-      var touch_to_platfm = function (_v22) {
+      var touch_to_platfm = function (_v24) {
          return function () {
             return {_: {}
                    ,end: {_: {}
-                         ,x: $Basics.toFloat(_v22.x)
-                         ,y: $Basics.toFloat(_v22.y)}
+                         ,x: $Basics.toFloat(_v24.x)
+                         ,y: $Basics.toFloat(_v24.y)}
                    ,start: {_: {}
-                           ,x: $Basics.toFloat(_v22.x0)
-                           ,y: $Basics.toFloat(_v22.y0)}
+                           ,x: $Basics.toFloat(_v24.x0)
+                           ,y: $Basics.toFloat(_v24.y0)}
                    ,time_left: 800};
          }();
       };
-      var step = F2(function (_v24,
+      var step = F2(function (_v26,
       g) {
          return function () {
-            switch (_v24.ctor)
+            switch (_v26.ctor)
             {case "_Tuple3":
                return function () {
                     var points_from_coins = 5 * $Basics.toFloat($List.length(A2($List.filter,
@@ -1559,21 +1573,10 @@ Elm.Game.make = function (_elm) {
                     var player_on_fire = A2($BasicUtil.any,
                     player_hitting_fb(g.player),
                     g.fireballs);
-                    var confirm_platfm_validity = function (_v29) {
-                       return function () {
-                          return _U.eq(_v29.start,
-                          _v29.end) ? $Maybe.Nothing : _U.eq(_v29.start.y,
-                          _v29.end.y) ? $Maybe.Just(_U.replace([["start"
-                                                                ,_U.replace([["y"
-                                                                             ,_v29.start.y - 1]],
-                                                                _v29.start)]],
-                          _v29)) : $Maybe.Just(_v29);
-                       }();
-                    };
                     var new_preview_plat = function () {
                        var _v31 = {ctor: "_Tuple2"
                                   ,_0: g.t0_preview_plat_just_added
-                                  ,_1: _v24._0};
+                                  ,_1: _v26._0};
                        switch (_v31.ctor)
                        {case "_Tuple2":
                           switch (_v31._0.ctor)
@@ -1597,17 +1600,10 @@ Elm.Game.make = function (_elm) {
                                return $Maybe.Nothing;}
                             break;}
                        _U.badCase($moduleName,
-                       "between lines 127 and 135");
+                       "between lines 128 and 136");
                     }();
-                    var should_add_preview_plat = A2($Maybe.andThen,
-                    new_preview_plat,
-                    function (plat) {
-                       return A2($Player.intersects_plat,
-                       g.player,
-                       plat) ? $Maybe.Just(plat) : $Maybe.Nothing;
-                    });
                     var drawn_plat = function () {
-                       switch (_v24._0.ctor)
+                       switch (_v26._0.ctor)
                        {case "Just":
                           return $Maybe.Nothing;
                           case "Nothing":
@@ -1617,11 +1613,18 @@ Elm.Game.make = function (_elm) {
                             g.preview_plat),
                             confirm_platfm_validity);}
                        _U.badCase($moduleName,
-                       "between lines 137 and 143");
+                       "between lines 138 and 144");
                     }();
+                    var should_add_preview_plat = A2($Maybe.andThen,
+                    new_preview_plat,
+                    function (plat) {
+                       return A2($Player.intersects_plat,
+                       g.player,
+                       plat) ? $Maybe.Just(plat) : $Maybe.Nothing;
+                    });
                     var new_plats = function () {
                        var updated_plats = A3(update_and_filter,
-                       $Platfm.stepPlatfm(_v24._2),
+                       $Platfm.stepPlatfm(_v26._2),
                        plat_should_stay,
                        g.plats);
                        return function () {
@@ -1646,21 +1649,21 @@ Elm.Game.make = function (_elm) {
                     }();
                     var $ = A4(randomly_create_x,
                     g.fb_creation_seed,
-                    _v24._2,
+                    _v26._2,
                     1,
                     $Basics.round($Fireball.configFireball.padded_len)),
                     new_fb_pos = $._0,
                     seed$ = $._1;
                     var $ = A4(randomly_create_x,
                     seed$,
-                    _v24._2,
+                    _v26._2,
                     0.4,
                     $Basics.round($Coin.coin_radius)),
                     new_coin_pos = $._0,
                     seed$$ = $._1;
                     var $ = A4(randomly_create_x,
                     seed$$,
-                    _v24._2,
+                    _v26._2,
                     0.2,
                     $Basics.round($Target.target_radius)),
                     new_target_x = $._0,
@@ -1674,7 +1677,7 @@ Elm.Game.make = function (_elm) {
                     new_seed = $._1;
                     var new_targets = function () {
                        var updated_targets = A3(update_and_filter,
-                       $Target.stepTarget(_v24._2),
+                       $Target.stepTarget(_v26._2),
                        A3($BasicUtil.fn_map2,
                        F2(function (x,y) {
                           return x && y;
@@ -1698,12 +1701,12 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_targets;}
                           _U.badCase($moduleName,
-                          "between lines 179 and 183");
+                          "between lines 180 and 184");
                        }();
                     }();
                     var new_coins = function () {
                        var updated_coins = A3(update_and_filter,
-                       $Coin.stepCoin(_v24._2),
+                       $Coin.stepCoin(_v26._2),
                        A3($BasicUtil.fn_map2,
                        F2(function (x,y) {
                           return x && y;
@@ -1724,12 +1727,12 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_coins;}
                           _U.badCase($moduleName,
-                          "between lines 172 and 176");
+                          "between lines 173 and 177");
                        }();
                     }();
                     var new_fireballs = function () {
                        var updated_fbs = A3(update_and_filter,
-                       $Fireball.stepFireball(_v24._2),
+                       $Fireball.stepFireball(_v26._2),
                        fb_on_screen,
                        g.fireballs);
                        return function () {
@@ -1743,7 +1746,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_fbs;}
                           _U.badCase($moduleName,
-                          "between lines 162 and 165");
+                          "between lines 163 and 166");
                        }();
                     }();
                     var new_game = {_: {}
@@ -1751,25 +1754,25 @@ Elm.Game.make = function (_elm) {
                                    ,fb_creation_seed: new_seed
                                    ,fireballs: new_fireballs
                                    ,just_a_simulation: false
-                                   ,last_touch: _v24._0
+                                   ,last_touch: _v26._0
                                    ,plats: new_plats
                                    ,player: A2($Player.stepPlayer,
                                    {ctor: "_Tuple2"
                                    ,_0: new_plats
-                                   ,_1: _v24._2},
+                                   ,_1: _v26._2},
                                    g.player)
-                                   ,points: g.points + 2 * $Time.inSeconds(_v24._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height)) + points_from_coins
-                                   ,prev_tap_pos: _v24._1
+                                   ,points: g.points + 2 * $Time.inSeconds(_v26._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height)) + points_from_coins
+                                   ,prev_tap_pos: _v26._1
                                    ,preview_plat: $BasicUtil.isJust(should_add_preview_plat) ? $Maybe.Nothing : new_preview_plat
                                    ,t0_preview_plat_just_added: $BasicUtil.isJust(should_add_preview_plat) ? A2($Maybe.map,
                                    function (_) {
                                       return _.t0;
                                    },
-                                   _v24._0) : g.t0_preview_plat_just_added
+                                   _v26._0) : g.t0_preview_plat_just_added
                                    ,targets: new_targets
-                                   ,time_playing: g.time_playing + _v24._2};
-                    var tap_target = _U.eq(_v24._1,
-                    g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v24._1);
+                                   ,time_playing: g.time_playing + _v26._2};
+                    var tap_target = _U.eq(_v26._1,
+                    g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v26._1);
                     var pause_clicked = function () {
                        switch (tap_target.ctor)
                        {case "Just":
@@ -1778,7 +1781,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 109 and 112");
+                       "between lines 114 and 117");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -1788,13 +1791,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 113 and 116");
+                       "between lines 118 and 121");
                     }();
                     return _U.cmp(g.player.pos.y,
-                    $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v24._1) : Continue(new_game);
+                    $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v26._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 107 and 206");
+            "between lines 112 and 207");
          }();
       });
       return step;
@@ -6880,7 +6883,7 @@ Elm.Player.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 45 and 50");
+         "between lines 40 and 45");
       }();
    });
    var stepPlayer = function () {
@@ -6903,10 +6906,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
-                    "on line 54, column 34 to 53");
+                    "on line 49, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 54, column 34 to 53");
+            "on line 49, column 34 to 53");
          }();
       });
       var plat_slope = function (_v11) {
@@ -6942,7 +6945,7 @@ Elm.Player.make = function (_elm) {
                             player_grav * _v13._1 / 28,
                             p.vel);}
                        _U.badCase($moduleName,
-                       "between lines 69 and 72");
+                       "between lines 64 and 67");
                     }();
                     var $ = function () {
                        var $ = A2($HasPosition.vect_add,
@@ -6968,42 +6971,25 @@ Elm.Player.make = function (_elm) {
                            ,vel: vel};
                  }();}
             _U.badCase($moduleName,
-            "between lines 67 and 80");
+            "between lines 62 and 75");
          }();
       });
       return step;
    }();
+   var graphic = A2($Graphics$Collage.filled,
+   $Color.blue,
+   $Graphics$Collage.circle(10));
    var renderPlayer = function (p) {
       return A2($HasPosition.move_f,
       p.pos,
-      A2($Graphics$Collage.filled,
-      $Color.blue,
-      $Graphics$Collage.circle(10)));
+      graphic);
    };
-   var std_player = function () {
-      var secondary = A4($Color.rgba,
-      50,
-      50,
-      200,
-      1);
-      var blue_gray = A4($Color.rgba,
-      50,
-      50,
-      200,
-      0.7);
-      return $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.filled,
-                                                  blue_gray,
-                                                  $Graphics$Collage.circle(configPlayer.radius))
-                                                  ,A2($Graphics$Collage.outlined,
-                                                  $Graphics$Collage.solid(secondary),
-                                                  $Graphics$Collage.circle(configPlayer.radius))]));
-   }();
    var Player = F2(function (a,b) {
       return {_: {},pos: a,vel: b};
    });
    _elm.Player.values = {_op: _op
                         ,Player: Player
-                        ,std_player: std_player
+                        ,graphic: graphic
                         ,renderPlayer: renderPlayer
                         ,configPlayer: configPlayer
                         ,intersects_plat: intersects_plat
@@ -7660,16 +7646,6 @@ Elm.Target.make = function (_elm) {
    $HasPosition = Elm.HasPosition.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Time = Elm.Time.make(_elm);
-   var circleB = function (r) {
-      return A2($Graphics$Collage.filled,
-      $Color.darkGrey,
-      $Graphics$Collage.circle(r));
-   };
-   var circleA = function (r) {
-      return A2($Graphics$Collage.filled,
-      $Color.red,
-      $Graphics$Collage.circle(r));
-   };
    var stepTarget = F2(function (dt,
    _v0) {
       return function () {
@@ -7684,31 +7660,30 @@ Elm.Target.make = function (_elm) {
       }();
    });
    var target_lifespan = 6000;
-   var onlyFor = F3(function (lifeleft,
-   frac,
-   graphic) {
-      return _U.cmp(lifeleft,
-      frac * target_lifespan) > -1 ? graphic : graphic;
-   });
    var target_radius = 12;
+   var circA = A2($Graphics$Collage.filled,
+   $Color.red,
+   $Graphics$Collage.circle(target_radius));
+   var circB = A2($Graphics$Collage.filled,
+   $Color.darkGrey,
+   $Graphics$Collage.circle(target_radius));
+   var graphic = $Graphics$Collage.group(_L.fromArray([circA
+                                                      ,A2($Graphics$Collage.scale,
+                                                      0.75,
+                                                      circB)
+                                                      ,A2($Graphics$Collage.scale,
+                                                      0.5,
+                                                      circA)
+                                                      ,A2($Graphics$Collage.scale,
+                                                      0.25,
+                                                      circB)]));
    var renderTarget = function (_v5) {
       return function () {
          switch (_v5.ctor)
          {case "_Tuple3":
-            return $HasPosition.move_f(_v5._0)($Graphics$Collage.scale(_v5._1 / target_lifespan)($Graphics$Collage.group(_L.fromArray([A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0.75)(circleA(target_radius))
-                                                                                                                                      ,A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0.5)(circleB(target_radius * 0.75))
-                                                                                                                                      ,A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0.25)(circleA(target_radius * 0.5))
-                                                                                                                                      ,A2(onlyFor,
-                                                                                                                                      _v5._1,
-                                                                                                                                      0)(circleB(target_radius * 0.25))]))));}
+            return $HasPosition.move_f(_v5._0)($Graphics$Collage.scale(_v5._1 / target_lifespan)(graphic));}
          _U.badCase($moduleName,
-         "between lines 37 and 42");
+         "on line 38, column 3 to 58");
       }();
    };
    _elm.Target.values = {_op: _op

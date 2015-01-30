@@ -82,7 +82,7 @@ Elm.Fireball.make = function (_elm) {
                           ,fb_height: fb_height
                           ,stepFireball: stepFireball
                           ,single_fb: single_fb
-                          ,renderFireball: renderFireball
-                          ,makeFireball: makeFireball};
+                          ,makeFireball: makeFireball
+                          ,renderFireball: renderFireball};
    return _elm.Fireball.values;
 };

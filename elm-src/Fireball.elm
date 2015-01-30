@@ -29,7 +29,7 @@ single_fb = Collage.group [
  , Collage.move (2.5-3,0) (Collage.outlined (Collage.solid Color.red) (Collage.circle fb_radius))
  ]
 
-renderFireball f = move_f f.pos single_fb
-
 makeFireball : Position -> Fireball
 makeFireball pos = { pos = pos, speed = configFireball.def_speed }
+
+renderFireball f = move_f f.pos single_fb
