@@ -240,8 +240,8 @@ render =
                   Just p  -> p::forms'
     in Collage.collage game_total_width game_total_height (game_background :: forms)
 
-init : State
-init =
+init : Time.Time -> State
+init current_time =
   let side_margin = game_side_margin
       top_margin = game_top_margin
       (gw, gh) = (toFloat game_total_width, toFloat game_total_height)
@@ -254,7 +254,7 @@ init =
      , last_touch = Nothing
      , preview_plat = Nothing
      , t0_preview_plat_just_added = Nothing
-     , fb_creation_seed = Random.initialSeed 1234567890987654321 -- CHANGE THIS TO MAKE IT VARY
+     , fb_creation_seed = Random.initialSeed (round current_time)
      , prev_tap_pos = {x=0,y=0}
      , time_playing = 0
      , points = 0

@@ -14,7 +14,8 @@ Elm.App.make = function (_elm) {
    $DeadScreen = Elm.DeadScreen.make(_elm),
    $Game = Elm.Game.make(_elm),
    $MainMenu = Elm.MainMenu.make(_elm),
-   $Paused = Elm.Paused.make(_elm);
+   $Paused = Elm.Paused.make(_elm),
+   $Time = Elm.Time.make(_elm);
    var render = function (st) {
       return function () {
          switch (st.ctor)
@@ -27,7 +28,7 @@ Elm.App.make = function (_elm) {
             case "OnPaused":
             return $Paused.render(st._0);}
          _U.badCase($moduleName,
-         "between lines 40 and 44");
+         "between lines 42 and 46");
       }();
    };
    var sndOfThree = function (_v5) {
@@ -35,7 +36,7 @@ Elm.App.make = function (_elm) {
          switch (_v5.ctor)
          {case "_Tuple3": return _v5._1;}
          _U.badCase($moduleName,
-         "on line 16, column 22 to 23");
+         "on line 18, column 22 to 23");
       }();
    };
    var OnMainMenu = function (a) {
@@ -55,78 +56,84 @@ Elm.App.make = function (_elm) {
       return {ctor: "OnGame"
              ,_0: a};
    };
-   var step = F2(function (inputs,
+   var step = F2(function (_v10,
    st) {
       return function () {
-         switch (st.ctor)
-         {case "OnDead":
+         switch (_v10.ctor)
+         {case "_Tuple2":
             return function () {
-                 var _v15 = A2($DeadScreen.step,
-                 sndOfThree(inputs),
-                 st._0);
-                 switch (_v15.ctor)
-                 {case "Continue":
-                    return OnDead(_v15._0);
-                    case "Replay":
+                 switch (st.ctor)
+                 {case "OnDead":
                     return function () {
-                         var i = $Game.init;
-                         return OnGame(_U.replace([["prev_tap_pos"
-                                                   ,_v15._0]],
-                         i));
+                         var _v19 = A2($DeadScreen.step,
+                         sndOfThree(_v10._1),
+                         st._0);
+                         switch (_v19.ctor)
+                         {case "Continue":
+                            return OnDead(_v19._0);
+                            case "Replay":
+                            return function () {
+                                 var i = $Game.init(_v10._0);
+                                 return OnGame(_U.replace([["prev_tap_pos"
+                                                           ,_v19._0]],
+                                 i));
+                              }();}
+                         _U.badCase($moduleName,
+                         "between lines 33 and 36");
+                      }();
+                    case "OnGame":
+                    return function () {
+                         var _v22 = A2($Game.step,
+                         _v10._1,
+                         st._0);
+                         switch (_v22.ctor)
+                         {case "Continue":
+                            return OnGame(_v22._0);
+                            case "Die":
+                            return OnDead(_v22._0);
+                            case "Pause":
+                            return OnPaused(_v22._0);
+                            case "Restart":
+                            return function () {
+                                 var i = $Game.init(_v10._0);
+                                 return OnGame(_U.replace([["prev_tap_pos"
+                                                           ,_v22._0]],
+                                 i));
+                              }();}
+                         _U.badCase($moduleName,
+                         "between lines 23 and 28");
+                      }();
+                    case "OnMainMenu":
+                    return function () {
+                         var _v27 = A2($MainMenu.step,
+                         sndOfThree(_v10._1),
+                         st._0);
+                         switch (_v27.ctor)
+                         {case "Continue":
+                            return OnMainMenu(_v27._0);
+                            case "PlayGame":
+                            return OnGame($Game.init(_v10._0));}
+                         _U.badCase($moduleName,
+                         "between lines 37 and 39");
+                      }();
+                    case "OnPaused":
+                    return function () {
+                         var _v29 = A2($Paused.step,
+                         sndOfThree(_v10._1),
+                         st._0);
+                         switch (_v29.ctor)
+                         {case "Continue":
+                            return OnPaused(_v29._0);
+                            case "Play":
+                            return OnGame(_v29._0);}
+                         _U.badCase($moduleName,
+                         "between lines 29 and 32");
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 31 and 34");
-              }();
-            case "OnGame":
-            return function () {
-                 var _v18 = A2($Game.step,
-                 inputs,
-                 st._0);
-                 switch (_v18.ctor)
-                 {case "Continue":
-                    return OnGame(_v18._0);
-                    case "Die":
-                    return OnDead(_v18._0);
-                    case "Pause":
-                    return OnPaused(_v18._0);
-                    case "Restart":
-                    return function () {
-                         var i = $Game.init;
-                         return OnGame(_U.replace([["prev_tap_pos"
-                                                   ,_v18._0]],
-                         i));
-                      }();}
-                 _U.badCase($moduleName,
-                 "between lines 21 and 26");
-              }();
-            case "OnMainMenu":
-            return function () {
-                 var _v23 = A2($MainMenu.step,
-                 sndOfThree(inputs),
-                 st._0);
-                 switch (_v23.ctor)
-                 {case "Continue":
-                    return OnMainMenu(_v23._0);
-                    case "PlayGame":
-                    return OnGame($Game.init);}
-                 _U.badCase($moduleName,
-                 "between lines 35 and 37");
-              }();
-            case "OnPaused":
-            return function () {
-                 var _v25 = A2($Paused.step,
-                 sndOfThree(inputs),
-                 st._0);
-                 switch (_v25.ctor)
-                 {case "Continue":
-                    return OnPaused(_v25._0);
-                    case "Play":
-                    return OnGame(_v25._0);}
-                 _U.badCase($moduleName,
-                 "between lines 27 and 30");
+                 "between lines 21 and 39");
               }();}
          _U.badCase($moduleName,
-         "between lines 19 and 37");
+         "between lines 21 and 39");
       }();
    });
    _elm.App.values = {_op: _op
@@ -1223,36 +1230,38 @@ Elm.Game.make = function (_elm) {
    $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Touch = Elm.Touch.make(_elm);
-   var init = function () {
-      var $ = {ctor: "_Tuple2"
-              ,_0: $Fireball.configFireball.padded_len
-              ,_1: $Fireball.configFireball.side_len},
-      pad_len = $._0,
-      side_len = $._1;
-      var $ = {ctor: "_Tuple2"
-              ,_0: $Basics.toFloat($Config.game_total_width)
-              ,_1: $Basics.toFloat($Config.game_total_height)},
-      gw = $._0,
-      gh = $._1;
-      var top_margin = $Config.game_top_margin;
-      var side_margin = $Config.game_side_margin;
-      return {_: {}
-             ,coins: _L.fromArray([])
-             ,fb_creation_seed: $Random.initialSeed(-1318314831)
-             ,fireballs: _L.fromArray([])
-             ,just_a_simulation: false
-             ,last_touch: $Maybe.Nothing
-             ,plats: _L.fromArray([])
-             ,player: {_: {}
-                      ,pos: {_: {},x: 200,y: 75}
-                      ,vel: {_: {},x: 0,y: 0}}
-             ,points: 0
-             ,prev_tap_pos: {_: {},x: 0,y: 0}
-             ,preview_plat: $Maybe.Nothing
-             ,t0_preview_plat_just_added: $Maybe.Nothing
-             ,targets: _L.fromArray([])
-             ,time_playing: 0};
-   }();
+   var init = function (current_time) {
+      return function () {
+         var $ = {ctor: "_Tuple2"
+                 ,_0: $Fireball.configFireball.padded_len
+                 ,_1: $Fireball.configFireball.side_len},
+         pad_len = $._0,
+         side_len = $._1;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: $Basics.toFloat($Config.game_total_width)
+                 ,_1: $Basics.toFloat($Config.game_total_height)},
+         gw = $._0,
+         gh = $._1;
+         var top_margin = $Config.game_top_margin;
+         var side_margin = $Config.game_side_margin;
+         return {_: {}
+                ,coins: _L.fromArray([])
+                ,fb_creation_seed: $Random.initialSeed($Basics.round(current_time))
+                ,fireballs: _L.fromArray([])
+                ,just_a_simulation: false
+                ,last_touch: $Maybe.Nothing
+                ,plats: _L.fromArray([])
+                ,player: {_: {}
+                         ,pos: {_: {},x: 200,y: 75}
+                         ,vel: {_: {},x: 0,y: 0}}
+                ,points: 0
+                ,prev_tap_pos: {_: {},x: 0,y: 0}
+                ,preview_plat: $Maybe.Nothing
+                ,t0_preview_plat_just_added: $Maybe.Nothing
+                ,targets: _L.fromArray([])
+                ,time_playing: 0};
+      }();
+   };
    var State = function (a) {
       return function (b) {
          return function (c) {
@@ -3121,6 +3130,11 @@ Elm.Main.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Touch = Elm.Touch.make(_elm);
+   var approx_time = _P.portIn("approx_time",
+   _P.incomingSignal(function (v) {
+      return typeof v === "number" ? v : _U.badPort("a number",
+      v);
+   }));
    var taps = _P.portIn("taps",
    _P.incomingSignal(function (v) {
       return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "x" in v && "y" in v ? {_: {}
@@ -3185,7 +3199,14 @@ Elm.Main.make = function (_elm) {
    $App.init,
    A2($Signal.sampleOn,
    delta,
-   inputs)));
+   A3($Signal.map2,
+   F2(function (v0,v1) {
+      return {ctor: "_Tuple2"
+             ,_0: v0
+             ,_1: v1};
+   }),
+   approx_time,
+   inputs))));
    _elm.Main.values = {_op: _op
                       ,main: main
                       ,delta: delta

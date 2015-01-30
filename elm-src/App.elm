@@ -3,6 +3,8 @@
 module App (State, init, step, render, Input) where
 
 import Text (plainText)
+import Signal ((<~))
+import Time (Time)
 
 import Config (game_total_height)
 import Game
@@ -11,16 +13,16 @@ import DeadScreen
 import MainMenu
 
 type State = OnGame Game.State | OnDead Game.State | OnPaused Game.State | OnMainMenu MainMenu.State
-type alias Input = Game.Input
+type alias Input = (Time, Game.Input) -- The Time is the current time, from port approx_time
 
 sndOfThree (_,x,_) = x
 
-step inputs st =
+step (t, inputs) st =
   case st of
     (OnGame g) ->
       case Game.step inputs g of
         Game.Die g -> OnDead g
-        Game.Restart pos -> let i = Game.init in OnGame { i | prev_tap_pos <- pos }
+        Game.Restart pos -> let i = (Game.init t) in OnGame { i | prev_tap_pos <- pos }
         Game.Pause st -> OnPaused st
         Game.Continue new_game -> OnGame new_game
     (OnPaused g) ->
@@ -30,11 +32,11 @@ step inputs st =
     (OnDead g) ->
       case DeadScreen.step (sndOfThree inputs) g of
         DeadScreen.Continue g -> OnDead g
-        DeadScreen.Replay pos -> let i = Game.init in OnGame { i | prev_tap_pos <- pos }
+        DeadScreen.Replay pos -> let i = (Game.init t) in OnGame { i | prev_tap_pos <- pos }
     (OnMainMenu p) ->
       case MainMenu.step (sndOfThree inputs) p of
         MainMenu.Continue pos -> OnMainMenu pos
-        MainMenu.PlayGame -> OnGame Game.init
+        MainMenu.PlayGame -> OnGame (Game.init t)
 
 render st =
   case st of

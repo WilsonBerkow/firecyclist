@@ -29,36 +29,38 @@ Elm.Game.make = function (_elm) {
    $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Touch = Elm.Touch.make(_elm);
-   var init = function () {
-      var $ = {ctor: "_Tuple2"
-              ,_0: $Fireball.configFireball.padded_len
-              ,_1: $Fireball.configFireball.side_len},
-      pad_len = $._0,
-      side_len = $._1;
-      var $ = {ctor: "_Tuple2"
-              ,_0: $Basics.toFloat($Config.game_total_width)
-              ,_1: $Basics.toFloat($Config.game_total_height)},
-      gw = $._0,
-      gh = $._1;
-      var top_margin = $Config.game_top_margin;
-      var side_margin = $Config.game_side_margin;
-      return {_: {}
-             ,coins: _L.fromArray([])
-             ,fb_creation_seed: $Random.initialSeed(-1318314831)
-             ,fireballs: _L.fromArray([])
-             ,just_a_simulation: false
-             ,last_touch: $Maybe.Nothing
-             ,plats: _L.fromArray([])
-             ,player: {_: {}
-                      ,pos: {_: {},x: 200,y: 75}
-                      ,vel: {_: {},x: 0,y: 0}}
-             ,points: 0
-             ,prev_tap_pos: {_: {},x: 0,y: 0}
-             ,preview_plat: $Maybe.Nothing
-             ,t0_preview_plat_just_added: $Maybe.Nothing
-             ,targets: _L.fromArray([])
-             ,time_playing: 0};
-   }();
+   var init = function (current_time) {
+      return function () {
+         var $ = {ctor: "_Tuple2"
+                 ,_0: $Fireball.configFireball.padded_len
+                 ,_1: $Fireball.configFireball.side_len},
+         pad_len = $._0,
+         side_len = $._1;
+         var $ = {ctor: "_Tuple2"
+                 ,_0: $Basics.toFloat($Config.game_total_width)
+                 ,_1: $Basics.toFloat($Config.game_total_height)},
+         gw = $._0,
+         gh = $._1;
+         var top_margin = $Config.game_top_margin;
+         var side_margin = $Config.game_side_margin;
+         return {_: {}
+                ,coins: _L.fromArray([])
+                ,fb_creation_seed: $Random.initialSeed($Basics.round(current_time))
+                ,fireballs: _L.fromArray([])
+                ,just_a_simulation: false
+                ,last_touch: $Maybe.Nothing
+                ,plats: _L.fromArray([])
+                ,player: {_: {}
+                         ,pos: {_: {},x: 200,y: 75}
+                         ,vel: {_: {},x: 0,y: 0}}
+                ,points: 0
+                ,prev_tap_pos: {_: {},x: 0,y: 0}
+                ,preview_plat: $Maybe.Nothing
+                ,t0_preview_plat_just_added: $Maybe.Nothing
+                ,targets: _L.fromArray([])
+                ,time_playing: 0};
+      }();
+   };
    var State = function (a) {
       return function (b) {
          return function (c) {

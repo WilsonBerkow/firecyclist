@@ -1,7 +1,7 @@
 -- (c) Wilson Berkow.
 
-import Signal (Signal, map, map3, foldp, sampleOn)
-import Time (inSeconds, fps)
+import Signal (Signal, map, map2, map3, foldp, sampleOn)
+import Time (Time, inSeconds, fps)
 import Config (framerate)
 import Maybe (Maybe, withDefault)
 import Touch
@@ -14,7 +14,7 @@ main = map App.render
          (foldp
            App.step
            App.init
-           (sampleOn delta inputs))
+           (sampleOn delta (map2 (,) approx_time inputs)))
 
 delta = fps framerate
 
@@ -26,6 +26,8 @@ port touches = Touch.touches
 port modtouches : Signal (List Touch.Touch)
 
 port taps : Signal (Maybe Position)
+
+port approx_time : Signal Time
 
 -- TODO: Start using GlobalState, and test it out with highscores storage. That
 --  would most likely not be done with ordinary global state, as it would have

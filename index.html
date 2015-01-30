@@ -25,7 +25,7 @@
         <script src="elm.js"></script>
         <script>
             (function () {
-                var module = Elm.embed(Elm.Main, jQuery('#Main')[0], {taps: null, modtouches: []}),
+                var module = Elm.embed(Elm.Main, jQuery('#Main')[0], {taps: null, modtouches: [], approx_time: Date.now()}),
                     pageScaleFactor = 1,
                     moduleOffsetX = 0,
                     resize = function () { // This zooms the page so that the Firecyclist module (initially always (576/2) by (1024/2) in dimensions), fits to the page.
@@ -73,6 +73,11 @@
                 module.ports.touches.subscribe(function (event) {
                     module.ports.modtouches.send(event.map(transformTouch));
                 });
+                setInterval(function () {
+                    module.ports.touches.subscribe(function (event) {
+                        module.ports.approx_time.send(Date.now());
+                    });
+                }, 1000);
             }());
         </script>
     </body>
