@@ -253,7 +253,7 @@ init current_time =
      , fireballs = []
      , last_touch = Nothing
      , preview_plat = Nothing
-     , t0_preview_plat_just_added = Nothing
+     , t0_preview_plat_just_added = Nothing -- TODO: change this to hold the .id of the plat
      , fb_creation_seed = Random.initialSeed (round current_time)
      , prev_tap_pos = {x=0,y=0}
      , time_playing = 0
