@@ -25,7 +25,7 @@
         <script src="elm.js"></script>
         <script>
             (function () {
-                var module = Elm.embed(Elm.Main, jQuery('#Main')[0], {taps: null, modtouches: [], approx_time: Date.now()}),
+                var module = Elm.embed(Elm.Main, jQuery('#Main')[0], {taps: null, cur_touch: null, approx_time: Date.now()}),
                     pageScaleFactor = 1,
                     moduleOffsetX = 0,
                     resize = function () { // This zooms the page so that the Firecyclist module (initially always (576/2) by (1024/2) in dimensions), fits to the page.
@@ -46,38 +46,55 @@
                             moduleOffsetX = ((jQuery("body").width() - (576 / 2) * pageScaleFactor) / 2) / pageScaleFactor; // The last division, by pageScaleFactor, is there because the zoom done above will automatically scale this whole expression/offest by pageScaleFactor, so the division undoes that.
                             jQuery("#Main").css("position", "absolute").css("left", moduleOffsetX);
                         }
-                    },
-                    transform = function (coordinate) { return coordinate / pageScaleFactor; }, // For converting tap and touch event values, so that the visual zoom of the page registers in where the program sees the taps happening.
-                    transformTouch = function (touch) {
-                        // Note that below, the transformations on x's and y's only handle the scale factor
-                        //  of the entire page, and not the offset of the module, used to center it. This
-                        //  is because the 'touch' comes from Elm's Touch module, which gives coordinates
-                        //  relative to the top-left of the Elm module by default.
-                        // However, for the 'taps' port, handled below, I *do* handle the x-axis offset.
-                        return {
-                            "x": transform(touch.x),
-                            "y": transform(touch.y),
-                            "x0": transform(touch.x0),
-                            "y0": transform(touch.y0),
-                            "t0": touch.t0,
-                            "id": touch.id
-                        };
                     };
                 resize();
                 jQuery(document).tap(function (event) {
                     module.ports.taps.send({
-                        "x": transform(event.pageX) - moduleOffsetX,
-                        "y": transform(event.pageY)
+                        "x": event.pageX / pageScaleFactor - moduleOffsetX,
+                        "y": event.pageY / pageScaleFactor
                     });
-                });
-                module.ports.touches.subscribe(function (event) {
-                    module.ports.modtouches.send(event.map(transformTouch));
                 });
                 setInterval(function () {
-                    module.ports.touches.subscribe(function (event) {
-                        module.ports.approx_time.send(Date.now());
-                    });
+                    module.ports.approx_time.send(Date.now());
                 }, 1000);
+                (function () {
+                    var touchesCount = 0,
+                        curTouch = null,
+                        updatePort = function () {
+                            module.ports.cur_touch.send(curTouch);
+                        },
+                        calcPos = function (event) {
+                            return {
+                                "x": (typeof event.pageX === "number" ? event.pageX : event.originalEvent.changedTouches[0].pageX) / pageScaleFactor - moduleOffsetX,
+                                "y": (typeof event.pageY === "number" ? event.pageY : event.originalEvent.changedTouches[0].pageY) / pageScaleFactor
+                            };
+                        };
+                    jQuery(document).on("mousemove touchmove", function (event) {
+                        var xy = calcPos(event);
+                        if (curTouch !== null) {
+                            curTouch.x = xy.x;
+                            curTouch.y = xy.y;
+                            updatePort();
+                        }
+                    });
+                    jQuery(document).on("touchstart", function (event) {
+                        var now = Date.now(), xy = calcPos(event);
+                        curTouch = {
+                            "t0": now,
+                            "id": touchesCount,
+                            "x0": xy.x,
+                            "y0": xy.y,
+                            "x":  xy.x,
+                            "y":  xy.y
+                        };
+                        touchesCount += 1;
+                        updatePort();
+                    });
+                    jQuery(document).on("touchend", function () {
+                        curTouch = null;
+                        updatePort();
+                    });
+                }());
             }());
         </script>
     </body>

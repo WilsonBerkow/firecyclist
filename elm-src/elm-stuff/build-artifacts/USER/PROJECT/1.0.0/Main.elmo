@@ -11,7 +11,6 @@ Elm.Main.make = function (_elm) {
    _P = _N.Ports.make(_elm),
    $moduleName = "Main",
    $App = Elm.App.make(_elm),
-   $BasicUtil = Elm.BasicUtil.make(_elm),
    $Config = Elm.Config.make(_elm),
    $HasPosition = Elm.HasPosition.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
@@ -32,24 +31,22 @@ Elm.Main.make = function (_elm) {
                                                                                                                                    v.y)} : _U.badPort("an object with fields \'x\', \'y\'",
       v));
    }));
-   var modtouches = _P.portIn("modtouches",
+   var cur_touch = _P.portIn("cur_touch",
    _P.incomingSignal(function (v) {
-      return typeof v === "object" && v instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.map(function (v) {
-         return typeof v === "object" && "x" in v && "y" in v && "id" in v && "x0" in v && "y0" in v && "t0" in v ? {_: {}
-                                                                                                                    ,x: typeof v.x === "number" ? v.x : _U.badPort("a number",
-                                                                                                                    v.x)
-                                                                                                                    ,y: typeof v.y === "number" ? v.y : _U.badPort("a number",
-                                                                                                                    v.y)
-                                                                                                                    ,id: typeof v.id === "number" ? v.id : _U.badPort("a number",
-                                                                                                                    v.id)
-                                                                                                                    ,x0: typeof v.x0 === "number" ? v.x0 : _U.badPort("a number",
-                                                                                                                    v.x0)
-                                                                                                                    ,y0: typeof v.y0 === "number" ? v.y0 : _U.badPort("a number",
-                                                                                                                    v.y0)
-                                                                                                                    ,t0: typeof v.t0 === "number" ? v.t0 : _U.badPort("a number",
-                                                                                                                    v.t0)} : _U.badPort("an object with fields \'x\', \'y\', \'id\', \'x0\', \'y0\', \'t0\'",
-         v);
-      })) : _U.badPort("an array",v);
+      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "x" in v && "y" in v && "id" in v && "x0" in v && "y0" in v && "t0" in v ? {_: {}
+                                                                                                                                                                                       ,x: typeof v.x === "number" ? v.x : _U.badPort("a number",
+                                                                                                                                                                                       v.x)
+                                                                                                                                                                                       ,y: typeof v.y === "number" ? v.y : _U.badPort("a number",
+                                                                                                                                                                                       v.y)
+                                                                                                                                                                                       ,id: typeof v.id === "number" ? v.id : _U.badPort("a number",
+                                                                                                                                                                                       v.id)
+                                                                                                                                                                                       ,x0: typeof v.x0 === "number" ? v.x0 : _U.badPort("a number",
+                                                                                                                                                                                       v.x0)
+                                                                                                                                                                                       ,y0: typeof v.y0 === "number" ? v.y0 : _U.badPort("a number",
+                                                                                                                                                                                       v.y0)
+                                                                                                                                                                                       ,t0: typeof v.t0 === "number" ? v.t0 : _U.badPort("a number",
+                                                                                                                                                                                       v.t0)} : _U.badPort("an object with fields \'x\', \'y\', \'id\', \'x0\', \'y0\', \'t0\'",
+      v));
    }));
    var touches = _P.portOut("touches",
    _P.outgoingSignal(function (v) {
@@ -71,9 +68,7 @@ Elm.Main.make = function (_elm) {
              ,_1: v1
              ,_2: v2};
    }),
-   A2($Signal.map,
-   $BasicUtil.mhead,
-   modtouches),
+   cur_touch,
    A2($Signal.map,
    $Maybe.withDefault({_: {}
                       ,x: 0

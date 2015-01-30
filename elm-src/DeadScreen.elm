@@ -1,6 +1,6 @@
 -- (c) Wilson Berkow.
 
-module DeadScreen (WhereTo(Continue, Replay), State, Input, step, render) where
+module DeadScreen (WhereTo(Continue, Replay), step, render) where
 
 import Text
 import Time
@@ -12,10 +12,7 @@ import Config (game_total_width, game_total_height)
 import HasPosition (Position)
 import Game
 
-type WhereTo = Continue State | Replay Position
-
-type alias State = Game.State
-type alias Input = Position
+type WhereTo = Continue Game.State | Replay Position
 
 step tap_pos g =
   let new_g = { g | prev_tap_pos <- tap_pos }

@@ -18,12 +18,12 @@ main = map App.render
 
 delta = fps framerate
 
-inputs = map3 (,,) (map mhead modtouches) (map (withDefault {x=0,y=0}) taps) delta
+inputs = map3 (,,) cur_touch (map (withDefault {x=0,y=0}) taps) delta
 
 port touches : Signal (List Touch.Touch)
 port touches = Touch.touches
 
-port modtouches : Signal (List Touch.Touch)
+port cur_touch : Signal (Maybe Touch.Touch)
 
 port taps : Signal (Maybe Position)
 
