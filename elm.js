@@ -1219,6 +1219,7 @@ Elm.Game.make = function (_elm) {
    $Platfm = Elm.Platfm.make(_elm),
    $Player = Elm.Player.make(_elm),
    $Random = Elm.Random.make(_elm),
+   $Target = Elm.Target.make(_elm),
    $Text = Elm.Text.make(_elm),
    $Time = Elm.Time.make(_elm),
    $Touch = Elm.Touch.make(_elm);
@@ -1249,6 +1250,7 @@ Elm.Game.make = function (_elm) {
              ,prev_tap_pos: {_: {},x: 0,y: 0}
              ,preview_plat: $Maybe.Nothing
              ,t0_preview_plat_just_added: $Maybe.Nothing
+             ,targets: _L.fromArray([])
              ,time_playing: 0};
    }();
    var State = function (a) {
@@ -1263,19 +1265,22 @@ Elm.Game.make = function (_elm) {
                               return function (j) {
                                  return function (k) {
                                     return function (l) {
-                                       return {_: {}
-                                              ,coins: c
-                                              ,fb_creation_seed: h
-                                              ,fireballs: d
-                                              ,just_a_simulation: l
-                                              ,last_touch: e
-                                              ,plats: a
-                                              ,player: b
-                                              ,points: k
-                                              ,prev_tap_pos: i
-                                              ,preview_plat: f
-                                              ,t0_preview_plat_just_added: g
-                                              ,time_playing: j};
+                                       return function (m) {
+                                          return {_: {}
+                                                 ,coins: c
+                                                 ,fb_creation_seed: i
+                                                 ,fireballs: e
+                                                 ,just_a_simulation: m
+                                                 ,last_touch: f
+                                                 ,plats: a
+                                                 ,player: b
+                                                 ,points: l
+                                                 ,prev_tap_pos: j
+                                                 ,preview_plat: g
+                                                 ,t0_preview_plat_just_added: h
+                                                 ,targets: d
+                                                 ,time_playing: k};
+                                       };
                                     };
                                  };
                               };
@@ -1326,6 +1331,9 @@ Elm.Game.make = function (_elm) {
             var plat_preview = A2($Maybe.map,
             $Platfm.renderTouchPlatfmPreview,
             game.preview_plat);
+            var targets = A2($List.map,
+            $Target.renderTarget,
+            game.targets);
             var coins = A2($List.map,
             $Coin.renderCoin,
             game.coins);
@@ -1359,10 +1367,12 @@ Elm.Game.make = function (_elm) {
             A2($Basics._op["++"],
             plats,
             A2($Basics._op["++"],
+            targets,
+            A2($Basics._op["++"],
             coins,
             A2($Basics._op["++"],
             fireballs,
-            _L.fromArray([$Player.renderPlayer(game.player)]))))));
+            _L.fromArray([$Player.renderPlayer(game.player)])))))));
             var forms = function () {
                switch (plat_preview.ctor)
                {case "Just":
@@ -1371,7 +1381,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 219 and 222");
+               "between lines 238 and 241");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -1440,6 +1450,28 @@ Elm.Game.make = function (_elm) {
          stepper,
          A2($List.filter,filterer,objs));
       });
+      var target_hitting_player = F2(function (pl,
+      _v4) {
+         return function () {
+            switch (_v4.ctor)
+            {case "_Tuple3":
+               return _U.cmp(A2($HasPosition.distance,
+                 pl.pos,
+                 _v4._0),
+                 $Player.configPlayer.radius + $Target.target_radius * (_v4._1 / $Target.target_lifespan)) < 0;}
+            _U.badCase($moduleName,
+            "on line 87, column 53 to 141");
+         }();
+      });
+      var target_alive = function (_v9) {
+         return function () {
+            switch (_v9.ctor)
+            {case "_Tuple3":
+               return _U.cmp(_v9._1,0) > -1;}
+            _U.badCase($moduleName,
+            "on line 84, column 39 to 52");
+         }();
+      };
       var coin_hitting_player = F2(function (pl,
       coin) {
          return _U.cmp(A2($HasPosition.distance,
@@ -1454,26 +1486,26 @@ Elm.Game.make = function (_elm) {
          fb.pos),
          $Player.configPlayer.radius + $Fireball.fb_radius) < 0;
       });
-      var plat_alive = function (_v4) {
+      var plat_alive = function (_v14) {
          return function () {
-            return _U.cmp(_v4.time_left,
+            return _U.cmp(_v14.time_left,
             30) > 0;
          }();
       };
-      var point_on_screen = function (_v6) {
+      var point_on_screen = function (_v16) {
          return function () {
             return A3($BasicUtil.in_range,
             0,
             $Basics.toFloat($Config.game_total_width),
-            _v6.x) && A3($BasicUtil.in_range,
+            _v16.x) && A3($BasicUtil.in_range,
             0,
             $Basics.toFloat($Config.game_total_height),
-            _v6.y);
+            _v16.y);
          }();
       };
-      var plat_on_screen = function (_v8) {
+      var plat_on_screen = function (_v18) {
          return function () {
-            return point_on_screen(_v8.start) || point_on_screen(_v8.end);
+            return point_on_screen(_v18.start) || point_on_screen(_v18.end);
          }();
       };
       var plat_should_stay = A3($BasicUtil.fn_map2,
@@ -1482,11 +1514,11 @@ Elm.Game.make = function (_elm) {
       }),
       plat_on_screen,
       plat_alive);
-      var fb_on_screen = function (_v10) {
+      var fb_on_screen = function (_v20) {
          return function () {
-            return point_on_screen(_v10.pos) || point_on_screen(A2($HasPosition.vect_rise,
+            return point_on_screen(_v20.pos) || point_on_screen(A2($HasPosition.vect_rise,
             $Fireball.fb_height,
-            _v10.pos));
+            _v20.pos));
          }();
       };
       var coin_on_screen = function (pos) {
@@ -1494,22 +1526,22 @@ Elm.Game.make = function (_elm) {
          $Coin.coin_radius,
          pos));
       };
-      var touch_to_platfm = function (_v12) {
+      var touch_to_platfm = function (_v22) {
          return function () {
             return {_: {}
                    ,end: {_: {}
-                         ,x: $Basics.toFloat(_v12.x)
-                         ,y: $Basics.toFloat(_v12.y)}
+                         ,x: $Basics.toFloat(_v22.x)
+                         ,y: $Basics.toFloat(_v22.y)}
                    ,start: {_: {}
-                           ,x: $Basics.toFloat(_v12.x0)
-                           ,y: $Basics.toFloat(_v12.y0)}
+                           ,x: $Basics.toFloat(_v22.x0)
+                           ,y: $Basics.toFloat(_v22.y0)}
                    ,time_left: 800};
          }();
       };
-      var step = F2(function (_v14,
+      var step = F2(function (_v24,
       g) {
          return function () {
-            switch (_v14.ctor)
+            switch (_v24.ctor)
             {case "_Tuple3":
                return function () {
                     var points_from_coins = 5 * $Basics.toFloat($List.length(A2($List.filter,
@@ -1518,45 +1550,45 @@ Elm.Game.make = function (_elm) {
                     var player_on_fire = A2($BasicUtil.any,
                     player_hitting_fb(g.player),
                     g.fireballs);
-                    var confirm_platfm_validity = function (_v19) {
+                    var confirm_platfm_validity = function (_v29) {
                        return function () {
-                          return _U.eq(_v19.start,
-                          _v19.end) ? $Maybe.Nothing : _U.eq(_v19.start.y,
-                          _v19.end.y) ? $Maybe.Just(_U.replace([["start"
+                          return _U.eq(_v29.start,
+                          _v29.end) ? $Maybe.Nothing : _U.eq(_v29.start.y,
+                          _v29.end.y) ? $Maybe.Just(_U.replace([["start"
                                                                 ,_U.replace([["y"
-                                                                             ,_v19.start.y - 1]],
-                                                                _v19.start)]],
-                          _v19)) : $Maybe.Just(_v19);
+                                                                             ,_v29.start.y - 1]],
+                                                                _v29.start)]],
+                          _v29)) : $Maybe.Just(_v29);
                        }();
                     };
                     var new_preview_plat = function () {
-                       var _v21 = {ctor: "_Tuple2"
+                       var _v31 = {ctor: "_Tuple2"
                                   ,_0: g.t0_preview_plat_just_added
-                                  ,_1: _v14._0};
-                       switch (_v21.ctor)
+                                  ,_1: _v24._0};
+                       switch (_v31.ctor)
                        {case "_Tuple2":
-                          switch (_v21._0.ctor)
+                          switch (_v31._0.ctor)
                             {case "Just":
-                               switch (_v21._1.ctor)
+                               switch (_v31._1.ctor)
                                  {case "Just":
-                                    return _U.eq(_v21._0._0,
-                                      _v21._1._0.t0) ? $Maybe.Nothing : A2($Maybe.andThen,
-                                      $Maybe.Just(touch_to_platfm(_v21._1._0)),
+                                    return _U.eq(_v31._0._0,
+                                      _v31._1._0.t0) ? $Maybe.Nothing : A2($Maybe.andThen,
+                                      $Maybe.Just(touch_to_platfm(_v31._1._0)),
                                       confirm_platfm_validity);}
                                  break;
                                case "Nothing":
-                               switch (_v21._1.ctor)
+                               switch (_v31._1.ctor)
                                  {case "Just":
                                     return A2($Maybe.andThen,
-                                      $Maybe.Just(touch_to_platfm(_v21._1._0)),
+                                      $Maybe.Just(touch_to_platfm(_v31._1._0)),
                                       confirm_platfm_validity);}
                                  break;}
-                            switch (_v21._1.ctor)
+                            switch (_v31._1.ctor)
                             {case "Nothing":
                                return $Maybe.Nothing;}
                             break;}
                        _U.badCase($moduleName,
-                       "between lines 118 and 126");
+                       "between lines 127 and 135");
                     }();
                     var should_add_preview_plat = A2($Maybe.andThen,
                     new_preview_plat,
@@ -1566,7 +1598,7 @@ Elm.Game.make = function (_elm) {
                        plat) ? $Maybe.Just(plat) : $Maybe.Nothing;
                     });
                     var drawn_plat = function () {
-                       switch (_v14._0.ctor)
+                       switch (_v24._0.ctor)
                        {case "Just":
                           return $Maybe.Nothing;
                           case "Nothing":
@@ -1576,28 +1608,28 @@ Elm.Game.make = function (_elm) {
                             g.preview_plat),
                             confirm_platfm_validity);}
                        _U.badCase($moduleName,
-                       "between lines 128 and 134");
+                       "between lines 137 and 143");
                     }();
                     var new_plats = function () {
                        var updated_plats = A3(update_and_filter,
-                       $Platfm.stepPlatfm(_v14._2),
+                       $Platfm.stepPlatfm(_v24._2),
                        plat_should_stay,
                        g.plats);
                        return function () {
-                          var _v29 = {ctor: "_Tuple2"
+                          var _v39 = {ctor: "_Tuple2"
                                      ,_0: should_add_preview_plat
                                      ,_1: drawn_plat};
-                          switch (_v29.ctor)
+                          switch (_v39.ctor)
                           {case "_Tuple2":
-                             switch (_v29._1.ctor)
+                             switch (_v39._1.ctor)
                                {case "Just":
                                   return A2($List._op["::"],
-                                    _v29._1._0,
+                                    _v39._1._0,
                                     updated_plats);}
-                               switch (_v29._0.ctor)
+                               switch (_v39._0.ctor)
                                {case "Just":
                                   return A2($List._op["::"],
-                                    _v29._0._0,
+                                    _v39._0._0,
                                     updated_plats);}
                                break;}
                           return updated_plats;
@@ -1605,21 +1637,64 @@ Elm.Game.make = function (_elm) {
                     }();
                     var $ = A4(randomly_create_x,
                     g.fb_creation_seed,
-                    _v14._2,
+                    _v24._2,
                     1,
                     $Basics.round($Fireball.configFireball.padded_len)),
                     new_fb_pos = $._0,
                     seed$ = $._1;
                     var $ = A4(randomly_create_x,
                     seed$,
-                    _v14._2,
+                    _v24._2,
                     0.4,
                     $Basics.round($Coin.coin_radius)),
                     new_coin_pos = $._0,
+                    seed$$ = $._1;
+                    var $ = A4(randomly_create_x,
+                    seed$$,
+                    _v24._2,
+                    0.2,
+                    $Basics.round($Target.target_radius)),
+                    new_target_x = $._0,
+                    seed$$$ = $._1;
+                    var $ = A2($Random.generate,
+                    A2($Random.$float,
+                    25,
+                    $Basics.toFloat($Config.game_total_height) * 1 / 3 + 25),
+                    seed$$$),
+                    random_target_y = $._0,
                     new_seed = $._1;
+                    var new_targets = function () {
+                       var updated_targets = A3(update_and_filter,
+                       $Target.stepTarget(_v24._2),
+                       A3($BasicUtil.fn_map2,
+                       F2(function (x,y) {
+                          return x && y;
+                       }),
+                       target_alive,
+                       function ($) {
+                          return $Basics.not(target_hitting_player(g.player)($));
+                       }),
+                       g.targets);
+                       return function () {
+                          switch (new_target_x.ctor)
+                          {case "Just":
+                             return A2($List._op["::"],
+                               {ctor: "_Tuple3"
+                               ,_0: {_: {}
+                                    ,x: new_target_x._0
+                                    ,y: random_target_y}
+                               ,_1: $Target.target_lifespan
+                               ,_2: $Maybe.Nothing},
+                               updated_targets);
+                             case "Nothing":
+                             return updated_targets;}
+                          _U.badCase($moduleName,
+                          "between lines 179 and 183");
+                       }();
+                    }();
                     var new_coins = function () {
                        var updated_coins = A3(update_and_filter,
-                       $Coin.stepCoin(_v14._2),
+                       $Coin.stepCoin(_v24._2),
                        A3($BasicUtil.fn_map2,
                        F2(function (x,y) {
                           return x && y;
@@ -1640,12 +1715,12 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_coins;}
                           _U.badCase($moduleName,
-                          "between lines 163 and 167");
+                          "between lines 172 and 176");
                        }();
                     }();
                     var new_fireballs = function () {
                        var updated_fbs = A3(update_and_filter,
-                       $Fireball.stepFireball(_v14._2),
+                       $Fireball.stepFireball(_v24._2),
                        fb_on_screen,
                        g.fireballs);
                        return function () {
@@ -1659,7 +1734,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_fbs;}
                           _U.badCase($moduleName,
-                          "between lines 153 and 156");
+                          "between lines 162 and 165");
                        }();
                     }();
                     var new_game = {_: {}
@@ -1667,24 +1742,25 @@ Elm.Game.make = function (_elm) {
                                    ,fb_creation_seed: new_seed
                                    ,fireballs: new_fireballs
                                    ,just_a_simulation: false
-                                   ,last_touch: _v14._0
+                                   ,last_touch: _v24._0
                                    ,plats: new_plats
                                    ,player: A2($Player.stepPlayer,
                                    {ctor: "_Tuple2"
                                    ,_0: new_plats
-                                   ,_1: _v14._2},
+                                   ,_1: _v24._2},
                                    g.player)
-                                   ,points: g.points + 2 * $Time.inSeconds(_v14._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height)) + points_from_coins
-                                   ,prev_tap_pos: _v14._1
+                                   ,points: g.points + 2 * $Time.inSeconds(_v24._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height)) + points_from_coins
+                                   ,prev_tap_pos: _v24._1
                                    ,preview_plat: $BasicUtil.isJust(should_add_preview_plat) ? $Maybe.Nothing : new_preview_plat
                                    ,t0_preview_plat_just_added: $BasicUtil.isJust(should_add_preview_plat) ? A2($Maybe.map,
                                    function (_) {
                                       return _.t0;
                                    },
-                                   _v14._0) : g.t0_preview_plat_just_added
-                                   ,time_playing: g.time_playing + _v14._2};
-                    var tap_target = _U.eq(_v14._1,
-                    g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v14._1);
+                                   _v24._0) : g.t0_preview_plat_just_added
+                                   ,targets: new_targets
+                                   ,time_playing: g.time_playing + _v24._2};
+                    var tap_target = _U.eq(_v24._1,
+                    g.prev_tap_pos) ? $Maybe.Nothing : $Maybe.Just(_v24._1);
                     var pause_clicked = function () {
                        switch (tap_target.ctor)
                        {case "Just":
@@ -1693,7 +1769,7 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 101 and 104");
+                       "between lines 109 and 112");
                     }();
                     var restart_clicked = function () {
                        switch (tap_target.ctor)
@@ -1703,13 +1779,13 @@ Elm.Game.make = function (_elm) {
                             50) < 0;
                           case "Nothing": return false;}
                        _U.badCase($moduleName,
-                       "between lines 105 and 108");
+                       "between lines 113 and 116");
                     }();
                     return _U.cmp(g.player.pos.y,
-                    $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v14._1) : Continue(new_game);
+                    $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v24._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 99 and 189");
+            "between lines 107 and 206");
          }();
       });
       return step;
@@ -7549,6 +7625,82 @@ Elm.Signal.make = function (_elm) {
                         ,send: send
                         ,subscribe: subscribe};
    return _elm.Signal.values;
+};
+Elm.Target = Elm.Target || {};
+Elm.Target.make = function (_elm) {
+   "use strict";
+   _elm.Target = _elm.Target || {};
+   if (_elm.Target.values)
+   return _elm.Target.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Target",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var circleB = function (r) {
+      return A2($Graphics$Collage.filled,
+      $Color.darkGrey,
+      $Graphics$Collage.circle(r));
+   };
+   var circleA = function (r) {
+      return A2($Graphics$Collage.filled,
+      $Color.red,
+      $Graphics$Collage.circle(r));
+   };
+   var stepTarget = F2(function (dt,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple3":
+            return {ctor: "_Tuple3"
+                   ,_0: _v0._0
+                   ,_1: _v0._1 - dt
+                   ,_2: _v0._2};}
+         _U.badCase($moduleName,
+         "on line 24, column 33 to 50");
+      }();
+   });
+   var target_lifespan = 6000;
+   var onlyFor = F3(function (lifeleft,
+   frac,
+   graphic) {
+      return _U.cmp(lifeleft,
+      frac * target_lifespan) > -1 ? graphic : graphic;
+   });
+   var target_radius = 12;
+   var renderTarget = function (_v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "_Tuple3":
+            return $HasPosition.move_f(_v5._0)($Graphics$Collage.scale(_v5._1 / target_lifespan)($Graphics$Collage.group(_L.fromArray([A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0.75)(circleA(target_radius))
+                                                                                                                                      ,A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0.5)(circleB(target_radius * 0.75))
+                                                                                                                                      ,A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0.25)(circleA(target_radius * 0.5))
+                                                                                                                                      ,A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0)(circleB(target_radius * 0.25))]))));}
+         _U.badCase($moduleName,
+         "between lines 37 and 42");
+      }();
+   };
+   _elm.Target.values = {_op: _op
+                        ,stepTarget: stepTarget
+                        ,renderTarget: renderTarget
+                        ,target_radius: target_radius
+                        ,target_lifespan: target_lifespan};
+   return _elm.Target.values;
 };
 Elm.Text = Elm.Text || {};
 Elm.Text.make = function (_elm) {

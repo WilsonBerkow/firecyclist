@@ -23,6 +23,7 @@ import Player (..)
 import Fireball (..)
 import Platfm (Platfm, configPlatfm, stepPlatfm, renderPlatfm, renderTouchPlatfmPreview)
 import Coin (..)
+import Target (..)
 
 type WhereTo = Continue State | Pause State | Restart Position | Die State -- It is necessary for 'Restart' to take a Position for the same reason it is necessary for DeadScreen.Replay to take one: so that the new game that is started records the previous tap correctly, and does not accidentally pause it or anything
 toPosition {x,y} = { x = (toFloat x), y = (toFloat y) }
@@ -34,6 +35,7 @@ type alias State =
   { plats : List Platfm
   , player : Player
   , coins : List Coin
+  , targets: List Target
   , fireballs : List Fireball
   , last_touch : Maybe Touch.Touch
   , preview_plat : Maybe Platfm
@@ -78,6 +80,12 @@ step =
       coin_hitting_player : Player -> Coin -> Bool
       coin_hitting_player pl coin = distance pl.pos coin < (configPlayer.radius + coin_radius)
       
+      target_alive : Target -> Bool
+      target_alive (_, lifespan, _) = lifespan >= 0
+      
+      target_hitting_player : Player -> Target -> Bool
+      target_hitting_player pl (pos, lifeleft, _) = distance pl.pos pos < (configPlayer.radius + target_radius * (lifeleft / target_lifespan))
+      
       update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
       
       randomly_create_x seed dt likelihood spacing =
@@ -106,8 +114,9 @@ step =
                 Nothing -> False
                 Just {x, y} -> x > (toFloat game_total_width - 50) && y < 50
             (new_fb_pos, seed') = randomly_create_x g.fb_creation_seed dt 1 (round configFireball.padded_len)
-            (new_coin_pos, new_seed) = randomly_create_x seed' dt 0.4 (round coin_radius)
-            
+            (new_coin_pos, seed'') = randomly_create_x seed' dt 0.4 (round coin_radius)
+            (new_target_x, seed''') = randomly_create_x seed'' dt 0.2 (round target_radius)
+            (random_target_y, new_seed) = Random.generate (Random.float 25 (toFloat game_total_height * 1 / 3 + 25)) seed'''
             confirm_platfm_validity ({start, end} as plat) =
               if | start == end -> Nothing
                  | start.y == end.y -> Just { plat | start <- { start | y <- plat.start.y - 1 } } -- This handles when the platform is drawn perfectly vertically.
@@ -151,7 +160,7 @@ step =
             new_fireballs =
               let updated_fbs = update_and_filter (stepFireball dt) fb_on_screen g.fireballs
               in case new_fb_pos of
-                   Just pos -> makeFireball { x = pos, y = toFloat game_total_height + fb_height } :: updated_fbs
+                   Just xpos -> makeFireball { x = xpos, y = toFloat game_total_height + fb_height } :: updated_fbs
                    Nothing -> updated_fbs
             player_on_fire = any (player_hitting_fb g.player) g.fireballs
             
@@ -161,14 +170,22 @@ step =
             new_coins =
               let updated_coins = update_and_filter (stepCoin dt) (fn_map2 (&&) coin_on_screen (not << coin_hitting_player g.player)) g.coins
               in case new_coin_pos of
-                   Just pos -> { x = pos, y = toFloat game_total_height + coin_radius } :: updated_coins
+                   Just xpos -> { x = xpos, y = toFloat game_total_height + coin_radius } :: updated_coins
                    Nothing -> updated_coins
+            
+            new_targets : List Target
+            new_targets =
+              let updated_targets = update_and_filter (stepTarget dt) (fn_map2 (&&) target_alive (not << target_hitting_player g.player)) g.targets -- Testing whether it's been hit is a temporary measure. Later it will be whether the hit-animation has finished.
+              in case new_target_x of
+                   Just xpos -> ({ x = xpos, y = random_target_y }, target_lifespan, Nothing) :: updated_targets -- The hard-coded y coordinate is probably just for now.
+                   Nothing -> updated_targets
             
             new_game : State
             new_game =
               { player           = stepPlayer (new_plats,dt) g.player
               , plats            = new_plats
               , coins            = new_coins
+              , targets          = new_targets
               , last_touch       = cur_touch
               , fireballs        = new_fireballs
               , preview_plat     = if isJust should_add_preview_plat then Nothing else new_preview_plat
@@ -204,6 +221,7 @@ render =
   in \game ->
     let plats = List.map renderPlatfm game.plats
         coins = List.map renderCoin game.coins
+        targets = List.map renderTarget game.targets
         plat_preview = Maybe.map renderTouchPlatfmPreview game.preview_plat
         fireballs = List.map renderFireball game.fireballs
         
@@ -213,6 +231,7 @@ render =
                  , move_f {x=toFloat game_total_width / 2, y=20} (Collage.toForm (Text.centered (Text.color Color.black (Text.bold (Text.typeface ["monospace", "arial"] (Text.height 30 (Text.fromString (toString (round game.points)))))))))
                  ]
               ++ plats
+              ++ targets
               ++ coins
               ++ fireballs
               ++ [renderPlayer game.player]
@@ -230,6 +249,7 @@ init =
   in { plats = []
      , player = { pos = {x=200,y=75}, vel = {x=0,y=0} }
      , coins = []
+     , targets = []
      , fireballs = []
      , last_touch = Nothing
      , preview_plat = Nothing

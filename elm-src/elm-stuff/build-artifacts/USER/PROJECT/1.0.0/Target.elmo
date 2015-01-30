@@ -1,0 +1,76 @@
+Elm.Target = Elm.Target || {};
+Elm.Target.make = function (_elm) {
+   "use strict";
+   _elm.Target = _elm.Target || {};
+   if (_elm.Target.values)
+   return _elm.Target.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Target",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $HasPosition = Elm.HasPosition.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var circleB = function (r) {
+      return A2($Graphics$Collage.filled,
+      $Color.darkGrey,
+      $Graphics$Collage.circle(r));
+   };
+   var circleA = function (r) {
+      return A2($Graphics$Collage.filled,
+      $Color.red,
+      $Graphics$Collage.circle(r));
+   };
+   var stepTarget = F2(function (dt,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple3":
+            return {ctor: "_Tuple3"
+                   ,_0: _v0._0
+                   ,_1: _v0._1 - dt
+                   ,_2: _v0._2};}
+         _U.badCase($moduleName,
+         "on line 24, column 33 to 50");
+      }();
+   });
+   var target_lifespan = 6000;
+   var onlyFor = F3(function (lifeleft,
+   frac,
+   graphic) {
+      return _U.cmp(lifeleft,
+      frac * target_lifespan) > -1 ? graphic : graphic;
+   });
+   var target_radius = 12;
+   var renderTarget = function (_v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "_Tuple3":
+            return $HasPosition.move_f(_v5._0)($Graphics$Collage.scale(_v5._1 / target_lifespan)($Graphics$Collage.group(_L.fromArray([A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0.75)(circleA(target_radius))
+                                                                                                                                      ,A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0.5)(circleB(target_radius * 0.75))
+                                                                                                                                      ,A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0.25)(circleA(target_radius * 0.5))
+                                                                                                                                      ,A2(onlyFor,
+                                                                                                                                      _v5._1,
+                                                                                                                                      0)(circleB(target_radius * 0.25))]))));}
+         _U.badCase($moduleName,
+         "between lines 37 and 42");
+      }();
+   };
+   _elm.Target.values = {_op: _op
+                        ,stepTarget: stepTarget
+                        ,renderTarget: renderTarget
+                        ,target_radius: target_radius
+                        ,target_lifespan: target_lifespan};
+   return _elm.Target.values;
+};
