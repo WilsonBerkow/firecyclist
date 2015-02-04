@@ -72,19 +72,20 @@ step =
       
       player_hitting_fb : Player -> Fireball -> Bool
       player_hitting_fb player fb =
-        distance player.pos fb.pos < (configPlayer.radius + fb_radius)
+        distance player.pos fb.pos < (player_head_radius + fb_radius)
       
       coin_on_screen : Coin -> Bool
       coin_on_screen pos = point_on_screen pos || point_on_screen (vect_rise coin_radius pos)
       
       coin_hitting_player : Player -> Coin -> Bool
-      coin_hitting_player pl coin = distance pl.pos coin < (configPlayer.radius + coin_radius)
+      coin_hitting_player pl coin = (distance pl.pos coin < (player_head_radius + coin_radius))
+                                 || (distance (playerWheelCenterPos pl) coin < (player_wheel_radius + coin_radius))
       
       target_alive : Target -> Bool
       target_alive (_, lifespan, _) = lifespan >= 0
       
       target_hitting_player : Player -> Target -> Bool
-      target_hitting_player pl (pos, lifeleft, _) = distance pl.pos pos < (configPlayer.radius + target_radius * (lifeleft / target_lifespan))
+      target_hitting_player pl (pos, lifeleft, _) = distance pl.pos pos < (player_head_radius + target_radius * (lifeleft / target_lifespan))
       
       update_and_filter stepper filterer objs = List.map stepper (List.filter filterer objs)
       
