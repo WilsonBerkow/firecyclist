@@ -119,10 +119,11 @@ step =
               case tap_target of
                 Nothing -> False
                 Just {x, y} -> x > (toFloat game_total_width - 50) && y < 50
-            (new_fb_pos, seed') = randomly_create_x g.fb_creation_seed dt 1 (round configFireball.padded_len)
-            (new_coin_pos, seed'') = randomly_create_x seed' dt 0.4 (round coin_radius)
-            (new_target_x, seed''') = randomly_create_x seed'' dt 0.2 (round target_radius)
-            (random_target_y, new_seed) = Random.generate (Random.float 25 (toFloat game_total_height * 1 / 3 + 25)) seed'''
+            (new_fb_pos, seed0) = randomly_create_x g.fb_creation_seed dt 1 (round configFireball.padded_len)
+            (new_coin_pos, seed1) = randomly_create_x seed0 dt 0.4 (round coin_radius)
+            (new_target_x, seed2) = randomly_create_x seed1 dt 0.2 (round target_radius)
+            (random_target_y, seed3) = Random.generate (Random.float 25 (toFloat game_total_height * 1 / 3 + 25)) seed2
+            (change_arms_dir, new_seed) = Random.generate (Random.int 0 10) seed3
             
             new_preview_plat : Maybe Platfm
             new_preview_plat = -- This does a check to make sure that the 'preview plat' has NOT already been drawn/materialized by having been landed on by the player.
@@ -184,7 +185,7 @@ step =
             
             new_game : State
             new_game =
-              { player           = stepPlayer (new_plats,dt) g.player
+              { player           = stepPlayer (new_plats,dt,change_arms_dir == 0) g.player
               , plats            = new_plats
               , coins            = new_coins
               , targets          = new_targets
@@ -249,7 +250,7 @@ init current_time =
       (gw, gh) = (toFloat game_total_width, toFloat game_total_height)
       (pad_len, side_len) = (configFireball.padded_len, configFireball.side_len)
   in { plats = []
-     , player = { pos = {x=200,y=75}, vel = {x=0,y=0} }
+     , player = { pos = {x=200,y=75}, vel = {x=0,y=0}, arms_dir = True }
      , coins = []
      , targets = []
      , fireballs = []

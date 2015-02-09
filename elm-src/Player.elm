@@ -12,8 +12,8 @@ import BasicUtil (..)
 import HasPosition (..)
 import Platfm (Platfm, configPlatfm, platfm_thickness)
 
-type alias Player = { pos : Position, vel : Position }
-type alias PlayerInputs = (List Platfm, Time.Time)
+type alias Player = { pos : Position, vel : Position, arms_dir : Bool }
+type alias PlayerInputs = (List Platfm, Time.Time, Bool)
 
 player_head_radius = 7
 player_wheel_radius = player_head_radius * 7 / 6
@@ -22,7 +22,7 @@ player_torso_length = player_head_radius * 3 / 2
 playerWheelCenterPos : Player -> Position
 playerWheelCenterPos pl = vect_fall (player_head_radius + player_wheel_radius + player_torso_length) pl.pos
 
-graphic =
+(body_graphic, arms_graphic, createGraphic) =
   let rad = player_head_radius
       torsoLen = player_torso_length
       wheelRad = player_wheel_radius
@@ -47,24 +47,37 @@ graphic =
         --, rotate (turns <| 6/8) oneSpoke
         --, rotate (turns <| 7/8) oneSpoke
         ]
-  in group
-       [ -- Head:
-         outlined (solid black) (circle rad)
-         
-         -- Torso:
-       , traced defaultLine (segment (0, -rad) (0, -rad - torsoLen))
-         
-         -- Arms:
-       , moveY armsStartY oneArm
-       , moveY armsStartY (scale -1 oneArm)
-         
-         -- Wheel:
-       , moveY (-rad - torsoLen - wheelRad) <| outlined (solid black) (circle wheelRad)
-       , moveY (-rad - torsoLen - wheelRad) allSpokes
-       ]
+      body = group
+        [ -- Head:
+          outlined (solid black) (circle rad)
+          
+          -- Torso:
+        , traced defaultLine (segment (0, -rad) (0, -rad - torsoLen))
+          
+          -- Wheel:
+        , moveY (-rad - torsoLen - wheelRad) <| outlined (solid black) (circle wheelRad)
+        , moveY (-rad - torsoLen - wheelRad) allSpokes
+        ]
+      armsA = group
+        [ oneArm
+        , scale -1 oneArm
+        ]
+      armsB = group
+        [ moveX (elbowXDiff * 2) oneArm
+        , moveY -elbowYDiff <| moveX (-elbowXDiff * 2) (scale -1 oneArm)
+        ]
+      flippedArms dir =
+        if not dir
+          then armsA
+          else armsB
+      createGraphic flipdir = group
+        [ body
+        , moveY armsStartY (flippedArms flipdir)
+        ]
+  in (body_graphic, arms_graphic, createGraphic)
 
 renderPlayer : Player -> Form
-renderPlayer p = move_f p.pos graphic
+renderPlayer p = move_f p.pos (createGraphic p.arms_dir)
 
 intersects_plat : Player -> Platfm -> Bool
 intersects_plat player plat = -- This algorithm is from http://mathworld.wolfram.com/Circle-LineIntersection.html
@@ -102,7 +115,7 @@ stepPlayer =
                           |> vect_rise platfm_bounciness
       player_grav = 0.3--0.2--0.3
       
-      step (plats, dt) p =
+      step (plats, dt, flip_arms_dir) p =
         let on_plat = touching_any p plats
             vel =
               case on_plat of
@@ -116,5 +129,6 @@ stepPlayer =
                              | otherwise           -> newx
         in { pos = {x=modded_newx,y=newy}
            , vel = vel
+           , arms_dir = if flip_arms_dir then not p.arms_dir else p.arms_dir
            }
   in step

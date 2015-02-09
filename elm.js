@@ -1255,6 +1255,7 @@ Elm.Game.make = function (_elm) {
                 ,last_touch: $Maybe.Nothing
                 ,plats: _L.fromArray([])
                 ,player: {_: {}
+                         ,arms_dir: true
                          ,pos: {_: {},x: 200,y: 75}
                          ,vel: {_: {},x: 0,y: 0}}
                 ,points: 0
@@ -1393,7 +1394,7 @@ Elm.Game.make = function (_elm) {
                     forms$);
                   case "Nothing": return forms$;}
                _U.badCase($moduleName,
-               "between lines 240 and 243");
+               "between lines 241 and 244");
             }();
             return A3($Graphics$Collage.collage,
             $Config.game_total_width,
@@ -1603,7 +1604,7 @@ Elm.Game.make = function (_elm) {
                                return $Maybe.Nothing;}
                             break;}
                        _U.badCase($moduleName,
-                       "between lines 129 and 137");
+                       "between lines 130 and 138");
                     }();
                     var drawn_plat = function () {
                        switch (_v26._0.ctor)
@@ -1616,7 +1617,7 @@ Elm.Game.make = function (_elm) {
                             g.preview_plat),
                             confirm_platfm_validity);}
                        _U.badCase($moduleName,
-                       "between lines 139 and 145");
+                       "between lines 140 and 146");
                     }();
                     var should_add_preview_plat = A2($Maybe.andThen,
                     new_preview_plat,
@@ -1656,27 +1657,32 @@ Elm.Game.make = function (_elm) {
                     1,
                     $Basics.round($Fireball.configFireball.padded_len)),
                     new_fb_pos = $._0,
-                    seed$ = $._1;
+                    seed0 = $._1;
                     var $ = A4(randomly_create_x,
-                    seed$,
+                    seed0,
                     _v26._2,
                     0.4,
                     $Basics.round($Coin.coin_radius)),
                     new_coin_pos = $._0,
-                    seed$$ = $._1;
+                    seed1 = $._1;
                     var $ = A4(randomly_create_x,
-                    seed$$,
+                    seed1,
                     _v26._2,
                     0.2,
                     $Basics.round($Target.target_radius)),
                     new_target_x = $._0,
-                    seed$$$ = $._1;
+                    seed2 = $._1;
                     var $ = A2($Random.generate,
                     A2($Random.$float,
                     25,
                     $Basics.toFloat($Config.game_total_height) * 1 / 3 + 25),
-                    seed$$$),
+                    seed2),
                     random_target_y = $._0,
+                    seed3 = $._1;
+                    var $ = A2($Random.generate,
+                    A2($Random.$int,0,10),
+                    seed3),
+                    change_arms_dir = $._0,
                     new_seed = $._1;
                     var new_targets = function () {
                        var updated_targets = A3(update_and_filter,
@@ -1704,7 +1710,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_targets;}
                           _U.badCase($moduleName,
-                          "between lines 181 and 185");
+                          "between lines 182 and 186");
                        }();
                     }();
                     var new_coins = function () {
@@ -1730,7 +1736,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_coins;}
                           _U.badCase($moduleName,
-                          "between lines 174 and 178");
+                          "between lines 175 and 179");
                        }();
                     }();
                     var new_fireballs = function () {
@@ -1749,7 +1755,7 @@ Elm.Game.make = function (_elm) {
                              case "Nothing":
                              return updated_fbs;}
                           _U.badCase($moduleName,
-                          "between lines 164 and 167");
+                          "between lines 165 and 168");
                        }();
                     }();
                     var new_game = {_: {}
@@ -1760,9 +1766,10 @@ Elm.Game.make = function (_elm) {
                                    ,last_touch: _v26._0
                                    ,plats: new_plats
                                    ,player: A2($Player.stepPlayer,
-                                   {ctor: "_Tuple2"
+                                   {ctor: "_Tuple3"
                                    ,_0: new_plats
-                                   ,_1: _v26._2},
+                                   ,_1: _v26._2
+                                   ,_2: _U.eq(change_arms_dir,0)},
                                    g.player)
                                    ,points: g.points + 2 * $Time.inSeconds(_v26._2) * (1 + g.player.pos.y / $Basics.toFloat($Config.game_total_height)) + points_from_coins
                                    ,prev_tap_pos: _v26._1
@@ -1800,7 +1807,7 @@ Elm.Game.make = function (_elm) {
                     $Basics.toFloat($Config.game_total_height)) > 0 ? Die(new_game) : player_on_fire ? Die(new_game) : pause_clicked ? Pause(new_game) : restart_clicked ? Restart(_v26._1) : Continue(new_game);
                  }();}
             _U.badCase($moduleName,
-            "between lines 113 and 208");
+            "between lines 113 and 209");
          }();
       });
       return step;
@@ -6891,7 +6898,7 @@ Elm.Player.make = function (_elm) {
             case "[]":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 85 and 90");
+         "between lines 98 and 103");
       }();
    });
    var stepPlayer = function () {
@@ -6913,10 +6920,10 @@ Elm.Player.make = function (_elm) {
                     {case "_Tuple2":
                        return (_v4._1 - _v3._1) / (_v4._0 - _v3._0);}
                     _U.badCase($moduleName,
-                    "on line 94, column 34 to 53");
+                    "on line 107, column 34 to 53");
                  }();}
             _U.badCase($moduleName,
-            "on line 94, column 34 to 53");
+            "on line 107, column 34 to 53");
          }();
       });
       var plat_slope = function (_v11) {
@@ -6934,7 +6941,7 @@ Elm.Player.make = function (_elm) {
       p) {
          return function () {
             switch (_v13.ctor)
-            {case "_Tuple2":
+            {case "_Tuple3":
                return function () {
                     var rad = player_wheel_radius;
                     var gwidth = $Basics.toFloat($Config.game_total_width);
@@ -6952,7 +6959,7 @@ Elm.Player.make = function (_elm) {
                             player_grav * _v13._1 / 28,
                             p.vel);}
                        _U.badCase($moduleName,
-                       "between lines 108 and 111");
+                       "between lines 121 and 124");
                     }();
                     var $ = function () {
                        var $ = A2($HasPosition.vect_add,
@@ -6972,18 +6979,19 @@ Elm.Player.make = function (_elm) {
                     gwidth + rad) > 0 ? newx - gwidth - rad : _U.cmp(newx,
                     0 - rad) < 0 ? newx + gwidth + rad : newx;
                     return {_: {}
+                           ,arms_dir: _v13._2 ? $Basics.not(p.arms_dir) : p.arms_dir
                            ,pos: {_: {}
                                  ,x: modded_newx
                                  ,y: newy}
                            ,vel: vel};
                  }();}
             _U.badCase($moduleName,
-            "between lines 106 and 119");
+            "between lines 119 and 133");
          }();
       });
       return step;
    }();
-   var graphic = function () {
+   var $ = function () {
       var wheelRad = player_wheel_radius;
       var oneSpoke = A2($Graphics$Collage.traced,
       $Graphics$Collage.defaultLine,
@@ -7036,40 +7044,65 @@ Elm.Player.make = function (_elm) {
                                                         {ctor: "_Tuple2"
                                                         ,_0: -2 * elbowXDiff
                                                         ,_1: 0 - elbowYDiff}))]));
-      return $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.outlined,
-                                                  $Graphics$Collage.solid($Color.black),
-                                                  $Graphics$Collage.circle(rad))
-                                                  ,A2($Graphics$Collage.traced,
-                                                  $Graphics$Collage.defaultLine,
-                                                  A2($Graphics$Collage.segment,
-                                                  {ctor: "_Tuple2"
-                                                  ,_0: 0
-                                                  ,_1: 0 - rad},
-                                                  {ctor: "_Tuple2"
-                                                  ,_0: 0
-                                                  ,_1: 0 - rad - torsoLen}))
-                                                  ,A2($Graphics$Collage.moveY,
-                                                  armsStartY,
-                                                  oneArm)
-                                                  ,A2($Graphics$Collage.moveY,
-                                                  armsStartY,
-                                                  A2($Graphics$Collage.scale,
-                                                  -1,
-                                                  oneArm))
-                                                  ,$Graphics$Collage.moveY(0 - rad - torsoLen - wheelRad)(A2($Graphics$Collage.outlined,
-                                                  $Graphics$Collage.solid($Color.black),
-                                                  $Graphics$Collage.circle(wheelRad)))
-                                                  ,A2($Graphics$Collage.moveY,
-                                                  0 - rad - torsoLen - wheelRad,
-                                                  allSpokes)]));
-   }();
+      var armsA = $Graphics$Collage.group(_L.fromArray([oneArm
+                                                       ,A2($Graphics$Collage.scale,
+                                                       -1,
+                                                       oneArm)]));
+      var armsB = $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.moveX,
+                                                       elbowXDiff * 2,
+                                                       oneArm)
+                                                       ,$Graphics$Collage.moveY(0 - elbowYDiff)(A2($Graphics$Collage.moveX,
+                                                       (0 - elbowXDiff) * 2,
+                                                       A2($Graphics$Collage.scale,
+                                                       -1,
+                                                       oneArm)))]));
+      var flippedArms = function (dir) {
+         return $Basics.not(dir) ? armsA : armsB;
+      };
+      var body = $Graphics$Collage.group(_L.fromArray([A2($Graphics$Collage.outlined,
+                                                      $Graphics$Collage.solid($Color.black),
+                                                      $Graphics$Collage.circle(rad))
+                                                      ,A2($Graphics$Collage.traced,
+                                                      $Graphics$Collage.defaultLine,
+                                                      A2($Graphics$Collage.segment,
+                                                      {ctor: "_Tuple2"
+                                                      ,_0: 0
+                                                      ,_1: 0 - rad},
+                                                      {ctor: "_Tuple2"
+                                                      ,_0: 0
+                                                      ,_1: 0 - rad - torsoLen}))
+                                                      ,$Graphics$Collage.moveY(0 - rad - torsoLen - wheelRad)(A2($Graphics$Collage.outlined,
+                                                      $Graphics$Collage.solid($Color.black),
+                                                      $Graphics$Collage.circle(wheelRad)))
+                                                      ,A2($Graphics$Collage.moveY,
+                                                      0 - rad - torsoLen - wheelRad,
+                                                      allSpokes)]));
+      var createGraphic = function (flipdir) {
+         return $Graphics$Collage.group(_L.fromArray([body
+                                                     ,A2($Graphics$Collage.moveY,
+                                                     armsStartY,
+                                                     flippedArms(flipdir))]));
+      };
+      return {ctor: "_Tuple3"
+             ,_0: body_graphic
+             ,_1: arms_graphic
+             ,_2: createGraphic};
+   }(),
+   body_graphic = $._0,
+   arms_graphic = $._1,
+   createGraphic = $._2;
    var renderPlayer = function (p) {
       return A2($HasPosition.move_f,
       p.pos,
-      graphic);
+      createGraphic(p.arms_dir));
    };
-   var Player = F2(function (a,b) {
-      return {_: {},pos: a,vel: b};
+   var Player = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,arms_dir: c
+             ,pos: a
+             ,vel: b};
    });
    _elm.Player.values = {_op: _op
                         ,Player: Player
@@ -7077,7 +7110,9 @@ Elm.Player.make = function (_elm) {
                         ,player_wheel_radius: player_wheel_radius
                         ,player_torso_length: player_torso_length
                         ,playerWheelCenterPos: playerWheelCenterPos
-                        ,graphic: graphic
+                        ,arms_graphic: arms_graphic
+                        ,body_graphic: body_graphic
+                        ,createGraphic: createGraphic
                         ,renderPlayer: renderPlayer
                         ,intersects_plat: intersects_plat
                         ,touching_any: touching_any

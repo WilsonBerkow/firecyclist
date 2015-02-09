@@ -1,4 +1,4 @@
--- (c) Wilson Berkow*
+-- (c) Wilson Berkow
 
 module HasPosition where
 
